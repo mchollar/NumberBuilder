@@ -12,6 +12,9 @@
 		22442BB42166EEA4000CDCBD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22442BB22166EEA4000CDCBD /* Main.storyboard */; };
 		22442BB62166EEA6000CDCBD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22442BB52166EEA6000CDCBD /* Assets.xcassets */; };
 		22442BB92166EEA6000CDCBD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22442BB72166EEA6000CDCBD /* LaunchScreen.storyboard */; };
+		22442BC22166EEF3000CDCBD /* Punch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22442BC12166EEF3000CDCBD /* Punch.swift */; };
+		22442BC42166EF72000CDCBD /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22442BC32166EF72000CDCBD /* Operation.swift */; };
+		22442BC821699002000CDCBD /* SlamNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22442BC721699002000CDCBD /* SlamNumber.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +25,9 @@
 		22442BB52166EEA6000CDCBD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22442BB82166EEA6000CDCBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		22442BBA2166EEA6000CDCBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		22442BC12166EEF3000CDCBD /* Punch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Punch.swift; sourceTree = "<group>"; };
+		22442BC32166EF72000CDCBD /* Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
+		22442BC721699002000CDCBD /* SlamNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlamNumber.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +60,7 @@
 		22442BAD2166EEA4000CDCBD /* NumberSlam */ = {
 			isa = PBXGroup;
 			children = (
+				22442BC02166EED4000CDCBD /* Model */,
 				22442BAE2166EEA4000CDCBD /* AppDelegate.swift */,
 				22442BB02166EEA4000CDCBD /* ViewController.swift */,
 				22442BB22166EEA4000CDCBD /* Main.storyboard */,
@@ -62,6 +69,16 @@
 				22442BBA2166EEA6000CDCBD /* Info.plist */,
 			);
 			path = NumberSlam;
+			sourceTree = "<group>";
+		};
+		22442BC02166EED4000CDCBD /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				22442BC12166EEF3000CDCBD /* Punch.swift */,
+				22442BC721699002000CDCBD /* SlamNumber.swift */,
+				22442BC32166EF72000CDCBD /* Operation.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,8 +152,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22442BC821699002000CDCBD /* SlamNumber.swift in Sources */,
+				22442BC22166EEF3000CDCBD /* Punch.swift in Sources */,
 				22442BB12166EEA4000CDCBD /* ViewController.swift in Sources */,
 				22442BAF2166EEA4000CDCBD /* AppDelegate.swift in Sources */,
+				22442BC42166EF72000CDCBD /* Operation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
