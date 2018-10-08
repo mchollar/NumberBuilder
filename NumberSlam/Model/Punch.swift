@@ -9,10 +9,10 @@
 import Foundation
 
 class Punch: CustomStringConvertible {
-    var number: Int
+    var number: SlamNumber
     var description: String
     
-    init(number: Int, description: String) {
+    init(number: SlamNumber, description: String) {
         self.number = number
         self.description = description
     }

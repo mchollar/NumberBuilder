@@ -14,6 +14,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     
     let maxPower = 5
     var operations = [Operation]()
+    var results: [Punch]?
     
     @IBOutlet weak var dicePickerA: UIPickerView!
     @IBOutlet weak var dicePickerB: UIPickerView!
@@ -21,7 +22,9 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     
     @IBOutlet weak var resultTextView: UITextView!
     
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
     
+    @IBOutlet weak var viewResultsButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -32,13 +35,10 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         
         operations.append(Operation(description: "+", function: +))
         operations.append(Operation(description: "-", function: -))
-        operations.append(Operation(description: "*", function: *))
+        operations.append(Operation(description: "x", function: *))
         operations.append(Operation(description: "/", function: /))
         
-        
     }
-    
-
     
     @IBAction func rollButtonTouched(_ sender: UIButton) {
         var numbers = [Int]()
@@ -55,61 +55,67 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     
     @IBAction func calculateButtonTouched(_ sender: UIButton) {
         
-        var numbers = [Int]()
-        numbers.append(dicePickerA.selectedRow(inComponent: 0)+1)
-        numbers.append(dicePickerB.selectedRow(inComponent: 0)+1)
-        numbers.append(dicePickerC.selectedRow(inComponent: 0)+1)
+        var numbers = [SlamNumber]()
+        numbers.append(SlamNumber(value: dicePickerA.selectedRow(inComponent: 0)+1))
+        numbers.append(SlamNumber(value: dicePickerB.selectedRow(inComponent: 0)+1))
+        numbers.append(SlamNumber(value: dicePickerC.selectedRow(inComponent: 0)+1))
         resultTextView.text = "Performing calculations on: \(numbers)\n"
         performCalculationsOn(numbers: numbers)
     }
     
     
-    func performCalculationsOn(numbers: [Int]) {
-        //Create combinations of operations
-        let opCombos = combos(elements: operations, k: 2)
-        print ("\(opCombos)")
+    func performCalculationsOn(numbers: [SlamNumber]) {
         
-        var mutableNumbers = numbers
-        //Create initial permutations of numbers
-        var numberCombos = permutations(mutableNumbers.count, &mutableNumbers)
-        
-        for i in 0 ..< 3 {
-            for j in 0 ... maxPower {
-                let elevatedNumber = Int(pow(Double(mutableNumbers[i]), Double(j)))
-                print ("\(mutableNumbers[i]) pow \(j) = \(elevatedNumber)")
-                var tempSet = mutableNumbers
-                tempSet[i] = elevatedNumber
-                let tempNumberCombos = permutations(tempSet.count, &tempSet)
-                numberCombos += tempNumberCombos
-                
-                for k in 2 ... maxPower {
-                    let secondElevatedDouble = pow(Double(elevatedNumber), 1/Double(k))
-                    print(elevatedNumber, (1/Double(k)), secondElevatedDouble)
-                    if floor(secondElevatedDouble) == secondElevatedDouble {
-                        
-                        let secondElevatedNumber = Int(secondElevatedDouble)
-                        print ("\(elevatedNumber) pow 1/\(k) = \(secondElevatedNumber)")
-                        
-                        var tempSet = mutableNumbers
-                        tempSet[i] = secondElevatedNumber
-                        let tempNumberCombos = permutations(tempSet.count, &tempSet)
-                        numberCombos += tempNumberCombos
-                        
+        spinner.startAnimating()
+        viewResultsButton.isEnabled = false
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            //Create combinations of operations
+            let opCombos = self?.combos(elements: self!.operations, k: 2)
+            //print ("\(opCombos)")
+            
+            //var mutableNumbers = numbers
+            
+            var firstNumberSet = numbers[0].powersAndRootsSet(maxPower: self?.maxPower ?? 1)
+            firstNumberSet = firstNumberSet.removeDuplicates()
+            var secondNumberSet = numbers[1].powersAndRootsSet(maxPower: self?.maxPower ?? 1)
+            secondNumberSet = secondNumberSet.removeDuplicates()
+            var thirdNumberSet = numbers[2].powersAndRootsSet(maxPower: self?.maxPower ?? 1)
+            thirdNumberSet = thirdNumberSet.removeDuplicates()
+            var numberCombos = [[SlamNumber]]()
+            for i in 0 ..< firstNumberSet.count {
+                for j in 0 ..< secondNumberSet.count {
+                    for k in 0 ..< thirdNumberSet.count {
+                        var elements = [firstNumberSet[i], secondNumberSet[j], thirdNumberSet[k]]
+                        if let elementCombos = self?.permutations(3, &elements)
+                        {
+                            for combo in elementCombos {
+                            numberCombos.append(combo)
+                            }
+                        }
                     }
                 }
             }
-        }
-        
-        print("\(numberCombos.count) values total")
-        numberCombos = numberCombos.removeDuplicates()
-        print("\(numberCombos.count) values after reduction")
-        
-        let punches = runOperations(opCombos, on: numberCombos)
-        let sortedPunches = punches.sorted(by: {$0.number<$1.number})
-        print("Possible Combinations are:/n \(sortedPunches)")
-        
-        for punch in sortedPunches {
-            resultTextView.text += punch.description + "\n"
+            
+            print("\(numberCombos.count) values total")
+            numberCombos = numberCombos.removeDuplicates()
+            print("\(numberCombos.count) values after reduction")
+            
+            if let punches = self?.runOperations(opCombos!, on: numberCombos) {
+                let sortedPunches = punches.sorted(by: {$0.number<$1.number})
+                print("Possible Combinations are:/n \(sortedPunches)")
+                
+                for punch in sortedPunches {
+                    DispatchQueue.main.async {
+                        self?.resultTextView.text += punch.description + "\n"
+                    }
+                    
+                }
+                self?.results = sortedPunches
+            }
+            DispatchQueue.main.async {
+                self?.spinner.stopAnimating()
+                self?.viewResultsButton.isEnabled = true
+            }
         }
     }
     
@@ -122,7 +128,20 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         dicePickerC.selectRow(numbers[2]-1, inComponent: 0, animated: true)
     }
     
-    func runOperations(_ operations: [[Operation]], on numbers: [[Int]]) -> [Punch] {
+    func operationReturnsInt(_ operation: Operation, on numbers: [SlamNumber]) -> Bool {
+        guard numbers.count == 2 else { print("wrong number entered in operationReturnsInt function");  return false }
+        if operation.description == "/" {
+            if numbers[0] % numbers[1] != 0 {
+                return false
+            }
+        }
+        if operation.description == "root" {
+            return false
+        }
+        return true
+    }
+    
+    func runOperations(_ operations: [[Operation]], on numbers: [[SlamNumber]]) -> [Punch] {
         
         var results = [Punch]()
         
@@ -140,7 +159,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         return results
     }
     
-    func runOperation(_ operations: [Operation], on numbers: [Int]) -> Punch? {
+    func runOperation(_ operations: [Operation], on numbers: [SlamNumber]) -> Punch? {
         guard numbers.count - operations.count == 1 else { return nil }
         
         let firstOp = operations[0].function
@@ -162,25 +181,14 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         
         let firstValue = firstOp(numbers[0], numbers[1])
         let secondValue = secondOp(firstValue, numbers[2])
-        if secondValue > 36 { print("Value > 36"); return nil }
-        if secondValue < 1 { print( "Value < 1"); return nil }
+        if secondValue > SlamNumber(value: 36) { print("Value > 36"); return nil }
+        if secondValue < SlamNumber(value: 1) { print( "Value < 1"); return nil }
         let returnString = "\(numbers[0]) \(operations[0].description) \(numbers[1]) \(operations[1].description) \(numbers[2]) = \(secondValue)"
         let returnPunch = Punch(number: secondValue, description: returnString)
         return returnPunch
     }
     
-    func operationReturnsInt(_ operation: Operation, on numbers: [Int]) -> Bool {
-        guard numbers.count == 2 else { print("wrong number entered in operationReturnsInt function");  return false }
-        if operation.description == "/" {
-            if numbers[0] % numbers[1] != 0 {
-                return false
-            }
-        }
-        if operation.description == "root" {
-            return false
-        }
-        return true
-    }
+    
     
     func permutations<T>(_ n:Int, _ a: inout Array<T>) -> [[T]] {
         if n == 1 {
@@ -218,13 +226,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         return combos(elements: ArraySlice(elements), k: k)
     }
     
-    func powerSetOf(_ number: Int, maxPower: Int) -> [Int] {
-        var results = [Int]()
-        for i in 0 ... maxPower {
-            results.append(Int(pow(Double(number), Double(i))))
-        }
-        return results
-    }
+    
     
     //MARK: - UIPickerView Protocol Methods
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -237,6 +239,16 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return "\(row + 1)"
+    }
+    
+    //MARK: Navigation
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "ShowResults" {
+            if let resultsCVC = segue.destination as? ResultsCollectionViewController {
+                resultsCVC.results = results
+            }
+        }
     }
 }
 
