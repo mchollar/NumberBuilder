@@ -25,17 +25,9 @@ class ResultsCollectionViewController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Register cell classes
-        //self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
-
         loadPunchStructure()
         collectionView?.collectionViewLayout = columnLayout
         collectionView?.contentInsetAdjustmentBehavior = .always
-        
-        // Do any additional setup after loading the view.
     }
 
     private func loadPunchStructure() {
@@ -52,8 +44,7 @@ class ResultsCollectionViewController: UICollectionViewController {
     }
     
     // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowPunches" {
             if let punchTVC = segue.destination as? PunchTableViewController,
@@ -68,7 +59,7 @@ class ResultsCollectionViewController: UICollectionViewController {
     }
     
 
-    // MARK: UICollectionViewDataSource
+    // MARK: - UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         // #warning Incomplete implementation, return the number of sections
@@ -95,7 +86,8 @@ class ResultsCollectionViewController: UICollectionViewController {
             cell.isUserInteractionEnabled = false
         }
         //cell.punchesLabel.text = "\(structuredResults[indexPath.row].count) punches"
-    
+        cell.layer.cornerRadius = CGFloat(5)
+        
         return cell
     }
 

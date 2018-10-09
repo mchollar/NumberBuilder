@@ -10,6 +10,5 @@ import Foundation
 
 struct Operation: CustomStringConvertible {
     var description: String
-    //var function: ((Int, Int) -> Int)
     var function: ((SlamNumber, SlamNumber) -> SlamNumber)
 }

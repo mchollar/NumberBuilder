@@ -28,23 +28,27 @@ class SlamNumber: CustomStringConvertible, Equatable {
         self.value = value
         self.base = value
     }
+
+    let supers = ["\u{2070}", "\u{00B9}", "\u{00B2}", "\u{00B3}", "\u{2074}", "\u{2075}", "\u{2076}", "\u{2077}", "\u{2078}", "\u{2079}", "\u{2E0D}"] //Unicode characters for superscript (exponents and roots) - 0-9 and the / symbol
     
     var description: String {
         var desc = "\(base)"
         if exponent == 0 {
-            return desc + "^0 (1)"
+            return desc + supers[0] + " (\(value))"
+            
         }
         if exponent != 1 {
-            desc += "^\(exponent)"
+            desc += supers[exponent]
             if root != 1 {
-                desc += "/\(root)"
+                desc += supers[10] + supers[root]
             }
             desc += " (\(value))"
         }
         else if root != 1 {
-            desc += "^1/\(root)"
+            desc += supers[1] + supers[10] + supers[root]
             desc += " (\(value))"
         }
+        
         return desc
     }
     
@@ -100,7 +104,7 @@ class SlamNumber: CustomStringConvertible, Equatable {
                     
                     let tempRootDouble = pow(Double(tempNumber.value), 1/Double(j)) // Create this to see if it's a whole number
                     
-                    if floor(tempRootDouble) == tempRootDouble {
+                    if floor(tempRootDouble) == tempRootDouble { //Evaluates true if it's a whole number
                         let newTempNumber = SlamNumber(value: self.value)
                         newTempNumber.exponent = tempNumber.exponent
                         newTempNumber.root = j
@@ -112,7 +116,6 @@ class SlamNumber: CustomStringConvertible, Equatable {
         
         return results
     }
-    
     
 }
 
