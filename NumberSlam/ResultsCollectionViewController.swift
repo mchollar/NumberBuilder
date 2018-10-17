@@ -14,6 +14,7 @@ class ResultsCollectionViewController: UICollectionViewController {
 
     var results: [Punch]?
     var structuredResults = [[Punch]]()
+    var diceNumbers = [Int]()
     
     let columnLayout = SlamBoardLayout(
         cellsPerRow: 6,
@@ -28,6 +29,10 @@ class ResultsCollectionViewController: UICollectionViewController {
         loadPunchStructure()
         collectionView?.collectionViewLayout = columnLayout
         collectionView?.contentInsetAdjustmentBehavior = .always
+        
+        addGradientToBackGround(color1: ColorPalette.slamRed, color2: ColorPalette.backgroundGray)
+        
+        self.navigationItem.title = "Results \(diceNumbers)"
     }
 
     private func loadPunchStructure() {
@@ -43,6 +48,10 @@ class ResultsCollectionViewController: UICollectionViewController {
         }
     }
     
+    func updateShadows() {
+        
+    }
+    
     // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -52,7 +61,7 @@ class ResultsCollectionViewController: UICollectionViewController {
                 let index = collectionView.indexPath(for: senderCell) {
                 
                 punchTVC.punches = structuredResults[index.row]
-                punchTVC.navigationItem.title = "\(index.row + 1)"
+                punchTVC.navigationItem.title = "\(diceNumbers) ➡︎ \(index.row + 1)"
             }
         }
     
@@ -80,17 +89,38 @@ class ResultsCollectionViewController: UICollectionViewController {
             cell.backgroundColor = .blue
             cell.numberLabel.textColor = .white
             cell.isUserInteractionEnabled = true
+            
+            cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
+            
         } else {
             cell.backgroundColor = .lightGray
             cell.numberLabel.textColor = .black
             cell.isUserInteractionEnabled = false
+            
+            cell.dropShadow(color: .black, opacity: 0.0, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
         }
-        //cell.punchesLabel.text = "\(structuredResults[indexPath.row].count) punches"
+        
         cell.layer.cornerRadius = CGFloat(5)
+        
+        //cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 5, height: 5), radius: 5, scale: true)
         
         return cell
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        for index in 0 ..< structuredResults.count {
+            if let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) {
+                if structuredResults[index].count > 0 {
+                    cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
+                
+                } else {
+                    cell.dropShadow(color: .black, opacity: 0.0, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
+                }
+            }
+        }
+    }
+    
     // MARK: UICollectionViewDelegate
 
     /*

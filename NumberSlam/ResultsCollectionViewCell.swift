@@ -12,4 +12,19 @@ class ResultsCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var numberLabel: UILabel!
     
+    override var isSelected: Bool {
+        didSet{
+            if self.isSelected
+            {
+                self.backgroundColor = .black
+            }
+            else
+            {
+                self.backgroundColor = .blue
+            }
+        }
+    }
+    
+    var isEmpty = true
+    
 }

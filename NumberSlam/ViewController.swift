@@ -15,20 +15,25 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     let maxPower = 5
     var operations = [Operation]()
     var results: [Punch]?
+    var diceNumbers = [SlamNumber]()
     
     @IBOutlet weak var dicePickerA: UIPickerView!
     @IBOutlet weak var dicePickerB: UIPickerView!
     @IBOutlet weak var dicePickerC: UIPickerView!
     
-    @IBOutlet weak var resultTextView: UITextView!
-    
     @IBOutlet weak var spinner: UIActivityIndicatorView!
+    
+    @IBOutlet weak var resultsFoundLabel: UILabel!
+    
     
     @IBOutlet weak var viewResultsButton: UIButton!
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
         setup()
+        //ColorPalette.addGradient(to: self.view, color1: ColorPalette.backgroundBlue, color2: ColorPalette.backgroundGray)
+        ColorPalette.addGradient(to: self.view, color1: .white, color2: ColorPalette.backgroundGray)
+        self.view.tintColor = ColorPalette.slamRed
     }
     
     func setup() {
@@ -50,7 +55,9 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         print("You rolled: \(numbers)")
         
         updateDicePickersWith(numbers: numbers)
-        //performCalculationsOn(numbers: numbers)
+        resultsFoundLabel.isHidden = true
+        viewResultsButton.isEnabled = false
+        
     }
     
     @IBAction func calculateButtonTouched(_ sender: UIButton) {
@@ -59,7 +66,6 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         numbers.append(SlamNumber(value: dicePickerA.selectedRow(inComponent: 0)+1))
         numbers.append(SlamNumber(value: dicePickerB.selectedRow(inComponent: 0)+1))
         numbers.append(SlamNumber(value: dicePickerC.selectedRow(inComponent: 0)+1))
-        resultTextView.text = "Performing calculations on: \(numbers)\n"
         performCalculationsOn(numbers: numbers)
     }
     
@@ -67,6 +73,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     func performCalculationsOn(numbers: [SlamNumber]) {
         
         spinner.startAnimating()
+        resultsFoundLabel.isHidden = true
         viewResultsButton.isEnabled = false
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             //Create combinations of operations
@@ -104,17 +111,19 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 let sortedPunches = punches.sorted(by: {$0.number<$1.number})
                 print("Possible Combinations are:/n \(sortedPunches)")
                 
-                for punch in sortedPunches {
-                    DispatchQueue.main.async {
-                        self?.resultTextView.text += punch.description + "\n"
-                    }
-                    
-                }
+//                for punch in sortedPunches {
+//                    DispatchQueue.main.async {
+//                        self?.resultTextView.text += punch.description + "\n"
+//                    }
+//
+//                }
                 self?.results = sortedPunches
             }
             DispatchQueue.main.async {
                 self?.spinner.stopAnimating()
                 self?.viewResultsButton.isEnabled = true
+                self?.resultsFoundLabel.text = "Total Solutions Found: \(self?.results?.count ?? 0)"
+                self?.resultsFoundLabel.isHidden = false
             }
         }
     }
@@ -189,7 +198,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     }
     
     
-    
+    //MARK: - Combination Methods
     func permutations<T>(_ n:Int, _ a: inout Array<T>) -> [[T]] {
         if n == 1 {
             print(a)
@@ -241,12 +250,21 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         return "\(row + 1)"
     }
     
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        resultsFoundLabel.isHidden = true
+        viewResultsButton.isEnabled = false
+    }
+    
+    
     //MARK: Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowResults" {
             if let resultsCVC = segue.destination as? ResultsCollectionViewController {
                 resultsCVC.results = results
+                resultsCVC.diceNumbers = [dicePickerA.selectedRow(inComponent: 0) + 1,
+                                          dicePickerB.selectedRow(inComponent: 0) + 1,
+                                          dicePickerC.selectedRow(inComponent: 0) + 1]
             }
         }
     }
