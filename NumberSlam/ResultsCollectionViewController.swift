@@ -12,6 +12,7 @@ private let reuseIdentifier = "ResultsCell"
 
 class ResultsCollectionViewController: UICollectionViewController {
 
+    var slamBoard: SlamBoard?
     var results: [Punch]?
     var structuredResults = [[Punch]]()
     var diceNumbers = [Int]()
@@ -36,11 +37,13 @@ class ResultsCollectionViewController: UICollectionViewController {
     }
 
     private func loadPunchStructure() {
+        
         guard let validResults = results else { return }
+        guard let slamBoard = self.slamBoard else { return }
         for i in 0 ..< 36 {
             var punches = [Punch]()
             for punch in validResults {
-                if punch.number.value == i+1 {
+                if punch.number.value == slamBoard.numbers[i] {
                     punches.append(punch)
                 }
             }
@@ -61,7 +64,7 @@ class ResultsCollectionViewController: UICollectionViewController {
                 let index = collectionView.indexPath(for: senderCell) {
                 
                 punchTVC.punches = structuredResults[index.row]
-                punchTVC.navigationItem.title = "\(diceNumbers) ➡︎ \(index.row + 1)"
+                punchTVC.navigationItem.title = "\(diceNumbers) ➡︎ \(slamBoard?.numbers[index.row] ?? -1)"
             }
         }
     
@@ -84,25 +87,23 @@ class ResultsCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ResultsCollectionViewCell
     
-        cell.numberLabel.text = "\(indexPath.row + 1)"
-        if structuredResults[indexPath.row].count > 0 {
+        //cell.numberLabel.text = "\(indexPath.row + 1)"
+        cell.numberLabel.text = "\(slamBoard?.numbers[indexPath.row] ?? -1)"
+        
+        if structuredResults[indexPath.row].count > 0 { // This cell has results
             cell.backgroundColor = .blue
             cell.numberLabel.textColor = .white
             cell.isUserInteractionEnabled = true
-            
             cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
             
-        } else {
+        } else { // This cell has no results
             cell.backgroundColor = .lightGray
             cell.numberLabel.textColor = .black
             cell.isUserInteractionEnabled = false
-            
             cell.dropShadow(color: .black, opacity: 0.0, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
         }
         
         cell.layer.cornerRadius = CGFloat(5)
-        
-        //cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 5, height: 5), radius: 5, scale: true)
         
         return cell
     }

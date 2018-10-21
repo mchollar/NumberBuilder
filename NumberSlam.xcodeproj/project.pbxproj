@@ -24,6 +24,13 @@
 		22570B05216AC00E00A7AA35 /* ResultsCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22570B04216AC00E00A7AA35 /* ResultsCollectionViewCell.swift */; };
 		22570B07216B099800A7AA35 /* SlamBoardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22570B06216B099800A7AA35 /* SlamBoardLayout.swift */; };
 		2296C66B2176E0B500A7C307 /* CustomBoardCVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2296C66A2176E0B500A7C307 /* CustomBoardCVC.swift */; };
+		2296C66D2176E13900A7C307 /* CustomBoardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2296C66C2176E13900A7C307 /* CustomBoardCollectionViewCell.swift */; };
+		22FB409721792E4600B5DD09 /* SlamBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB409621792E4600B5DD09 /* SlamBoard.swift */; };
+		22FB40992179303A00B5DD09 /* CustomBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB40982179303A00B5DD09 /* CustomBoardViewController.swift */; };
+		22FB409B217936D600B5DD09 /* CustomBoardNumberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB409A217936D600B5DD09 /* CustomBoardNumberView.swift */; };
+		22FB409F217949CC00B5DD09 /* CustomBoardTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB409E217949CC00B5DD09 /* CustomBoardTVC.swift */; };
+		22FB40A1217949EB00B5DD09 /* CustomBoardNumberTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB40A0217949EB00B5DD09 /* CustomBoardNumberTableViewCell.swift */; };
+		22FB40A3217AEB8C00B5DD09 /* BoardSelectTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB40A2217AEB8C00B5DD09 /* BoardSelectTVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +53,13 @@
 		22570B04216AC00E00A7AA35 /* ResultsCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsCollectionViewCell.swift; sourceTree = "<group>"; };
 		22570B06216B099800A7AA35 /* SlamBoardLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlamBoardLayout.swift; sourceTree = "<group>"; };
 		2296C66A2176E0B500A7C307 /* CustomBoardCVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardCVC.swift; sourceTree = "<group>"; };
+		2296C66C2176E13900A7C307 /* CustomBoardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardCollectionViewCell.swift; sourceTree = "<group>"; };
+		22FB409621792E4600B5DD09 /* SlamBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlamBoard.swift; sourceTree = "<group>"; };
+		22FB40982179303A00B5DD09 /* CustomBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardViewController.swift; sourceTree = "<group>"; };
+		22FB409A217936D600B5DD09 /* CustomBoardNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardNumberView.swift; sourceTree = "<group>"; };
+		22FB409E217949CC00B5DD09 /* CustomBoardTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardTVC.swift; sourceTree = "<group>"; };
+		22FB40A0217949EB00B5DD09 /* CustomBoardNumberTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardNumberTableViewCell.swift; sourceTree = "<group>"; };
+		22FB40A2217AEB8C00B5DD09 /* BoardSelectTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardSelectTVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +105,7 @@
 			children = (
 				22442BAE2166EEA4000CDCBD /* AppDelegate.swift */,
 				22442BB22166EEA4000CDCBD /* Main.storyboard */,
+				22FB40A2217AEB8C00B5DD09 /* BoardSelectTVC.swift */,
 				22442BB02166EEA4000CDCBD /* ViewController.swift */,
 				22570B00216AB92F00A7AA35 /* ResultsCollectionViewController.swift */,
 				22570B06216B099800A7AA35 /* SlamBoardLayout.swift */,
@@ -112,6 +127,7 @@
 				22442BC12166EEF3000CDCBD /* Punch.swift */,
 				22442BC721699002000CDCBD /* SlamNumber.swift */,
 				22442BC32166EF72000CDCBD /* Operation.swift */,
+				22FB409621792E4600B5DD09 /* SlamBoard.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -120,6 +136,11 @@
 			isa = PBXGroup;
 			children = (
 				2296C66A2176E0B500A7C307 /* CustomBoardCVC.swift */,
+				2296C66C2176E13900A7C307 /* CustomBoardCollectionViewCell.swift */,
+				22FB40982179303A00B5DD09 /* CustomBoardViewController.swift */,
+				22FB409A217936D600B5DD09 /* CustomBoardNumberView.swift */,
+				22FB409E217949CC00B5DD09 /* CustomBoardTVC.swift */,
+				22FB40A0217949EB00B5DD09 /* CustomBoardNumberTableViewCell.swift */,
 			);
 			path = "Custom Board";
 			sourceTree = "<group>";
@@ -196,19 +217,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				223BDBEF2173F16B00ACB7F8 /* UITableViewController+Gradient.swift in Sources */,
+				22FB40A3217AEB8C00B5DD09 /* BoardSelectTVC.swift in Sources */,
 				22442BC821699002000CDCBD /* SlamNumber.swift in Sources */,
 				22442BC22166EEF3000CDCBD /* Punch.swift in Sources */,
 				22442BB12166EEA4000CDCBD /* ViewController.swift in Sources */,
 				2296C66B2176E0B500A7C307 /* CustomBoardCVC.swift in Sources */,
 				22570B05216AC00E00A7AA35 /* ResultsCollectionViewCell.swift in Sources */,
 				22570B01216AB92F00A7AA35 /* ResultsCollectionViewController.swift in Sources */,
+				22FB409F217949CC00B5DD09 /* CustomBoardTVC.swift in Sources */,
+				2296C66D2176E13900A7C307 /* CustomBoardCollectionViewCell.swift in Sources */,
 				22442BAF2166EEA4000CDCBD /* AppDelegate.swift in Sources */,
+				22FB40992179303A00B5DD09 /* CustomBoardViewController.swift in Sources */,
 				22570B03216AB95A00A7AA35 /* PunchTableViewController.swift in Sources */,
 				223BDBEB2173E92100ACB7F8 /* UIView+DropShadow.swift in Sources */,
 				223BDBF22173F1FC00ACB7F8 /* UICollectionViewController+Gradient.swift in Sources */,
+				22FB409B217936D600B5DD09 /* CustomBoardNumberView.swift in Sources */,
 				22570B07216B099800A7AA35 /* SlamBoardLayout.swift in Sources */,
 				22442BC42166EF72000CDCBD /* Operation.swift in Sources */,
 				223BDBF02173F16B00ACB7F8 /* ColorPalette.swift in Sources */,
+				22FB40A1217949EB00B5DD09 /* CustomBoardNumberTableViewCell.swift in Sources */,
+				22FB409721792E4600B5DD09 /* SlamBoard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

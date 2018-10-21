@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
-    
+    var slamBoard: SlamBoard?
     
     let maxPower = 5
     var operations = [Operation]()
@@ -190,9 +190,20 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         
         let firstValue = firstOp(numbers[0], numbers[1])
         let secondValue = secondOp(firstValue, numbers[2])
-        if secondValue > SlamNumber(value: 36) { print("Value > 36"); return nil }
+        if secondValue > SlamNumber(value: slamBoard!.numbers.max()!) { print("Value > Max"); return nil } //TODO: Fix this code
         if secondValue < SlamNumber(value: 1) { print( "Value < 1"); return nil }
-        let returnString = "\(numbers[0]) \(operations[0].description) \(numbers[1]) \(operations[1].description) \(numbers[2]) = \(secondValue)"
+        
+        var returnString = ""
+        if (operations[0].description == "+" || operations[0].description == "-") &&
+            (operations[1].description == "x" || operations[1].description == "/") {
+            
+            returnString = "(\(numbers[0]) \(operations[0].description) \(numbers[1])) \(operations[1].description) \(numbers[2]) = \(secondValue)"
+            
+        } else {
+        
+            returnString = "\(numbers[0]) \(operations[0].description) \(numbers[1]) \(operations[1].description) \(numbers[2]) = \(secondValue)"
+            
+        }
         let returnPunch = Punch(number: secondValue, description: returnString)
         return returnPunch
     }
@@ -256,11 +267,12 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     }
     
     
-    //MARK: Navigation
+    //MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowResults" {
             if let resultsCVC = segue.destination as? ResultsCollectionViewController {
+                resultsCVC.slamBoard = slamBoard
                 resultsCVC.results = results
                 resultsCVC.diceNumbers = [dicePickerA.selectedRow(inComponent: 0) + 1,
                                           dicePickerB.selectedRow(inComponent: 0) + 1,
