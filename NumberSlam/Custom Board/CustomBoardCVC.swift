@@ -24,6 +24,9 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate {
         sectionInset: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     )
     
+    let fontSize = CGFloat(30)
+    let smallFontSize = CGFloat(22)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -33,7 +36,7 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate {
         addGradientToBackGround(color1: ColorPalette.slamBlueBackground, color2: ColorPalette.backgroundGray)
         
         setupBoard()
-        registerForKeyboardNotification()
+        //registerForKeyboardNotification()
         //flagDuplicates()
     }
 
@@ -158,8 +161,18 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate {
         
         guard textField.text != nil else { return }
         if let value = Int(textField.text!) {
-            //slamBoard?.numbers[textField.tag] = value
+            
             numbers[textField.tag] = value
+            
+            if value > 99 {
+                if let font = UIFont(name: "AvenirNext-Bold", size: smallFontSize) {
+                    textField.font = font
+                }
+            } else {
+                if let font = UIFont(name: "AvenirNext-Bold", size: fontSize) {
+                    textField.font = font
+                }
+            }
         }
         //Find duplicate values and flag them
         //flagDuplicates()

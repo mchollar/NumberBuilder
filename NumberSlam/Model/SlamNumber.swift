@@ -52,6 +52,36 @@ class SlamNumber: CustomStringConvertible, Equatable {
         return desc
     }
     
+    var attDescription: NSAttributedString {
+        
+        let boldAttributes: [NSAttributedString.Key: Any] = [
+            .strokeWidth: -3.0
+        ]
+        
+        let desc = NSMutableAttributedString(string: "\(base)", attributes: boldAttributes)
+        if exponent == 0 {
+            let expString = NSMutableAttributedString(string: supers[0], attributes: boldAttributes)
+            expString.append(NSAttributedString(string: " (\(value))"))
+            desc.append(expString)
+            return desc
+            
+        }
+        if exponent != 1 {
+            desc.append(NSAttributedString(string: supers[exponent], attributes: boldAttributes))
+            if root != 1 {
+                desc.append(NSAttributedString(string: supers[10] + supers[root], attributes: boldAttributes))
+                
+            }
+            desc.append(NSAttributedString(string: " (\(value))"))
+        }
+        else if root != 1 {
+            desc.append(NSAttributedString(string: supers[1] + supers[10] + supers[root], attributes: boldAttributes))
+            desc.append(NSAttributedString(string: " (\(value))"))
+        }
+        
+        return desc
+    }
+    
     static func +(lhs: SlamNumber, rhs: SlamNumber) -> SlamNumber {
         let ret = SlamNumber(value: lhs.value + rhs.value)
         return ret

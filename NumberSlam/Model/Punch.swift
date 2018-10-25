@@ -11,9 +11,11 @@ import Foundation
 class Punch: CustomStringConvertible {
     var number: SlamNumber
     var description: String
+    var attDescription: NSAttributedString
     
-    init(number: SlamNumber, description: String) {
+    init(number: SlamNumber, description: String, attDescription: NSAttributedString) {
         self.number = number
         self.description = description
+        self.attDescription = attDescription
     }
 }

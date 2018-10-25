@@ -159,6 +159,13 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 if let result = runOperation(operationSet, on: numberSet) {
                     print(result)
                     results.append(result)
+                    
+//                    DispatchQueue.main.async {
+//                        self.resultsFoundLabel.text = "Total Solutions Found: \(self.results?.count ?? 0)"
+//                        self.resultsFoundLabel.isHidden = false
+//                    }
+                    //TODO: Fix this so it updates
+                    
                 }
             }
             
@@ -194,17 +201,32 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         if secondValue < SlamNumber(value: 1) { print( "Value < 1"); return nil }
         
         var returnString = ""
+        let attReturnString = NSMutableAttributedString(string: "")
         if (operations[0].description == "+" || operations[0].description == "-") &&
             (operations[1].description == "x" || operations[1].description == "/") {
             
             returnString = "(\(numbers[0]) \(operations[0].description) \(numbers[1])) \(operations[1].description) \(numbers[2]) = \(secondValue)"
             
+            attReturnString.append(NSAttributedString(string: "("))
+            attReturnString.append(numbers[0].attDescription)
+            attReturnString.append(NSAttributedString(string: " " + operations[0].description + " "))
+            attReturnString.append(numbers[1].attDescription)
+            attReturnString.append(NSAttributedString(string: ") " + operations[1].description + " "))
+            attReturnString.append(numbers[2].attDescription)
+            //TODO: Fix parentheses
+            
         } else {
         
             returnString = "\(numbers[0]) \(operations[0].description) \(numbers[1]) \(operations[1].description) \(numbers[2]) = \(secondValue)"
             
+            attReturnString.append(numbers[0].attDescription)
+            attReturnString.append(NSAttributedString(string: " " + operations[0].description + " "))
+            attReturnString.append(numbers[1].attDescription)
+            attReturnString.append(NSAttributedString(string: " " + operations[1].description + " "))
+            attReturnString.append(numbers[2].attDescription)
+            
         }
-        let returnPunch = Punch(number: secondValue, description: returnString)
+        let returnPunch = Punch(number: secondValue, description: returnString, attDescription: attReturnString)
         return returnPunch
     }
     

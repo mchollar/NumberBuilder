@@ -24,6 +24,9 @@ class ResultsCollectionViewController: UICollectionViewController {
         sectionInset: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     )
     
+    let fontSize = CGFloat(30)
+    let smallFontSize = CGFloat(22)
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -87,8 +90,19 @@ class ResultsCollectionViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! ResultsCollectionViewCell
     
+        guard let slamBoard = self.slamBoard else { return cell }
         //cell.numberLabel.text = "\(indexPath.row + 1)"
-        cell.numberLabel.text = "\(slamBoard?.numbers[indexPath.row] ?? -1)"
+        cell.numberLabel.text = "\(slamBoard.numbers[indexPath.row])"
+        
+        if slamBoard.numbers[indexPath.row] > 99 {
+            if let font = UIFont(name: "AvenirNext-Bold", size: smallFontSize) {
+                cell.numberLabel.font = font
+            }
+        } else {
+            if let font = UIFont(name: "AvenirNext-Bold", size: fontSize) {
+                cell.numberLabel.font = font
+            }
+        }
         
         if structuredResults[indexPath.row].count > 0 { // This cell has results
             cell.backgroundColor = .blue
