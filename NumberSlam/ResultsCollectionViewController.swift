@@ -122,19 +122,19 @@ class ResultsCollectionViewController: UICollectionViewController {
         return cell
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        for index in 0 ..< structuredResults.count {
-            if let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) {
-                if structuredResults[index].count > 0 {
-                    cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
-                
-                } else {
-                    cell.dropShadow(color: .black, opacity: 0.0, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
-                }
-            }
-        }
-    }
+//    override func viewDidLayoutSubviews() {
+//        super.viewDidLayoutSubviews()
+//        for index in 0 ..< structuredResults.count {
+//            if let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) {
+//                if structuredResults[index].count > 0 {
+//                    cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
+//                
+//                } else {
+//                    cell.dropShadow(color: .black, opacity: 0.0, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
+//                }
+//            }
+//        }
+//    }
     
     // MARK: UICollectionViewDelegate
 

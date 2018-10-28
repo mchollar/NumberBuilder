@@ -10,12 +10,13 @@ import UIKit
 
 private let reuseIdentifier = "CustomCell"
 
-class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate {
+class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate, UIPopoverPresentationControllerDelegate {
 
     var activeField: UITextField?
     var textFields = [UITextField]()
     var slamBoard: SlamBoard?
     var numbers = [Int?]()
+    var maxRandom = 256
     
     let columnLayout = SlamBoardLayout(
         cellsPerRow: 6,
@@ -36,6 +37,8 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate {
         addGradientToBackGround(color1: ColorPalette.slamBlueBackground, color2: ColorPalette.backgroundGray)
         
         setupBoard()
+        
+        self.navigationController?.isToolbarHidden = false
         //registerForKeyboardNotification()
         //flagDuplicates()
     }
@@ -61,37 +64,66 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate {
         }
     }
     
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        for index in 0 ..< 36 {
-            if let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) {
-                
-                cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
-                
-            }
-        }
-    }
     
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
-        let destinationVC = segue.destination as! ViewController
-        var tempNumbers = [Int]()
-        for number in numbers {
-            if number != nil {
-                tempNumbers.append(number!)
-            } else {
-                tempNumbers.append(0)
+        switch segue.identifier {
+        case "SetMaxPopover":
+            let destinationVC = segue.destination as! RandomSettingViewController
+            destinationVC.maxValue = maxRandom
+            destinationVC.delegate = self
+        case "UseCustomBoard":
+            let destinationVC = segue.destination as! NumberSlamViewController
+            var tempNumbers = [Int]()
+            for number in numbers {
+                if number != nil {
+                    tempNumbers.append(number!)
+                } else {
+                    tempNumbers.append(0)
+                }
             }
+            self.slamBoard = SlamBoard(numbers: tempNumbers)
+            destinationVC.slamBoard = slamBoard
+            
+        default:
+            break
         }
-        self.slamBoard = SlamBoard(numbers: tempNumbers)
-        destinationVC.slamBoard = slamBoard
         
+    }
+
     
+    @IBAction func setMaxButtonTouched(_ sender: UIBarButtonItem) {
+        
+        guard let maxRandomVC = self.storyboard?.instantiateViewController(withIdentifier: "RandomSettingViewController") as? RandomSettingViewController else {
+            return
+        }
+        maxRandomVC.modalPresentationStyle = .popover
+        maxRandomVC.preferredContentSize = CGSize(width: 300, height: 125)
+        maxRandomVC.delegate = self
+        maxRandomVC.maxValue = maxRandom
+        
+        if let presentationController = maxRandomVC.popoverPresentationController {
+            presentationController.delegate = self
+            presentationController.permittedArrowDirections = [.up, .down]
+            presentationController.sourceView = self.navigationController?.toolbar
+            
+            self.present(maxRandomVC, animated: true, completion: nil)
+        }
     }
     
-
-    // MARK: UICollectionViewDataSource
+//    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
+//        if let randomVC = popoverPresentationController.presentingViewController as? RandomSettingViewController, randomVC.maxValue != nil {
+//            maxRandom = randomVC.maxValue!
+//        }
+//    }
+    
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        // Tells iOS that we do NOT want to adapt the presentation style for iPhone
+        return .none
+    }
+    
+    // MARK: - UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
@@ -113,12 +145,44 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate {
         }
         
         //cell.textField.text = "\(slamBoard?.numbers[indexPath.row] ?? 0)"
-        
+        if numbers[indexPath.row] != nil {
+            cell.textField.text = "\(numbers[indexPath.row]!)"
+            handleFontOf(cell.textField, with: numbers[indexPath.row]!)
+        } else {
+            cell.textField.text = ""
+        }
         cell.textField.tag = indexPath.row
         cell.textField.delegate = self
+        cell.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
+        
         return cell
     }
 
+    
+    @IBAction func randomButtonTouched(_ sender: UIBarButtonItem) {
+        
+        var randomNumbers = [Int]()
+        
+        for _ in 0 ..< 36 {
+            var randomValue = Int.random(in: 1...maxRandom)
+            while randomNumbers.contains(randomValue) {
+                randomValue = Int.random(in: 1...maxRandom)
+            }
+            randomNumbers.append(randomValue)
+            
+        }
+        randomNumbers.sort()
+        
+        for i in 0 ..< 36 {
+            numbers[i] = randomNumbers[i]
+            if let cell = collectionView(collectionView, cellForItemAt: IndexPath(row: i, section: 0)) as? CustomBoardCollectionViewCell {
+                cell.textField.text = "\(randomNumbers[i])"
+                collectionView.reloadItems(at: [IndexPath(item: i, section: 0)])
+            }
+        }
+        
+    }
+    
     // MARK: UICollectionViewDelegate
 
     /*
@@ -163,20 +227,24 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate {
         if let value = Int(textField.text!) {
             
             numbers[textField.tag] = value
-            
-            if value > 99 {
-                if let font = UIFont(name: "AvenirNext-Bold", size: smallFontSize) {
-                    textField.font = font
-                }
-            } else {
-                if let font = UIFont(name: "AvenirNext-Bold", size: fontSize) {
-                    textField.font = font
-                }
+            handleFontOf(textField, with: value)
+        } else { // Bad input, set value back to where it was
+            textField.text = numbers[textField.tag] != nil ?
+                "\(numbers[textField.tag]!)" : ""
+        }
+        
+    }
+    
+    func handleFontOf(_ textField: UITextField, with value: Int) {
+        if value > 99 {
+            if let font = UIFont(name: "AvenirNext-Bold", size: smallFontSize) {
+                textField.font = font
+            }
+        } else {
+            if let font = UIFont(name: "AvenirNext-Bold", size: fontSize) {
+                textField.font = font
             }
         }
-        //Find duplicate values and flag them
-        //flagDuplicates()
-        
     }
     
     func flagDuplicates() {

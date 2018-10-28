@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  NumberSlamViewController.swift
 //  NumberSlam
 //
 //  Created by Micah Chollar on 10/4/18.
@@ -8,30 +8,28 @@
 
 import UIKit
 
-class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     var slamBoard: SlamBoard?
-    
     let maxPower = 5
     var operations = [Operation]()
     var results: [Punch]?
     var diceNumbers = [SlamNumber]()
+    var lastUpdateTime = Date()
     
     @IBOutlet weak var dicePickerA: UIPickerView!
     @IBOutlet weak var dicePickerB: UIPickerView!
     @IBOutlet weak var dicePickerC: UIPickerView!
     
     @IBOutlet weak var spinner: UIActivityIndicatorView!
-    
     @IBOutlet weak var resultsFoundLabel: UILabel!
-    
-    
     @IBOutlet weak var viewResultsButton: UIButton!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setup()
-        //ColorPalette.addGradient(to: self.view, color1: ColorPalette.backgroundBlue, color2: ColorPalette.backgroundGray)
+        
         ColorPalette.addGradient(to: self.view, color1: .white, color2: ColorPalette.backgroundGray)
         self.view.tintColor = ColorPalette.slamRed
     }
@@ -72,15 +70,22 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
     
     func performCalculationsOn(numbers: [SlamNumber]) {
         
+        results = nil
         spinner.startAnimating()
-        resultsFoundLabel.isHidden = true
+        resultsFoundLabel.isHidden = false
         viewResultsButton.isEnabled = false
+        resultsFoundLabel.text = "Creating combinations"
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             //Create combinations of operations
-            let opCombos = self?.combos(elements: self!.operations, k: 2)
-            //print ("\(opCombos)")
+            //let opCombos = self?.combos(elements: self!.operations, k: 2)
+            var opCombos = self?.permutations(4, &self!.operations)
+            if opCombos != nil {
+                self?.trimCombos(&opCombos!)
+                opCombos = opCombos!.removeDuplicates()
+                self?.addDoubles(&opCombos!)
+            }
             
-            //var mutableNumbers = numbers
+            print ("\(String(describing: opCombos))")
             
             var firstNumberSet = numbers[0].powersAndRootsSet(maxPower: self?.maxPower ?? 1)
             firstNumberSet = firstNumberSet.removeDuplicates()
@@ -110,13 +115,7 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             if let punches = self?.runOperations(opCombos!, on: numberCombos) {
                 let sortedPunches = punches.sorted(by: {$0.number<$1.number})
                 print("Possible Combinations are:/n \(sortedPunches)")
-                
-//                for punch in sortedPunches {
-//                    DispatchQueue.main.async {
-//                        self?.resultTextView.text += punch.description + "\n"
-//                    }
-//
-//                }
+          
                 self?.results = sortedPunches
             }
             DispatchQueue.main.async {
@@ -160,12 +159,20 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                     print(result)
                     results.append(result)
                     
-//                    DispatchQueue.main.async {
-//                        self.resultsFoundLabel.text = "Total Solutions Found: \(self.results?.count ?? 0)"
-//                        self.resultsFoundLabel.isHidden = false
-//                    }
-                    //TODO: Fix this so it updates
-                    
+                    if DateInterval(start: lastUpdateTime, end: Date()) < DateInterval(start: lastUpdateTime, duration: 0.2) {
+                        print("Skipping updateProgress()")
+                     
+                    } else {
+                        
+                        DispatchQueue.main.async {
+                            self.lastUpdateTime = Date()
+                            self.resultsFoundLabel.text = "Total Solutions Found: \(self.results?.count ?? 0)"
+                            self.resultsFoundLabel.isHidden = false
+                            print("Updating solutions label to: \(self.results?.count ?? -1) at \(self.lastUpdateTime)")
+                            
+                        }
+                        //TODO: Fix this so it updates
+                    }
                 }
             }
             
@@ -188,14 +195,17 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
                 return nil
             }
         }
+        
+        
+        let firstValue = firstOp(numbers[0], numbers[1])
+        
         if operations[1].description == "/" {
-            if !operationReturnsInt(operations[1], on: [numbers[1], numbers[2]]) {
-                print("found bad division (\(numbers[1]) / \(numbers[2]))")
+            if !operationReturnsInt(operations[1], on: [firstValue, numbers[2]]) {
+                print("found bad division (\(firstValue) / \(numbers[2]))")
                 return nil
             }
         }
         
-        let firstValue = firstOp(numbers[0], numbers[1])
         let secondValue = secondOp(firstValue, numbers[2])
         if secondValue > SlamNumber(value: slamBoard!.numbers.max()!) { print("Value > Max"); return nil } //TODO: Fix this code
         if secondValue < SlamNumber(value: 1) { print( "Value < 1"); return nil }
@@ -226,10 +236,26 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
             attReturnString.append(numbers[2].attDescription)
             
         }
-        let returnPunch = Punch(number: secondValue, description: returnString, attDescription: attReturnString)
+        let punchType = determinePunchType(numbers: numbers)
+        let returnPunch = Punch(number: secondValue, description: returnString, attDescription: attReturnString, type: punchType)
         return returnPunch
     }
     
+    func determinePunchType(numbers: [SlamNumber]) -> PunchType {
+        
+        var type: PunchType = .simple
+        
+        for number in numbers {
+            if number.exponent != 1 {
+                type = .power
+            }
+            if number.root != 1 {
+                type = .root
+            }
+        }
+        
+        return type
+    }
     
     //MARK: - Combination Methods
     func permutations<T>(_ n:Int, _ a: inout Array<T>) -> [[T]] {
@@ -268,7 +294,19 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         return combos(elements: ArraySlice(elements), k: k)
     }
     
+    func trimCombos(_ operationsArray: inout [[Operation]]) {
+        for i in 0..<operationsArray.count {
+            while operationsArray[i].count > 2 {
+                operationsArray[i].removeLast()
+            }
+        }
+    }
     
+    func addDoubles(_ operationsArray: inout [[Operation]]) {
+        for i in 0 ..< operations.count {
+            operationsArray.append([operations[i], operations[i]])
+        }
+    }
     
     //MARK: - UIPickerView Protocol Methods
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -279,8 +317,100 @@ class ViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSo
         return 6
     }
     
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return "\(row + 1)"
+//    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+//
+//        var title = ""
+//        switch row {
+//        case 0:
+//            title = "⚀"
+//        case 1:
+//            title = "⚁"
+//        case 2:
+//            title = "⚂"
+//        case 3:
+//            title = "⚃"
+//        case 4:
+//            title = "⚄"
+//        case 5:
+//            title = "⚅"
+//        default:
+//            break
+//        }
+//        //"⚀ ⚁ ⚂ ⚃ ⚄ ⚅"
+//
+//        return title
+//        //return "\(row + 1)"
+//    }
+    
+//    func pickerView(_ pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
+//        var title = ""
+//        switch row {
+//        case 0:
+//            title = "⚀"
+//        case 1:
+//            title = "⚁"
+//        case 2:
+//            title = "⚂"
+//        case 3:
+//            title = "⚃"
+//        case 4:
+//            title = "⚄"
+//        case 5:
+//            title = "⚅"
+//        default:
+//            break
+//        }
+//
+//        var attributes: [NSAttributedString.Key: Any] = [:]
+//        if let font = UIFont(name: "AvenirNext-Bold", size: 40) {
+//            attributes = [.font: font]
+//        }
+//
+//        return NSAttributedString(string: title, attributes: attributes)
+//    }
+    
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView {
+//        var pickerLabel: UILabel? = (view as? UILabel)
+//        if pickerLabel == nil {
+//            pickerLabel = UILabel()
+//            pickerLabel?.font = UIFont(name: "AvenirNext-Bold", size: 40)
+//            pickerLabel?.textAlignment = .center
+//        }
+//
+//        var title = ""
+//        switch row {
+//        case 0:
+//            title = "⚀"
+//        case 1:
+//            title = "⚁"
+//        case 2:
+//            title = "⚂"
+//        case 3:
+//            title = "⚃"
+//        case 4:
+//            title = "⚄"
+//        case 5:
+//            title = "⚅"
+//        default:
+//            break
+//        }
+//
+//        pickerLabel?.text = title
+//        //pickerLabel?.textColor = UIColor.blue
+//        //pickerLabel?.dropShadow()
+//        //pickerLabel?.backgroundColor = .lightGray
+//
+//        return pickerLabel!
+        
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        if let image = UIImage(named: "Dice\(row+1)") {
+            imageView.image = image
+        }
+        return imageView
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, rowHeightForComponent component: Int) -> CGFloat {
+        return 50
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {

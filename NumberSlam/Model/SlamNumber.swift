@@ -8,7 +8,7 @@
 
 import Foundation
 
-class SlamNumber: CustomStringConvertible, Equatable {
+class SlamNumber: CustomStringConvertible, Equatable, Comparable {
     
     var value: Int = 0
     var base: Int = 0
@@ -61,7 +61,7 @@ class SlamNumber: CustomStringConvertible, Equatable {
         let desc = NSMutableAttributedString(string: "\(base)", attributes: boldAttributes)
         if exponent == 0 {
             let expString = NSMutableAttributedString(string: supers[0], attributes: boldAttributes)
-            expString.append(NSAttributedString(string: " (\(value))"))
+            expString.append(NSAttributedString(string: " [\(value)]"))
             desc.append(expString)
             return desc
             
@@ -72,11 +72,11 @@ class SlamNumber: CustomStringConvertible, Equatable {
                 desc.append(NSAttributedString(string: supers[10] + supers[root], attributes: boldAttributes))
                 
             }
-            desc.append(NSAttributedString(string: " (\(value))"))
+            desc.append(NSAttributedString(string: " [\(value)]"))
         }
         else if root != 1 {
             desc.append(NSAttributedString(string: supers[1] + supers[10] + supers[root], attributes: boldAttributes))
-            desc.append(NSAttributedString(string: " (\(value))"))
+            desc.append(NSAttributedString(string: " [\(value)]"))
         }
         
         return desc

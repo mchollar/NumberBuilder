@@ -126,7 +126,7 @@ class BoardSelectTVC: UITableViewController {
             break
             
         case "UseStandardBoard":
-            let destinationVC = segue.destination as! ViewController
+            let destinationVC = segue.destination as! NumberSlamViewController
             destinationVC.slamBoard = slamBoard
             
         default:

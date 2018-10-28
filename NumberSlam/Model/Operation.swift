@@ -8,7 +8,11 @@
 
 import Foundation
 
-struct Operation: CustomStringConvertible {
+struct Operation: CustomStringConvertible, Equatable {
     var description: String
     var function: ((SlamNumber, SlamNumber) -> SlamNumber)
+    
+    static func ==(lhs: Operation, rhs: Operation) -> Bool {
+        return lhs.description == rhs.description
+    }
 }
