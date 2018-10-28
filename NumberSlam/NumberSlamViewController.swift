@@ -113,7 +113,7 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
             print("\(numberCombos.count) values after reduction")
             
             if let punches = self?.runOperations(opCombos!, on: numberCombos) {
-                let sortedPunches = punches.sorted(by: {$0.number<$1.number})
+                let sortedPunches = punches.sorted(by: {$0.result < $1.result})
                 print("Possible Combinations are:/n \(sortedPunches)")
           
                 self?.results = sortedPunches
@@ -210,34 +210,8 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
         if secondValue > SlamNumber(value: slamBoard!.numbers.max()!) { print("Value > Max"); return nil } //TODO: Fix this code
         if secondValue < SlamNumber(value: 1) { print( "Value < 1"); return nil }
         
-        var returnString = ""
-        let attReturnString = NSMutableAttributedString(string: "")
-        if (operations[0].description == "+" || operations[0].description == "-") &&
-            (operations[1].description == "x" || operations[1].description == "/") {
-            
-            returnString = "(\(numbers[0]) \(operations[0].description) \(numbers[1])) \(operations[1].description) \(numbers[2]) = \(secondValue)"
-            
-            attReturnString.append(NSAttributedString(string: "("))
-            attReturnString.append(numbers[0].attDescription)
-            attReturnString.append(NSAttributedString(string: " " + operations[0].description + " "))
-            attReturnString.append(numbers[1].attDescription)
-            attReturnString.append(NSAttributedString(string: ") " + operations[1].description + " "))
-            attReturnString.append(numbers[2].attDescription)
-            //TODO: Fix parentheses
-            
-        } else {
-        
-            returnString = "\(numbers[0]) \(operations[0].description) \(numbers[1]) \(operations[1].description) \(numbers[2]) = \(secondValue)"
-            
-            attReturnString.append(numbers[0].attDescription)
-            attReturnString.append(NSAttributedString(string: " " + operations[0].description + " "))
-            attReturnString.append(numbers[1].attDescription)
-            attReturnString.append(NSAttributedString(string: " " + operations[1].description + " "))
-            attReturnString.append(numbers[2].attDescription)
-            
-        }
         let punchType = determinePunchType(numbers: numbers)
-        let returnPunch = Punch(number: secondValue, description: returnString, attDescription: attReturnString, type: punchType)
+        let returnPunch = Punch(result: secondValue, numbers: numbers, operations: operations, type: punchType)
         return returnPunch
     }
     
