@@ -12,7 +12,7 @@
         <!--NumberSlam-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController title="NumberSlam" id="BYZ-38-t0r" customClass="NumberSlamViewController" customModule="NumberSlam" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController title="NumberSlam" id="BYZ-38-t0r" customClass="NumberSlamViewController" customModule="NumbersSlam" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -135,7 +135,7 @@
         <!--Custom Board-->
         <scene sceneID="40n-61-nBO">
             <objects>
-                <collectionViewController id="UXW-ye-Eub" customClass="CustomBoardCVC" customModule="NumberSlam" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController id="UXW-ye-Eub" customClass="CustomBoardCVC" customModule="NumbersSlam" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="j0V-Vg-kJe">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -147,7 +147,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CustomCell" id="c5s-SU-jFB" customClass="CustomBoardCollectionViewCell" customModule="NumberSlam" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="CustomCell" id="c5s-SU-jFB" customClass="CustomBoardCollectionViewCell" customModule="NumbersSlam" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -205,7 +205,7 @@
         <!--Random Setting View Controller-->
         <scene sceneID="Hpj-Vg-z5B">
             <objects>
-                <viewController storyboardIdentifier="RandomSettingViewController" modalPresentationStyle="currentContext" id="f2f-83-cln" customClass="RandomSettingViewController" customModule="NumberSlam" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="RandomSettingViewController" modalPresentationStyle="currentContext" id="f2f-83-cln" customClass="RandomSettingViewController" customModule="NumbersSlam" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="4wj-fp-gb8">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -263,7 +263,7 @@
         <!--Results-->
         <scene sceneID="5b4-uu-0XC">
             <objects>
-                <collectionViewController title="Results" id="mF5-jo-t6j" customClass="ResultsCollectionViewController" customModule="NumberSlam" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController title="Results" id="mF5-jo-t6j" customClass="ResultsCollectionViewController" customModule="NumbersSlam" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="WN4-vT-Iz0">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -276,7 +276,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ResultsCell" id="p2q-3d-UsZ" customClass="ResultsCollectionViewCell" customModule="NumberSlam" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="ResultsCell" id="p2q-3d-UsZ" customClass="ResultsCollectionViewCell" customModule="NumbersSlam" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="67" height="65"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -314,7 +314,7 @@
         <!--Punch Table View Controller-->
         <scene sceneID="uRR-nS-Ynb">
             <objects>
-                <tableViewController id="6S1-e9-Sgf" customClass="PunchTableViewController" customModule="NumberSlam" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController id="6S1-e9-Sgf" customClass="PunchTableViewController" customModule="NumbersSlam" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="18" sectionFooterHeight="18" id="yz1-tx-ZaZ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -352,7 +352,7 @@
         <!--Select Slam Board-->
         <scene sceneID="aWF-84-3ru">
             <objects>
-                <collectionViewController id="hAR-fX-GwP" customClass="BoardSelectCVC" customModule="NumberSlam" customModuleProvider="target" sceneMemberID="viewController">
+                <collectionViewController id="hAR-fX-GwP" customClass="BoardSelectCVC" customModule="NumbersSlam" customModuleProvider="target" sceneMemberID="viewController">
                     <collectionView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" id="TbV-0p-vlW">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -364,7 +364,7 @@
                             <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                         </collectionViewFlowLayout>
                         <cells>
-                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="BoardSelectCollectionCell" id="Elc-My-UPu" customClass="BoardSelectCollectionViewCell" customModule="NumberSlam" customModuleProvider="target">
+                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="BoardSelectCollectionCell" id="Elc-My-UPu" customClass="BoardSelectCollectionViewCell" customModule="NumbersSlam" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="0.0" width="177" height="174"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -377,7 +377,7 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="npt-kX-FS1">
+                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="npt-kX-FS1" customClass="SlamView" customModule="NumbersSlam" customModuleProvider="target">
                                             <rect key="frame" x="13.5" y="0.0" width="150.5" height="150.5"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Xar-ve-MsY">

@@ -14,5 +14,5 @@ class BoardSelectCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var itemView: UIView!
     @IBOutlet weak var itemLabel: UILabel!
-    
+
 }

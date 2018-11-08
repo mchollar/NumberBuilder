@@ -166,9 +166,9 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
                         
                         DispatchQueue.main.async {
                             self.lastUpdateTime = Date()
-                            self.resultsFoundLabel.text = "Total Solutions Found: \(self.results?.count ?? 0)"
+                            self.resultsFoundLabel.text = "Total Solutions Found: \(results.count )"
                             self.resultsFoundLabel.isHidden = false
-                            print("Updating solutions label to: \(self.results?.count ?? -1) at \(self.lastUpdateTime)")
+                            print("Updating solutions label to: \(results.count) at \(self.lastUpdateTime)")
                             
                         }
                         //TODO: Fix this so it updates

@@ -26,6 +26,7 @@
 		226C3B2121851C3C006C87CC /* RandomSettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226C3B2021851C3C006C87CC /* RandomSettingViewController.swift */; };
 		2296C66B2176E0B500A7C307 /* CustomBoardCVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2296C66A2176E0B500A7C307 /* CustomBoardCVC.swift */; };
 		2296C66D2176E13900A7C307 /* CustomBoardCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2296C66C2176E13900A7C307 /* CustomBoardCollectionViewCell.swift */; };
+		22B6A8062193F0CA001A88C4 /* SlamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B6A8052193F0CA001A88C4 /* SlamView.swift */; };
 		22FB409721792E4600B5DD09 /* SlamBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB409621792E4600B5DD09 /* SlamBoard.swift */; };
 		22FB40992179303A00B5DD09 /* CustomBoardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB40982179303A00B5DD09 /* CustomBoardViewController.swift */; };
 		22FB409B217936D600B5DD09 /* CustomBoardNumberView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB409A217936D600B5DD09 /* CustomBoardNumberView.swift */; };
@@ -41,7 +42,7 @@
 		223BDBED2173F16A00ACB7F8 /* UITableViewController+Gradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableViewController+Gradient.swift"; sourceTree = "<group>"; };
 		223BDBEE2173F16A00ACB7F8 /* ColorPalette.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		223BDBF12173F1FC00ACB7F8 /* UICollectionViewController+Gradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewController+Gradient.swift"; sourceTree = "<group>"; };
-		22442BAB2166EEA4000CDCBD /* NumberSlam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NumberSlam.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		22442BAB2166EEA4000CDCBD /* NumbersSlam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NumbersSlam.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22442BAE2166EEA4000CDCBD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		22442BB02166EEA4000CDCBD /* NumberSlamViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberSlamViewController.swift; sourceTree = "<group>"; };
 		22442BB32166EEA4000CDCBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -58,6 +59,7 @@
 		226C3B2021851C3C006C87CC /* RandomSettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomSettingViewController.swift; sourceTree = "<group>"; };
 		2296C66A2176E0B500A7C307 /* CustomBoardCVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardCVC.swift; sourceTree = "<group>"; };
 		2296C66C2176E13900A7C307 /* CustomBoardCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardCollectionViewCell.swift; sourceTree = "<group>"; };
+		22B6A8052193F0CA001A88C4 /* SlamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlamView.swift; sourceTree = "<group>"; };
 		22FB409621792E4600B5DD09 /* SlamBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlamBoard.swift; sourceTree = "<group>"; };
 		22FB40982179303A00B5DD09 /* CustomBoardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardViewController.swift; sourceTree = "<group>"; };
 		22FB409A217936D600B5DD09 /* CustomBoardNumberView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBoardNumberView.swift; sourceTree = "<group>"; };
@@ -101,7 +103,7 @@
 		22442BAC2166EEA4000CDCBD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				22442BAB2166EEA4000CDCBD /* NumberSlam.app */,
+				22442BAB2166EEA4000CDCBD /* NumbersSlam.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -158,6 +160,7 @@
 				22FB40A2217AEB8C00B5DD09 /* BoardSelectTVC.swift */,
 				22FB40A4218245E000B5DD09 /* BoardSelectCVC.swift */,
 				22FB40A62182460600B5DD09 /* BoardSelectCollectionViewCell.swift */,
+				22B6A8052193F0CA001A88C4 /* SlamView.swift */,
 			);
 			path = "Board Select";
 			sourceTree = "<group>";
@@ -165,9 +168,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		22442BAA2166EEA4000CDCBD /* NumberSlam */ = {
+		22442BAA2166EEA4000CDCBD /* NumbersSlam */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 22442BBD2166EEA6000CDCBD /* Build configuration list for PBXNativeTarget "NumberSlam" */;
+			buildConfigurationList = 22442BBD2166EEA6000CDCBD /* Build configuration list for PBXNativeTarget "NumbersSlam" */;
 			buildPhases = (
 				22442BA72166EEA4000CDCBD /* Sources */,
 				22442BA82166EEA4000CDCBD /* Frameworks */,
@@ -177,9 +180,9 @@
 			);
 			dependencies = (
 			);
-			name = NumberSlam;
+			name = NumbersSlam;
 			productName = NumberSlam;
-			productReference = 22442BAB2166EEA4000CDCBD /* NumberSlam.app */;
+			productReference = 22442BAB2166EEA4000CDCBD /* NumbersSlam.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -210,7 +213,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				22442BAA2166EEA4000CDCBD /* NumberSlam */,
+				22442BAA2166EEA4000CDCBD /* NumbersSlam */,
 			);
 		};
 /* End PBXProject section */
@@ -237,6 +240,7 @@
 				22FB40A3217AEB8C00B5DD09 /* BoardSelectTVC.swift in Sources */,
 				22442BC821699002000CDCBD /* SlamNumber.swift in Sources */,
 				22442BC22166EEF3000CDCBD /* Punch.swift in Sources */,
+				22B6A8062193F0CA001A88C4 /* SlamView.swift in Sources */,
 				22442BB12166EEA4000CDCBD /* NumberSlamViewController.swift in Sources */,
 				2296C66B2176E0B500A7C307 /* CustomBoardCVC.swift in Sources */,
 				226C3B2121851C3C006C87CC /* RandomSettingViewController.swift in Sources */,
@@ -409,7 +413,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberSlam;
+				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumbersSlam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -427,7 +431,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberSlam;
+				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumbersSlam;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -446,7 +450,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		22442BBD2166EEA6000CDCBD /* Build configuration list for PBXNativeTarget "NumberSlam" */ = {
+		22442BBD2166EEA6000CDCBD /* Build configuration list for PBXNativeTarget "NumbersSlam" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				22442BBE2166EEA6000CDCBD /* Debug */,

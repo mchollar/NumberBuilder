@@ -15,26 +15,40 @@ class BoardSelectCVC: UICollectionViewController {
     var slamBoards = [SlamBoard]()
     var slamBoard: SlamBoard?
     
-    let columnLayout = SlamBoardLayout(
-        cellsPerRow: 2,
-        minimumInteritemSpacing: 10,
-        minimumLineSpacing: 10,
-        sectionInset: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-    )
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         setupSlamBoards()
         
+        let columnLayout = SlamBoardLayout(
+            cellsPerRow: traitCollection.horizontalSizeClass == .regular ? 3 : 2,
+            minimumInteritemSpacing: 10,
+            minimumLineSpacing: 10,
+            sectionInset: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        )
+        
         collectionView?.collectionViewLayout = columnLayout
         collectionView?.contentInsetAdjustmentBehavior = .always
         
         addGradientToBackGround(color1: ColorPalette.slamRedBackground, color2: ColorPalette.backgroundGray)
         
+        NotificationCenter.default.addObserver(self, selector: #selector(updateLayout), name: UIDevice.orientationDidChangeNotification, object: nil)
         
     }
 
+    @objc func updateLayout() {
+        let columnLayout = SlamBoardLayout(
+            cellsPerRow: UIDevice.current.orientation.isLandscape ? 3 : 2,
+            minimumInteritemSpacing: 10,
+            minimumLineSpacing: 10,
+            sectionInset: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        )
+        
+        collectionView?.collectionViewLayout = columnLayout
+        columnLayout.invalidateLayout()
+    }
     
     func setupSlamBoards() {
         for i in 1 ... 3 {
@@ -107,6 +121,10 @@ class BoardSelectCVC: UICollectionViewController {
         cell.itemLabel.text = itemText
         cell.itemView.layer.cornerRadius = 5.0
         cell.itemView.backgroundColor = ColorPalette.slamRedBackground
+        cell.itemView.clipsToBounds = true
+        cell.contentView.alpha = 1.0
+        
+        //cell.contentView.backgroundColor = ColorPalette.slamRedBackground
         //cell.itemView.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
         
         
@@ -119,7 +137,7 @@ class BoardSelectCVC: UICollectionViewController {
         for index in 0 ..< slamBoards.count + 1 {
             if let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? BoardSelectCollectionViewCell {
 
-                cell.itemView.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
+                //cell.itemView.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
 
             }
         }
