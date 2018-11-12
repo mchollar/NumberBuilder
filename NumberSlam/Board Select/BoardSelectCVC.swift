@@ -82,20 +82,15 @@ class BoardSelectCVC: UICollectionViewController {
     // MARK: UICollectionViewDataSource
 
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // #warning Incomplete implementation, return the number of sections
         return 1
     }
-
-
+    
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // #warning Incomplete implementation, return the number of items
-        
         return 4
     }
 
-    
-    
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! BoardSelectCollectionViewCell
     
         var cellText: String
@@ -117,32 +112,17 @@ class BoardSelectCVC: UICollectionViewController {
             cellText = ""
             itemText = ""
         }
+        
         cell.textLabel.text = cellText
         cell.itemLabel.text = itemText
-        cell.itemView.layer.cornerRadius = 5.0
-        cell.itemView.backgroundColor = ColorPalette.slamRedBackground
-        cell.itemView.clipsToBounds = true
-        cell.contentView.alpha = 1.0
         
-        //cell.contentView.backgroundColor = ColorPalette.slamRedBackground
-        //cell.itemView.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
+        cell.itemView.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
         
+        //cell.itemView.layer.cornerRadius = 5.0
+        //cell.itemView.clipsToBounds = true
         
         return cell
     }
-
-    override func viewDidLayoutSubviews() {
-
-        super.viewDidLayoutSubviews()
-        for index in 0 ..< slamBoards.count + 1 {
-            if let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? BoardSelectCollectionViewCell {
-
-                //cell.itemView.dropShadow(color: .black, opacity: 0.5, offSet: CGSize(width: 2, height: 2), radius: 2, scale: true)
-
-            }
-        }
-    }
-
 
     // MARK: UICollectionViewDelegate
 

@@ -11,7 +11,6 @@ import UIKit
 class SlamView: UIView {
     
     var points: [RadialPoint] = [RadialPoint]()
-    //var textLabel = UILabel()
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -24,28 +23,32 @@ class SlamView: UIView {
     }
     
     private func setup() {
-        layer.cornerRadius = 5.0
-        layer.masksToBounds = true
-        self.backgroundColor = UIColor.red
+        
+        self.backgroundColor = .clear //To make rounded corners appear
         loadPoints()
-//        if let font = UIFont(name: "AvenirNext-Bold", size: 60) {
-//            textLabel.font = font
-//        }
-//        textLabel.text = "1s"
-//        textLabel.textColor = .white
-//        textLabel.sizeToFit()
-//        self.addSubview(textLabel)
-//        textLabel.center = CGPoint(x: bounds.size.width/2, y: bounds.size.height/2)
         
     }
     
     func loadPoints() {
+       
+        // Constants that define the number and size of points
+        let pointsNumber = 25..<30
+        let outsideRange = 80...110
+        let insideRange = 50...70
         
-        let number = Int.random(in: 10..<15)
+        var number = Int.random(in: pointsNumber)
+        if number % 2 != 0 { number += 1 }
         for i in 0 ..< number {
-            let distance = Int.random(in: 80...150)
+            var distance = 0
+            if i % 2 == 0 {
+                distance = Int.random(in: outsideRange)
+            } else {
+                distance = Int.random(in: insideRange)
+            }
             //let radial = CGFloat(i) * (2 * CGFloat.pi / CGFloat(number))
-            let degrees = (CGFloat(i) * (360 / CGFloat(number))) + CGFloat(Int.random(in: -10...10))
+            var degrees = (CGFloat(i) * (360 / CGFloat(number))) + CGFloat(Int.random(in: -2...2))
+            if degrees > 360 { degrees = 360 }
+            if degrees < 0 { degrees = 0 }
             let point = RadialPoint(distance: distance, degrees: degrees)
             points.append(point)
             
@@ -56,22 +59,27 @@ class SlamView: UIView {
     
     override func draw(_ rect: CGRect) {
         
-        //Draw grid in background
-                ColorPalette.slamBlue.setFill()
-                let inset = CGFloat(5)
-                let gridSize = CGSize(width: bounds.size.width/6, height: bounds.size.height/6)
-                let squareSideLength = gridSize.width - (inset * 2)
-                for row in 0 ..< 6 {
-                    for column in 0 ..< 6 {
+        //Draw rounded corners
+        let roundedRect = UIBezierPath.init(roundedRect: rect, cornerRadius: 5)
+        ColorPalette.slamRed.setFill()
+        roundedRect.fill()
         
-                        let newRect = CGRect(x: CGFloat(column) * gridSize.width + inset,
-                                             y: CGFloat(row) * gridSize.height + inset,
-                                             width: squareSideLength,
-                                             height: squareSideLength)
-                        let square = UIBezierPath.init(roundedRect: newRect, cornerRadius: 5)
-                        square.fill()
-                    }
-                }
+        //Draw grid in background
+        UIColor.red.setStroke()
+        let inset = CGFloat(UIDevice.current.orientation.isLandscape ? 5 : 4)
+        let gridSize = CGSize(width: bounds.size.width/6, height: bounds.size.height/6)
+        let squareSideLength = gridSize.width - (inset * 2)
+        for row in 0 ..< 6 {
+            for column in 0 ..< 6 {
+                
+                let newRect = CGRect(x: CGFloat(column) * gridSize.width + inset,
+                                     y: CGFloat(row) * gridSize.height + inset,
+                                     width: squareSideLength,
+                                     height: squareSideLength)
+                let square = UIBezierPath.init(roundedRect: newRect, cornerRadius: inset/2)
+                square.stroke()
+            }
+        }
         
         //Draw blast
         let blastPath = UIBezierPath()
@@ -88,15 +96,16 @@ class SlamView: UIView {
                 let startPoint = CGPoint(x: startX, y: startY)
                 
                 let endPoint = rotatePoint(target: startPoint, aroundOrigin: CGPoint(x: bounds.size.width/2, y: bounds.size.height/2), byDegrees: point.degrees)
-                //blastPath.addLine(to: endPoint)
-                blastPath.addQuadCurve(to: endPoint, controlPoint: CGPoint(x: bounds.size.width/2, y: bounds.size.height/2))
+                blastPath.addLine(to: endPoint)
+                //blastPath.addQuadCurve(to: endPoint, controlPoint: CGPoint(x: bounds.size.width/2, y: bounds.size.height/2))
             }
             
-            blastPath.addQuadCurve(to: startPoint, controlPoint: CGPoint(x: bounds.size.width/2, y: bounds.size.height/2))
+            //blastPath.addQuadCurve(to: startPoint, controlPoint: CGPoint(x: bounds.size.width/2, y: bounds.size.height/2))
+            blastPath.addLine(to: startPoint)
         }
         
-        UIColor.blue.setFill()
-        UIColor.black.setStroke()
+        ColorPalette.slamBlue.setFill()
+        UIColor.white.setStroke()
         blastPath.lineWidth = 2.0
         blastPath.stroke()
         blastPath.fill()
@@ -104,16 +113,16 @@ class SlamView: UIView {
     }
     
     
-    func rotatePoint(target: CGPoint, aroundOrigin origin: CGPoint, byRads: CGFloat) -> CGPoint {
-        let dx = target.x - origin.x
-        let dy = target.y - origin.y
-        let radius = sqrt(dx * dx + dy * dy)
-        let azimuth = atan2(dy, dx) // in radians
-        let newAzimuth = azimuth + byRads  // convert it to radians
-        let x = origin.x + radius * cos(newAzimuth)
-        let y = origin.y + radius * sin(newAzimuth)
-        return CGPoint(x: x, y: y)
-    }
+//    func rotatePoint(target: CGPoint, aroundOrigin origin: CGPoint, byRads: CGFloat) -> CGPoint {
+//        let dx = target.x - origin.x
+//        let dy = target.y - origin.y
+//        let radius = sqrt(dx * dx + dy * dy)
+//        let azimuth = atan2(dy, dx) // in radians
+//        let newAzimuth = azimuth + byRads  // convert it to radians
+//        let x = origin.x + radius * cos(newAzimuth)
+//        let y = origin.y + radius * sin(newAzimuth)
+//        return CGPoint(x: x, y: y)
+//    }
     
     func rotatePoint(target: CGPoint, aroundOrigin origin: CGPoint, byDegrees: CGFloat) -> CGPoint {
         let dx = target.x - origin.x

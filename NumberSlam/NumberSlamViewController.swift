@@ -76,8 +76,8 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
         viewResultsButton.isEnabled = false
         resultsFoundLabel.text = "Creating combinations"
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            
             //Create combinations of operations
-            //let opCombos = self?.combos(elements: self!.operations, k: 2)
             var opCombos = self?.permutations(4, &self!.operations)
             if opCombos != nil {
                 self?.trimCombos(&opCombos!)
@@ -118,6 +118,7 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
           
                 self?.results = sortedPunches
             }
+            
             DispatchQueue.main.async {
                 self?.spinner.stopAnimating()
                 self?.viewResultsButton.isEnabled = true
@@ -171,19 +172,18 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
                             print("Updating solutions label to: \(results.count) at \(self.lastUpdateTime)")
                             
                         }
-                        //TODO: Fix this so it updates
                     }
                 }
             }
             
         }
         
-        
         return results
     }
     
     func runOperation(_ operations: [Operation], on numbers: [SlamNumber]) -> Punch? {
         guard numbers.count - operations.count == 1 else { return nil }
+        guard let slamBoard = slamBoard else { return nil }
         
         let firstOp = operations[0].function
         let secondOp = operations[1].function
@@ -207,7 +207,7 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
         }
         
         let secondValue = secondOp(firstValue, numbers[2])
-        if secondValue > SlamNumber(value: slamBoard!.numbers.max()!) { print("Value > Max"); return nil } //TODO: Fix this code
+        if secondValue > SlamNumber(value: slamBoard.numbers.max() ?? 0) { print("Value > Max"); return nil }
         if secondValue < SlamNumber(value: 1) { print( "Value < 1"); return nil }
         
         let punchType = determinePunchType(numbers: numbers)
@@ -224,7 +224,7 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
                 type = .power
             }
             if number.root != 1 {
-                type = .root
+                return .root
             }
         }
         

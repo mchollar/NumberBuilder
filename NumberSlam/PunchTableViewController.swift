@@ -60,7 +60,6 @@ class PunchTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PunchCell", for: indexPath)
         
-        //var description = NSAttributedString(string: "")
         switch indexPath.section {
         case 0:
             cell.textLabel?.attributedText = simplePunches[indexPath.row].attDescription
@@ -72,15 +71,11 @@ class PunchTableViewController: UITableViewController {
             break
         }
         
-//        if punches != nil {
-//            //cell.textLabel?.text = "\(punches![indexPath.row].attDescription)"
-//            cell.textLabel?.attributedText = punches![indexPath.row].attDescription
-//        }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        //return "Solutions Found: \(punches?.count ?? 0)"
+        
         switch section {
         case 0:
             return "Simple Solutions: \(simplePunches.count)"

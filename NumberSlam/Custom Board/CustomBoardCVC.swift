@@ -37,33 +37,23 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate, UIPopover
         addGradientToBackGround(color1: ColorPalette.slamBlueBackground, color2: ColorPalette.backgroundGray)
         
         setupBoard()
-        
-        self.navigationController?.isToolbarHidden = false
-        //registerForKeyboardNotification()
-        //flagDuplicates()
     }
 
     func setupBoard() {
-//        for index in 0 ..< 36 {
-//            let textField = UITextField()
-//            textField.tag = index
-//            textFields.append(textField)
-//        }
-//        //addDoneButtonOnKeyboard()
-        //Check if slamBoard is already set, if not create one full of zeroes
-//        if slamBoard == nil {
-//            var numbers = [Int]()
-//            for _ in 0 ..< 36 {
-//                numbers.append(0)
-//            }
-//            slamBoard = SlamBoard(numbers: numbers)
-//
-//        }
         for _ in 0 ..< 36 {
             numbers.append(nil)
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isToolbarHidden = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.isToolbarHidden = true
+    }
     
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -112,14 +102,8 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate, UIPopover
         }
     }
     
-//    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
-//        if let randomVC = popoverPresentationController.presentingViewController as? RandomSettingViewController, randomVC.maxValue != nil {
-//            maxRandom = randomVC.maxValue!
-//        }
-//    }
-    
     func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-        // Tells iOS that we do NOT want to adapt the presentation style for iPhone
+        // Tells iOS that we do NOT want to adapt the presentation style for iPhone, so the random max setting pop up doesn't show up fullscreen
         return .none
     }
     
@@ -141,10 +125,9 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate, UIPopover
         cell.backgroundColor = .blue
         cell.textField.textColor = .white
         if cell.textField.inputAccessoryView == nil {
-            addDoneButtonOnKeyboard(textField: cell.textField) // Need to not do this every time
+            addDoneButtonOnKeyboard(textField: cell.textField)
         }
         
-        //cell.textField.text = "\(slamBoard?.numbers[indexPath.row] ?? 0)"
         if numbers[indexPath.row] != nil {
             cell.textField.text = "\(numbers[indexPath.row]!)"
             handleFontOf(cell.textField, with: numbers[indexPath.row]!)
@@ -183,36 +166,6 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate, UIPopover
         
     }
     
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(_ collectionView: UICollectionView, shouldShowMenuForItemAt indexPath: IndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, canPerformAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) -> Bool {
-        return false
-    }
-
-    override func collectionView(_ collectionView: UICollectionView, performAction action: Selector, forItemAt indexPath: IndexPath, withSender sender: Any?) {
-    
-    }
-    */
 
     //MARK: - TextField methods
     
@@ -281,10 +234,6 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate, UIPopover
         
         doneToolbar.items = items
         doneToolbar.sizeToFit()
-        
-//        for textfield in textFields {
-//            textfield.inputAccessoryView = doneToolbar
-//        }
         textField.inputAccessoryView = doneToolbar
     }
     
@@ -293,45 +242,12 @@ class CustomBoardCVC: UICollectionViewController, UITextFieldDelegate, UIPopover
         self.view?.currentFirstResponder()?.resignFirstResponder()
     }
     
-    private func registerForKeyboardNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWasShown(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.keyboardWasHidden(notification:)), name: UIResponder.keyboardDidHideNotification, object: nil)
-    }
-    
-    @objc private func keyboardWasShown(notification: Notification) {
-        
-        //self.scrollView.isScrollEnabled = true
-        let info : NSDictionary = notification.userInfo! as NSDictionary
-        let keyboardSize = (info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size
-        let contentInsets : UIEdgeInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: keyboardSize!.height, right: 0.0)
-        
-        self.collectionView.contentInset = contentInsets
-        self.collectionView.scrollIndicatorInsets = contentInsets
-        
-        var aRect : CGRect = self.view.frame
-        aRect.size.height -= keyboardSize!.height + 30
-        if activeField != nil
-        {
-            if (!aRect.contains(activeField!.frame.origin))
-            {
-                self.collectionView.scrollRectToVisible(activeField!.frame, animated: true)
-            }
-        }
-    }
-    
-    @objc private func keyboardWasHidden(notification: Notification) {
-        
-        //Once keyboard disappears, restore original positions
-        let info : NSDictionary = notification.userInfo! as NSDictionary
-        let keyboardSize = (info[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue.size
-        let contentInsets : UIEdgeInsets = UIEdgeInsets(top: 0.0, left: 0.0, bottom: -(keyboardSize!.height + 30), right: 0.0)
-        self.collectionView.contentInset = contentInsets
-        self.collectionView.scrollIndicatorInsets = contentInsets
-    }
 }
 
 
 extension UIView {
+    //Extension to find current first responder, so we can dismiss it when the user is done with input
+    
     func currentFirstResponder() -> UIResponder? {
         if self.isFirstResponder {
             return self
