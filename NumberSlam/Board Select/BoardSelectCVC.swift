@@ -23,7 +23,8 @@ class BoardSelectCVC: UICollectionViewController {
         setupSlamBoards()
         
         let columnLayout = SlamBoardLayout(
-            cellsPerRow: traitCollection.horizontalSizeClass == .regular ? 3 : 2,
+            //cellsPerRow: traitCollection.horizontalSizeClass == .regular ? 3 : 2,
+            cellsPerRow: UIDevice.current.orientation.isLandscape ? 3 : 2,
             minimumInteritemSpacing: 10,
             minimumLineSpacing: 10,
             sectionInset: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
@@ -36,6 +37,11 @@ class BoardSelectCVC: UICollectionViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(updateLayout), name: UIDevice.orientationDidChangeNotification, object: nil)
         
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        collectionView.reloadData()
     }
 
     @objc func updateLayout() {
