@@ -42,7 +42,7 @@
 		223BDBED2173F16A00ACB7F8 /* UITableViewController+Gradient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UITableViewController+Gradient.swift"; sourceTree = "<group>"; };
 		223BDBEE2173F16A00ACB7F8 /* ColorPalette.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPalette.swift; sourceTree = "<group>"; };
 		223BDBF12173F1FC00ACB7F8 /* UICollectionViewController+Gradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewController+Gradient.swift"; sourceTree = "<group>"; };
-		22442BAB2166EEA4000CDCBD /* NumbersSlam.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NumbersSlam.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		22442BAB2166EEA4000CDCBD /* NumberBuilder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NumberBuilder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22442BAE2166EEA4000CDCBD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		22442BB02166EEA4000CDCBD /* NumberSlamViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberSlamViewController.swift; sourceTree = "<group>"; };
 		22442BB32166EEA4000CDCBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 		22442BA22166EEA4000CDCBD = {
 			isa = PBXGroup;
 			children = (
-				22442BAD2166EEA4000CDCBD /* NumberSlam */,
+				22442BAD2166EEA4000CDCBD /* NumberBuilder */,
 				22442BAC2166EEA4000CDCBD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -103,12 +103,12 @@
 		22442BAC2166EEA4000CDCBD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				22442BAB2166EEA4000CDCBD /* NumbersSlam.app */,
+				22442BAB2166EEA4000CDCBD /* NumberBuilder.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		22442BAD2166EEA4000CDCBD /* NumberSlam */ = {
+		22442BAD2166EEA4000CDCBD /* NumberBuilder */ = {
 			isa = PBXGroup;
 			children = (
 				22442BAE2166EEA4000CDCBD /* AppDelegate.swift */,
@@ -126,7 +126,7 @@
 				22442BB72166EEA6000CDCBD /* LaunchScreen.storyboard */,
 				22442BBA2166EEA6000CDCBD /* Info.plist */,
 			);
-			path = NumberSlam;
+			path = NumberBuilder;
 			sourceTree = "<group>";
 		};
 		22442BC02166EED4000CDCBD /* Model */ = {
@@ -168,9 +168,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		22442BAA2166EEA4000CDCBD /* NumbersSlam */ = {
+		22442BAA2166EEA4000CDCBD /* NumberBuilder */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 22442BBD2166EEA6000CDCBD /* Build configuration list for PBXNativeTarget "NumbersSlam" */;
+			buildConfigurationList = 22442BBD2166EEA6000CDCBD /* Build configuration list for PBXNativeTarget "NumberBuilder" */;
 			buildPhases = (
 				22442BA72166EEA4000CDCBD /* Sources */,
 				22442BA82166EEA4000CDCBD /* Frameworks */,
@@ -180,9 +180,9 @@
 			);
 			dependencies = (
 			);
-			name = NumbersSlam;
+			name = NumberBuilder;
 			productName = NumberSlam;
-			productReference = 22442BAB2166EEA4000CDCBD /* NumbersSlam.app */;
+			productReference = 22442BAB2166EEA4000CDCBD /* NumberBuilder.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -200,7 +200,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 22442BA62166EEA4000CDCBD /* Build configuration list for PBXProject "NumberSlam" */;
+			buildConfigurationList = 22442BA62166EEA4000CDCBD /* Build configuration list for PBXProject "NumberBuilder" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -213,7 +213,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				22442BAA2166EEA4000CDCBD /* NumbersSlam */,
+				22442BAA2166EEA4000CDCBD /* NumberBuilder */,
 			);
 		};
 /* End PBXProject section */
@@ -408,13 +408,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4C592246MX;
-				INFOPLIST_FILE = NumberSlam/Info.plist;
+				INFOPLIST_FILE = NumberBuilder/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumbersSlam;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberBuilder;
+				PRODUCT_NAME = NumberBuilder;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -426,13 +426,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 4C592246MX;
-				INFOPLIST_FILE = NumberSlam/Info.plist;
+				INFOPLIST_FILE = NumberBuilder/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumbersSlam;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberBuilder;
+				PRODUCT_NAME = NumberBuilder;
 				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -441,7 +441,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		22442BA62166EEA4000CDCBD /* Build configuration list for PBXProject "NumberSlam" */ = {
+		22442BA62166EEA4000CDCBD /* Build configuration list for PBXProject "NumberBuilder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				22442BBB2166EEA6000CDCBD /* Debug */,
@@ -450,7 +450,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		22442BBD2166EEA6000CDCBD /* Build configuration list for PBXNativeTarget "NumbersSlam" */ = {
+		22442BBD2166EEA6000CDCBD /* Build configuration list for PBXNativeTarget "NumberBuilder" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				22442BBE2166EEA6000CDCBD /* Debug */,
