@@ -32,7 +32,7 @@ class PunchBuilder {
         operations.append(Operation(description: "+", function: +))
         operations.append(Operation(description: "-", function: -))
         operations.append(Operation(description: "x", function: *))
-        operations.append(Operation(description: "/", function: /))
+        operations.append(Operation(description: "÷", function: /))
         
     }
     

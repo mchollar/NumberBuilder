@@ -125,7 +125,9 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <color key="tintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="Czf-9D-S4E" secondAttribute="bottom" id="7e3-PD-h9T"/>
                             <constraint firstItem="Czf-9D-S4E" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="16" id="GdQ-Iu-uBI"/>
+                            <constraint firstItem="Czf-9D-S4E" firstAttribute="top" relation="greaterThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="top" id="ISA-qh-Xdu"/>
                             <constraint firstItem="Czf-9D-S4E" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="PQO-Tg-9n0"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="Czf-9D-S4E" secondAttribute="trailing" constant="16" id="vjL-xf-UNs"/>
                         </constraints>
@@ -207,7 +209,7 @@
     </scenes>
     <resources>
         <namedColor name="SlamRed">
-            <color red="1" green="0.21286386986301364" blue="0.22598280536529669" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="1" green="0.21299999952316284" blue="0.22599999606609344" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
     </resources>
 </document>
