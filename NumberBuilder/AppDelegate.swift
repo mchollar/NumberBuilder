@@ -17,17 +17,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        UINavigationBar.appearance().tintColor = ColorPalette.slamRed
-        UINavigationBar.appearance().backgroundColor = ColorPalette.slamRed
+        let slamRed = UIColor.init(named: "SlamRed") ?? ColorPalette.slamRed
+        UINavigationBar.appearance().tintColor = slamRed
+        UINavigationBar.appearance().backgroundColor = slamRed
         
         if let titleFont = UIFont(name: "AvenirNext-Bold", size: 20),
             let largeTitleFont = UIFont(name: "AvenirNext-Bold", size: 34){
             
         UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor : ColorPalette.slamRed,
+            NSAttributedString.Key.foregroundColor : slamRed,
             NSAttributedString.Key.font : titleFont ]
         UINavigationBar.appearance().largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor : ColorPalette.slamRed,
+            NSAttributedString.Key.foregroundColor : slamRed,
             NSAttributedString.Key.font : largeTitleFont ]
         }
         

@@ -8,9 +8,11 @@
 
 import Foundation
 
+enum PunchType {
+    case simple, power, root
+}
+
 class Punch: CustomStringConvertible, Comparable {
-    
-    
     
     var result: SlamNumber
     var numbers: [SlamNumber]
@@ -78,9 +80,7 @@ class Punch: CustomStringConvertible, Comparable {
 
 }
 
-enum PunchType {
-    case simple, power, root
-}
+
 
 
 

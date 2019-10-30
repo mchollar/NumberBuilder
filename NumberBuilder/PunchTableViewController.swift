@@ -11,6 +11,7 @@ import UIKit
 class PunchTableViewController: UITableViewController {
 
     var punches: [Punch]?
+//    var structuredResults = [[Punch]]()
     var simplePunches = [Punch]()
     var powerPunches = [Punch]()
     var rootPunches = [Punch]()
@@ -18,9 +19,43 @@ class PunchTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         sortPunches()
-
-        addGradientToBackGround(color1: ColorPalette.slamRedBackground, color2: ColorPalette.backgroundGray)
+        setupBackground()
+        
     }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        setupBackground()
+    }
+    
+    func setupBackground() {
+        let color2: UIColor
+        if #available(iOS 13.0, *) {
+            color2 = .systemBackground
+        } else {
+            color2 = ColorPalette.backgroundGray
+        }
+        
+        addGradientToBackGround(color1: ColorPalette.slamRedBackground, color2: color2)
+    }
+    
+//    private func loadPunchStructure() {
+//
+//        guard let validResults = results else { return }
+//        guard let slamBoard = self.slamBoard else { return }
+//        for i in 0 ..< 36 {
+//            var punches = [Punch]()
+//            for punch in validResults {
+//                if punch.result.value == slamBoard.numbers[i] {
+//                    punches.append(punch)
+//                }
+//            }
+//
+//            punches.sort()
+//
+//            structuredResults.append(punches)
+//        }
+//
+//    }
 
     func sortPunches() {
         guard let punches = self.punches else { return }
