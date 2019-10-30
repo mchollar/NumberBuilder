@@ -9,7 +9,7 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDelegate {
 
     var window: UIWindow?
 
@@ -17,20 +17,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        let slamRed = UIColor.init(named: "SlamRed") ?? ColorPalette.slamRed
-        UINavigationBar.appearance().tintColor = slamRed
-        UINavigationBar.appearance().backgroundColor = slamRed
+        //let slamRed = UIColor.init(named: "SlamRed") ?? ColorPalette.slamRed
+        //UINavigationBar.appearance().tintColor = slamRed
+        //UINavigationBar.appearance().backgroundColor = slamRed
         
-        if let titleFont = UIFont(name: "AvenirNext-Bold", size: 20),
-            let largeTitleFont = UIFont(name: "AvenirNext-Bold", size: 34){
-            
-        UINavigationBar.appearance().titleTextAttributes = [
-            NSAttributedString.Key.foregroundColor : slamRed,
-            NSAttributedString.Key.font : titleFont ]
-        UINavigationBar.appearance().largeTitleTextAttributes = [
-            NSAttributedString.Key.foregroundColor : slamRed,
-            NSAttributedString.Key.font : largeTitleFont ]
-        }
+//        if let titleFont = UIFont(name: "AvenirNext-Bold", size: 20),
+//            let largeTitleFont = UIFont(name: "AvenirNext-Bold", size: 34){
+//            
+//        UINavigationBar.appearance().titleTextAttributes = [
+//            //NSAttributedString.Key.foregroundColor : slamRed,
+//            NSAttributedString.Key.font : titleFont ]
+//        UINavigationBar.appearance().largeTitleTextAttributes = [
+//            //NSAttributedString.Key.foregroundColor : slamRed,
+//            NSAttributedString.Key.font : largeTitleFont ]
+//        }
+        
+        let splitViewController = window!.rootViewController as! UISplitViewController
+        let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
+        navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
+        splitViewController.delegate = self
+        splitViewController.preferredDisplayMode = .allVisible
         
         return true
     }
@@ -58,5 +64,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
+    // MARK: - Split view
+
+    func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
+        guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
+        guard let topAsDetailController = secondaryAsNavController.topViewController as? PunchTableViewController else { return false }
+        if topAsDetailController.punches == nil {
+            // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
+            return true
+        }
+        return false
+    }
 }
 

@@ -12,7 +12,6 @@
 		223BDBF02173F16B00ACB7F8 /* ColorPalette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BDBEE2173F16A00ACB7F8 /* ColorPalette.swift */; };
 		223BDBF22173F1FC00ACB7F8 /* UICollectionViewController+Gradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 223BDBF12173F1FC00ACB7F8 /* UICollectionViewController+Gradient.swift */; };
 		22442BAF2166EEA4000CDCBD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22442BAE2166EEA4000CDCBD /* AppDelegate.swift */; };
-		22442BB12166EEA4000CDCBD /* NumberSlamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22442BB02166EEA4000CDCBD /* NumberSlamViewController.swift */; };
 		22442BB42166EEA4000CDCBD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22442BB22166EEA4000CDCBD /* Main.storyboard */; };
 		22442BB62166EEA6000CDCBD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22442BB52166EEA6000CDCBD /* Assets.xcassets */; };
 		22442BB92166EEA6000CDCBD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 22442BB72166EEA6000CDCBD /* LaunchScreen.storyboard */; };
@@ -21,6 +20,8 @@
 		22442BC821699002000CDCBD /* SlamNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22442BC721699002000CDCBD /* SlamNumber.swift */; };
 		22570B03216AB95A00A7AA35 /* PunchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22570B02216AB95A00A7AA35 /* PunchTableViewController.swift */; };
 		226B6B3A2368EC5200B261BE /* PunchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226B6B392368EC5200B261BE /* PunchBuilder.swift */; };
+		22A0E964236A098000C8C914 /* NumberBuilderTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A0E963236A098000C8C914 /* NumberBuilderTVC.swift */; };
+		22A87B51236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A87B50236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift */; };
 		22FB409721792E4600B5DD09 /* SlamBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22FB409621792E4600B5DD09 /* SlamBoard.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,7 +32,6 @@
 		223BDBF12173F1FC00ACB7F8 /* UICollectionViewController+Gradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UICollectionViewController+Gradient.swift"; sourceTree = "<group>"; };
 		22442BAB2166EEA4000CDCBD /* NumberBuilder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NumberBuilder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22442BAE2166EEA4000CDCBD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		22442BB02166EEA4000CDCBD /* NumberSlamViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberSlamViewController.swift; sourceTree = "<group>"; };
 		22442BB32166EEA4000CDCBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		22442BB52166EEA6000CDCBD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22442BB82166EEA6000CDCBD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -41,6 +41,8 @@
 		22442BC721699002000CDCBD /* SlamNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlamNumber.swift; sourceTree = "<group>"; };
 		22570B02216AB95A00A7AA35 /* PunchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PunchTableViewController.swift; sourceTree = "<group>"; };
 		226B6B392368EC5200B261BE /* PunchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PunchBuilder.swift; sourceTree = "<group>"; };
+		22A0E963236A098000C8C914 /* NumberBuilderTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberBuilderTVC.swift; sourceTree = "<group>"; };
+		22A87B50236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+CurrentFirstResponder.swift"; sourceTree = "<group>"; };
 		22FB409621792E4600B5DD09 /* SlamBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlamBoard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -87,8 +89,9 @@
 			children = (
 				22442BAE2166EEA4000CDCBD /* AppDelegate.swift */,
 				22442BB22166EEA4000CDCBD /* Main.storyboard */,
-				22442BB02166EEA4000CDCBD /* NumberSlamViewController.swift */,
+				22A0E963236A098000C8C914 /* NumberBuilderTVC.swift */,
 				22570B02216AB95A00A7AA35 /* PunchTableViewController.swift */,
+				22A87B50236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift */,
 				22442BC02166EED4000CDCBD /* Model */,
 				223BDBEC2173F16A00ACB7F8 /* Style */,
 				22442BB52166EEA6000CDCBD /* Assets.xcassets */,
@@ -142,6 +145,7 @@
 				TargetAttributes = {
 					22442BAA2166EEA4000CDCBD = {
 						CreatedOnToolsVersion = 10.0;
+						LastSwiftMigration = 1110;
 					};
 				};
 			};
@@ -184,13 +188,14 @@
 				223BDBEF2173F16B00ACB7F8 /* UITableViewController+Gradient.swift in Sources */,
 				22442BC821699002000CDCBD /* SlamNumber.swift in Sources */,
 				22442BC22166EEF3000CDCBD /* Punch.swift in Sources */,
-				22442BB12166EEA4000CDCBD /* NumberSlamViewController.swift in Sources */,
+				22A0E964236A098000C8C914 /* NumberBuilderTVC.swift in Sources */,
 				226B6B3A2368EC5200B261BE /* PunchBuilder.swift in Sources */,
 				22442BAF2166EEA4000CDCBD /* AppDelegate.swift in Sources */,
 				22570B03216AB95A00A7AA35 /* PunchTableViewController.swift in Sources */,
 				223BDBEB2173E92100ACB7F8 /* UIView+DropShadow.swift in Sources */,
 				223BDBF22173F1FC00ACB7F8 /* UICollectionViewController+Gradient.swift in Sources */,
 				22442BC42166EF72000CDCBD /* Operation.swift in Sources */,
+				22A87B51236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift in Sources */,
 				223BDBF02173F16B00ACB7F8 /* ColorPalette.swift in Sources */,
 				22FB409721792E4600B5DD09 /* SlamBoard.swift in Sources */,
 			);
@@ -347,7 +352,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberBuilder;
 				PRODUCT_NAME = NumberBuilder;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -365,7 +370,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberBuilder;
 				PRODUCT_NAME = NumberBuilder;
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

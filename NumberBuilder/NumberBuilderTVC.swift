@@ -1,14 +1,14 @@
 //
-//  NumberSlamViewController.swift
-//  NumberSlam
+//  NumberBuilderTVC.swift
+//  NumberBuilder
 //
-//  Created by Micah Chollar on 10/4/18.
-//  Copyright © 2018 Widgetilities. All rights reserved.
+//  Created by Micah Chollar on 10/30/19.
+//  Copyright © 2019 Widgetilities. All rights reserved.
 //
 
 import UIKit
 
-class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
+class NumberBuilderTVC: UITableViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
     var punchBuilder = PunchBuilder()
     var numberToBuild = 0
@@ -21,30 +21,33 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
     @IBOutlet weak var spinner: UIActivityIndicatorView!
     @IBOutlet weak var resultsFoundLabel: UILabel!
     @IBOutlet weak var viewResultsButton: UIButton!
+    @IBOutlet weak var calculateButton: UIButton!
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupBackgroundColor()
-        self.view.tintColor = UIColor.init(named: "SlamRed") ?? ColorPalette.slamRed
+        //setupBackgroundColor()
+        //self.view.tintColor = UIColor.init(named: "SlamRed") ?? ColorPalette.slamRed
         
         punchBuilder.delegate = self
         addDoneButtonOnKeyboard()
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        setupBackgroundColor()
-    }
+//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+//        setupBackgroundColor()
+//    }
     
-    private func setupBackgroundColor() {
-        let color1: UIColor
-        if #available(iOS 13.0, *) {
-            color1 = .systemBackground
-        } else {
-            color1 = .white
-        }
-        ColorPalette.addGradient(to: self.view, color1: color1, color2: UIColor.init(named: "BackgroundGray") ?? ColorPalette.backgroundGray)
-    }
+//    private func setupBackgroundColor() {
+//        let color1: UIColor
+//        if #available(iOS 13.0, *) {
+//            color1 = .systemBackground
+//        } else {
+//            color1 = .white
+//        }
+//        addGradientToBackGround(color1: color1, color2: UIColor.init(named: "BackgroundGray") ?? ColorPalette.backgroundGray)
+//        //ColorPalette.addGradient(to: self.view, color1: color1, color2: UIColor.init(named: "BackgroundGray") ?? ColorPalette.backgroundGray)
+//    }
     
     @IBAction func rollButtonTouched(_ sender: UIButton) {
         var numbers = [Int]()
@@ -119,14 +122,18 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "ShowResults" {
-
-            if let punchTVC = segue.destination as? PunchTableViewController
+            
+            if let navController = segue.destination as? UINavigationController,
+                let punchTVC = navController.viewControllers.first as? PunchTableViewController
             {
                 let diceNumbers = [dicePickerA.selectedRow(inComponent: 0) + 1,
                                    dicePickerB.selectedRow(inComponent: 0) + 1,
                                    dicePickerC.selectedRow(inComponent: 0) + 1]
                 punchTVC.punches = punchBuilder.results
                 punchTVC.navigationItem.title = "\(diceNumbers) ➡︎ \(numberToBuild)"
+                
+                punchTVC.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
+                punchTVC.navigationItem.leftItemsSupplementBackButton = true
             }
         }
     }
@@ -155,9 +162,10 @@ class NumberSlamViewController: UIViewController, UIPickerViewDelegate, UIPicker
         self.view?.currentFirstResponder()?.resignFirstResponder()
     }
     
+
 }
 
-extension NumberSlamViewController: PunchBuilderDelegateProtocol {
+extension NumberBuilderTVC: PunchBuilderDelegateProtocol {
     
     func resultsUpdate(number: Int) {
         DispatchQueue.main.async {
@@ -178,7 +186,7 @@ extension NumberSlamViewController: PunchBuilderDelegateProtocol {
     
 }
 
-extension NumberSlamViewController: UITextFieldDelegate {
+extension NumberBuilderTVC: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -190,23 +198,10 @@ extension NumberSlamViewController: UITextFieldDelegate {
         if let text = textField.text {
             numberToBuild = Int(text) ?? 0
             punchBuilder.numberToBuild = numberToBuild
+            calculateButton.isEnabled = text != ""
         }
     }
     
 }
 
-extension UIView {
-    func currentFirstResponder() -> UIResponder? {
-        if self.isFirstResponder {
-            return self
-        }
 
-        for view in self.subviews {
-            if let responder = view.currentFirstResponder() {
-                return responder
-            }
-        }
-
-        return nil
-    }
-}

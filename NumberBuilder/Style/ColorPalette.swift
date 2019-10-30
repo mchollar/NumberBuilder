@@ -24,7 +24,7 @@ struct ColorPalette {
     
     static func addGradient(to view: UIView, color1: UIColor, color2: UIColor, alpha: Float = 1.0){
         
-        if let oldLayerIndex = view.layer.sublayers?.index(where: {$0.name == "gradientLayer"}) {
+        if let oldLayerIndex = view.layer.sublayers?.firstIndex(where: {$0.name == "gradientLayer"}) {
             view.layer.sublayers?.remove(at: oldLayerIndex)
         }
         
