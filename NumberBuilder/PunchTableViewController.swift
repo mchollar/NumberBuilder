@@ -18,24 +18,9 @@ class PunchTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         sortPunches()
-//        setupBackground()
-        
+        navigationController?.navigationBar.prefersLargeTitles = true
     }
-    
-//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-//        setupBackground()
-//    }
-    
-//    func setupBackground() {
-//        let color2: UIColor
-//        if #available(iOS 13.0, *) {
-//            color2 = .systemBackground
-//        } else {
-//            color2 = ColorPalette.backgroundGray
-//        }
-//
-//        addGradientToBackGround(color1: ColorPalette.slamRedBackground, color2: color2)
-//    }
+
 
     func sortPunches() {
         guard let punches = self.punches else { return }

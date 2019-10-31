@@ -27,34 +27,23 @@ class NumberBuilderTVC: UITableViewController, UIPickerViewDelegate, UIPickerVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //setupBackgroundColor()
-        //self.view.tintColor = UIColor.init(named: "SlamRed") ?? ColorPalette.slamRed
-        
         punchBuilder.delegate = self
         addDoneButtonOnKeyboard()
+        updateDicePickersWith(numbers: [1,2,3])
     }
     
-//    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-//        setupBackgroundColor()
-//    }
-    
-//    private func setupBackgroundColor() {
-//        let color1: UIColor
-//        if #available(iOS 13.0, *) {
-//            color1 = .systemBackground
-//        } else {
-//            color1 = .white
-//        }
-//        addGradientToBackGround(color1: color1, color2: UIColor.init(named: "BackgroundGray") ?? ColorPalette.backgroundGray)
-//        //ColorPalette.addGradient(to: self.view, color1: color1, color2: UIColor.init(named: "BackgroundGray") ?? ColorPalette.backgroundGray)
-//    }
     
     @IBAction func rollButtonTouched(_ sender: UIButton) {
         var numbers = [Int]()
+        repeat {
+            numbers.removeAll()
         for _ in 0 ..< 3 {
             let randomInt = Int(arc4random() % 6) + 1
             numbers.append(randomInt)
-        }
+            }
+            
+        } while numbers.filter({$0 == 1}).count > 1
+        
         
         print("You rolled: \(numbers)")
         
@@ -143,8 +132,6 @@ class NumberBuilderTVC: UITableViewController, UIPickerViewDelegate, UIPickerVie
         doneToolbar.barStyle       = UIBarStyle.default
         let flexSpace              = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         let done: UIBarButtonItem  = UIBarButtonItem(title: "Done", style: UIBarButtonItem.Style.done, target: self, action: #selector(doneButtonAction))
-        
-        //let next: UIBarButtonItem  = UIBarButtonItem(title: "Next", style: UIBarButtonItem.Style.plain, target: self, action: #selector(CGTableViewController.nextButtonAction))
         
         var items = [UIBarButtonItem]()
         items.append(flexSpace)

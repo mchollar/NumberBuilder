@@ -17,21 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        //let slamRed = UIColor.init(named: "SlamRed") ?? ColorPalette.slamRed
-        //UINavigationBar.appearance().tintColor = slamRed
-        //UINavigationBar.appearance().backgroundColor = slamRed
-        
-//        if let titleFont = UIFont(name: "AvenirNext-Bold", size: 20),
-//            let largeTitleFont = UIFont(name: "AvenirNext-Bold", size: 34){
-//            
-//        UINavigationBar.appearance().titleTextAttributes = [
-//            //NSAttributedString.Key.foregroundColor : slamRed,
-//            NSAttributedString.Key.font : titleFont ]
-//        UINavigationBar.appearance().largeTitleTextAttributes = [
-//            //NSAttributedString.Key.foregroundColor : slamRed,
-//            NSAttributedString.Key.font : largeTitleFont ]
-//        }
-        
         let splitViewController = window!.rootViewController as! UISplitViewController
         let navigationController = splitViewController.viewControllers[splitViewController.viewControllers.count-1] as! UINavigationController
         navigationController.topViewController!.navigationItem.leftBarButtonItem = splitViewController.displayModeButtonItem
