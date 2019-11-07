@@ -23,6 +23,9 @@ class NumberBuilderTVC: UITableViewController, UIPickerViewDelegate, UIPickerVie
     @IBOutlet weak var viewResultsButton: UIButton!
     @IBOutlet weak var calculateButton: UIButton!
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
