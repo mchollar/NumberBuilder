@@ -33,6 +33,7 @@ class NumberBuilderTVC: UITableViewController, UIPickerViewDelegate, UIPickerVie
         punchBuilder.delegate = self
         addDoneButtonOnKeyboard()
         updateDicePickersWith(numbers: [1,2,3])
+        navigationController?.navigationBar.barStyle = .black
     }
     
     
