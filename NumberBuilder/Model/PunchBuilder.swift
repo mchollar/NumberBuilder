@@ -88,7 +88,7 @@ class PunchBuilder {
     
     func operationReturnsInt(_ operation: Operation, on numbers: [SlamNumber]) -> Bool {
         guard numbers.count == 2 else { print("wrong number entered in operationReturnsInt function");  return false }
-        if operation.description == "/" {
+        if operation.description == "÷" {
             if numbers[0] % numbers[1] != 0 {
                 return false
             }
@@ -137,7 +137,7 @@ class PunchBuilder {
         let secondOp = operations[1].function
         
         //Check for division, must result in Integer
-        if operations[0].description == "/" {
+        if operations[0].description == "÷" {
             if !operationReturnsInt(operations[0], on: [numbers[0], numbers[1]]) {
                 print("found bad division (\(numbers[0]) / \(numbers[1]))")
                 return nil
@@ -147,7 +147,7 @@ class PunchBuilder {
         
         let firstValue = firstOp(numbers[0], numbers[1])
         
-        if operations[1].description == "/" {
+        if operations[1].description == "÷" {
             if !operationReturnsInt(operations[1], on: [firstValue, numbers[2]]) {
                 print("found bad division (\(firstValue) / \(numbers[2]))")
                 return nil

@@ -30,7 +30,7 @@ class Punch: CustomStringConvertible, Comparable {
         
         let attReturnString = NSMutableAttributedString()
         if (operations[0].description == "+" || operations[0].description == "-") &&
-            (operations[1].description == "x" || operations[1].description == "/") {
+            (operations[1].description == "x" || operations[1].description == "÷") {
             
             self.description = "(\(numbers[0]) \(operations[0].description) \(numbers[1])) \(operations[1].description) \(numbers[2]) = \(result)"
             
