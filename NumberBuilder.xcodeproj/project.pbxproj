@@ -19,6 +19,7 @@
 		22442BC42166EF72000CDCBD /* Operation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22442BC32166EF72000CDCBD /* Operation.swift */; };
 		22442BC821699002000CDCBD /* SlamNumber.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22442BC721699002000CDCBD /* SlamNumber.swift */; };
 		22570B03216AB95A00A7AA35 /* PunchTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22570B02216AB95A00A7AA35 /* PunchTableViewController.swift */; };
+		225E8F75238DBA7F0069CE42 /* ShowAllResultsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 225E8F74238DBA7E0069CE42 /* ShowAllResultsTVC.swift */; };
 		226B6B3A2368EC5200B261BE /* PunchBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 226B6B392368EC5200B261BE /* PunchBuilder.swift */; };
 		22A0E964236A098000C8C914 /* NumberBuilderTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A0E963236A098000C8C914 /* NumberBuilderTVC.swift */; };
 		22A87B51236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A87B50236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift */; };
@@ -41,6 +42,7 @@
 		22442BC32166EF72000CDCBD /* Operation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operation.swift; sourceTree = "<group>"; };
 		22442BC721699002000CDCBD /* SlamNumber.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlamNumber.swift; sourceTree = "<group>"; };
 		22570B02216AB95A00A7AA35 /* PunchTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PunchTableViewController.swift; sourceTree = "<group>"; };
+		225E8F74238DBA7E0069CE42 /* ShowAllResultsTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShowAllResultsTVC.swift; sourceTree = "<group>"; };
 		226B6B392368EC5200B261BE /* PunchBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PunchBuilder.swift; sourceTree = "<group>"; };
 		22A0E963236A098000C8C914 /* NumberBuilderTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberBuilderTVC.swift; sourceTree = "<group>"; };
 		22A87B50236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+CurrentFirstResponder.swift"; sourceTree = "<group>"; };
@@ -94,6 +96,7 @@
 				22442BB22166EEA4000CDCBD /* Main.storyboard */,
 				22A0E963236A098000C8C914 /* NumberBuilderTVC.swift */,
 				22570B02216AB95A00A7AA35 /* PunchTableViewController.swift */,
+				225E8F74238DBA7E0069CE42 /* ShowAllResultsTVC.swift */,
 				22A87B52236A39F600D3CC5A /* AboutPageTVC.swift */,
 				22A87B50236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift */,
 				22442BC02166EED4000CDCBD /* Model */,
@@ -196,6 +199,7 @@
 				22442BAF2166EEA4000CDCBD /* AppDelegate.swift in Sources */,
 				22A87B55236A3B5A00D3CC5A /* UIView+RoundedShadow.swift in Sources */,
 				22A87B53236A39F600D3CC5A /* AboutPageTVC.swift in Sources */,
+				225E8F75238DBA7F0069CE42 /* ShowAllResultsTVC.swift in Sources */,
 				22570B03216AB95A00A7AA35 /* PunchTableViewController.swift in Sources */,
 				223BDBEB2173E92100ACB7F8 /* UIView+DropShadow.swift in Sources */,
 				223BDBF22173F1FC00ACB7F8 /* UICollectionViewController+Gradient.swift in Sources */,

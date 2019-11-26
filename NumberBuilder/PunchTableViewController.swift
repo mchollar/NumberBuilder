@@ -47,21 +47,41 @@ class PunchTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        let sectionCount: Int
         switch section {
         case 0:
-            return simplePunches.count
+            sectionCount = simplePunches.count
         case 1:
-            return powerPunches.count
+            sectionCount = powerPunches.count
         case 2:
-            return rootPunches.count
+            sectionCount = rootPunches.count
         default:
-            return 0
+            sectionCount = 0
             
+        }
+        
+        if sectionCount > 1 { return 2 }
+        else {
+            return sectionCount
         }
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        if indexPath.row == 0 {
+            return setupPunchCellFor(indexPath: indexPath)
+            
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "SeeMoreCell", for: indexPath)
+            cell.textLabel?.text = "Show All Results"
+            return cell
+        }
+        
+        
+    }
+    
+    private func setupPunchCellFor(indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PunchCell", for: indexPath)
         
         switch indexPath.section {
@@ -89,6 +109,30 @@ class PunchTableViewController: UITableViewController {
             return "Solutions using Powers and Roots: \(rootPunches.count)"
         default:
             return ""
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        
+        if segue.identifier == "ShowAllResults",
+            let destination = segue.destination as? ShowAllResultsTVC,
+            let sectionIndex = tableView.indexPathForSelectedRow?.section {
+            
+            switch sectionIndex {
+            case 0:
+                destination.punches = simplePunches
+                destination.title = "Simple Solutions"
+            case 1:
+                destination.punches = powerPunches
+                destination.title = "Using Powers"
+            case 2:
+                destination.punches = rootPunches
+                destination.title = "Using Powers and Roots"
+            default:
+                destination.punches = [Punch]()
+            }
+            
         }
     }
 
