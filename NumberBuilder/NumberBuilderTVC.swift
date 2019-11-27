@@ -193,6 +193,10 @@ extension NumberBuilderTVC: UITextFieldDelegate {
         }
     }
     
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        calculateButton.isEnabled = false
+    }
+    
 }
 
 

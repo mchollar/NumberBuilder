@@ -64,38 +64,12 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="gRU-Ju-VlU">
-                                        <rect key="frame" x="20" y="168" width="374" height="43.5"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="gRU-Ju-VlU" id="Jg6-yf-df7">
-                                            <rect key="frame" x="0.0" y="0.0" width="374" height="43.5"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lwg-bq-rSD">
-                                                    <rect key="frame" x="171" y="4" width="32" height="36"/>
-                                                    <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="17"/>
-                                                    <state key="normal" title="Roll">
-                                                        <color key="titleColor" systemColor="systemBlueColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    </state>
-                                                    <connections>
-                                                        <action selector="rollButtonTouched:" destination="Boy-UE-Kq3" eventType="touchUpInside" id="wBr-Xt-3vF"/>
-                                                    </connections>
-                                                </button>
-                                            </subviews>
-                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                            <constraints>
-                                                <constraint firstItem="lwg-bq-rSD" firstAttribute="centerX" secondItem="Jg6-yf-df7" secondAttribute="centerX" id="BfQ-ag-YB0"/>
-                                                <constraint firstItem="lwg-bq-rSD" firstAttribute="centerY" secondItem="Jg6-yf-df7" secondAttribute="centerY" id="xUJ-to-vVK"/>
-                                            </constraints>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection id="hOa-hy-EQB">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="BU9-70-ke6">
-                                        <rect key="frame" x="20" y="247.5" width="374" height="43.5"/>
+                                        <rect key="frame" x="20" y="204" width="374" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="BU9-70-ke6" id="6cX-9O-mVc">
                                             <rect key="frame" x="0.0" y="0.0" width="374" height="43.5"/>
@@ -127,17 +101,17 @@
                             <tableViewSection id="YZx-kO-bYz">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="MUM-zT-lAB">
-                                        <rect key="frame" x="20" y="327" width="374" height="43.5"/>
+                                        <rect key="frame" x="20" y="283.5" width="374" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="MUM-zT-lAB" id="Mwi-O2-xxT">
                                             <rect key="frame" x="0.0" y="0.0" width="374" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Wma-pK-hfj">
-                                                    <rect key="frame" x="86" y="-1.5" width="202" height="47"/>
+                                                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="Wma-pK-hfj">
+                                                    <rect key="frame" x="72" y="-1.5" width="230" height="47"/>
                                                     <subviews>
                                                         <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S5o-A6-BWW">
-                                                            <rect key="frame" x="0.0" y="0.0" width="77" height="47"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="105" height="47"/>
                                                             <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="17"/>
                                                             <state key="normal" title="Calculate"/>
                                                             <connections>
@@ -145,7 +119,7 @@
                                                             </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="1000" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="es8-Uz-A3o">
-                                                            <rect key="frame" x="97" y="0.0" width="105" height="47"/>
+                                                            <rect key="frame" x="125" y="0.0" width="105" height="47"/>
                                                             <fontDescription key="fontDescription" name="AvenirNext-Bold" family="Avenir Next" pointSize="17"/>
                                                             <state key="normal" title="View Results"/>
                                                             <connections>
@@ -167,7 +141,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="sS4-lq-zWW">
-                                        <rect key="frame" x="20" y="370.5" width="374" height="43.5"/>
+                                        <rect key="frame" x="20" y="327" width="374" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="sS4-lq-zWW" id="QSu-4y-NXk">
                                             <rect key="frame" x="0.0" y="0.0" width="374" height="43.5"/>
@@ -189,7 +163,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" id="yV3-uB-mPG">
-                                        <rect key="frame" x="20" y="414" width="374" height="43.5"/>
+                                        <rect key="frame" x="20" y="370.5" width="374" height="43.5"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="yV3-uB-mPG" id="43D-sP-mrR">
                                             <rect key="frame" x="0.0" y="0.0" width="374" height="43.5"/>
@@ -589,7 +563,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="NumberBuilder Icon" width="1025" height="1024"/>
+        <image name="NumberBuilder Icon" width="4268" height="4267"/>
         <image name="info_icon" width="50" height="50"/>
         <namedColor name="AppCyan">
             <color red="0.0" green="0.63999998569488525" blue="0.85600000619888306" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
