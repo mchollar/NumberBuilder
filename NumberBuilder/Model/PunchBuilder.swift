@@ -36,6 +36,8 @@ class PunchBuilder {
         
     }
     
+    /// This function will create all permutations of operations and perform them on the given SlamNumbers
+    /// - Parameter numbers: SlamNumber array (must contain three) upon which to perform calculations
     func performCalculationsOn(numbers: [SlamNumber]) {
         
         results = nil
@@ -86,6 +88,10 @@ class PunchBuilder {
     
     
     
+    /// Function that tests if an operation returns an Int.
+    /// - Parameters:
+    ///   - operation: Operation to test
+    ///   - numbers: Numbers on which the operation is to be performed
     func operationReturnsInt(_ operation: Operation, on numbers: [SlamNumber]) -> Bool {
         guard numbers.count == 2 else { print("wrong number entered in operationReturnsInt function");  return false }
         if operation.description == "÷" {
@@ -99,6 +105,10 @@ class PunchBuilder {
         return true
     }
     
+    /// Performs the given operations on the given numbers in all possible orders, returning an array of all possible Punches. This function also sends the delegate a message to update the number of results every 0.2 seconds during calculations and again when final.
+    /// - Parameters:
+    ///   - operations: 2D matrix of Operations
+    ///   - numbers: 2D matrix of SlamNumbers
     func runOperations(_ operations: [[Operation]], on numbers: [[SlamNumber]]) -> [Punch] {
         
         var results = [Punch]()
@@ -130,6 +140,10 @@ class PunchBuilder {
         return results
     }
     
+    /// Creates a Punch out of the given Operations and SlamNumbers. If the result is not an Int, or if it's greater than the given max value, or if it's negative,  it returns nil.
+    /// - Parameters:
+    ///   - operations: Array of Operations to be used
+    ///   - numbers: Array of SlamNumbers to be used
     func runOperation(_ operations: [Operation], on numbers: [SlamNumber]) -> Punch? {
         guard numbers.count - operations.count == 1 else { return nil }
         
@@ -163,6 +177,8 @@ class PunchBuilder {
         return returnPunch
     }
     
+    /// Helper function to sort Punches into the three types (simple, power, root)
+    /// - Parameter numbers: Array of SlamNumber to test
     func determinePunchType(numbers: [SlamNumber]) -> PunchType {
         
         var type: PunchType = .simple
@@ -180,6 +196,10 @@ class PunchBuilder {
     }
     
     //MARK: - Combination Methods
+    /// Math function to create permutations. Returns a 2D matrix of generic type T.
+    /// - Parameters:
+    ///   - n: Depth of permutations to create. Must match number of different elements.
+    ///   - a: inout Array to be modified while permutations are being created recursively
     func permutations<T>(_ n:Int, _ a: inout Array<T>) -> [[T]] {
         if n == 1 {
             print(a)
@@ -195,6 +215,10 @@ class PunchBuilder {
         return ret
     }
     
+    /// Creates combinations recursively. Return 2D matrix of combinations.
+    /// - Parameters:
+    ///   - elements: ArraySlice of elements
+    ///   - k: used for recursion
     func combos<T>(elements: ArraySlice<T>, k: Int) -> [[T]] {
         if k == 0 {
             return [[]]

@@ -14,6 +14,7 @@ class PunchTableViewController: UITableViewController {
     var simplePunches = [Punch]()
     var powerPunches = [Punch]()
     var rootPunches = [Punch]()
+    var shouldShowHelpController = false
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
@@ -23,6 +24,11 @@ class PunchTableViewController: UITableViewController {
         super.viewDidLoad()
         sortPunches()
         navigationController?.navigationBar.prefersLargeTitles = true
+        
+        if shouldShowHelpController {
+            showHelpController()
+        }
+        
     }
 
 
@@ -136,6 +142,21 @@ class PunchTableViewController: UITableViewController {
         }
     }
 
+    @IBAction func helpButtonTouched(_ sender: UIBarButtonItem) {
+        
+        showHelpController()
+        
+    }
     
 
+    private func showHelpController() {
+        let message = "The results are divided into three categories: Simple, Using Powers, and Using Powers and Roots. Only one of each solution type (if any) is shown on this page. More results of each type can be viewed by tapping on the 'Show All Results' cell.\n\n • The simple solutions use only the +, -, x and ÷ operations.\n • The Powers include the use of simple exponents.\n • The Powers and Roots solutions also allow fractions in the exponents (roots).\n\nEach number with a power or root will include its calculated value in square brackets []."
+        
+        let okAction = UIAlertAction(title: "OK", style: .default)
+        
+        let alertController = UIAlertController(title: "Results Help", message: message, preferredStyle: .alert)
+        alertController.addAction(okAction)
+        
+        self.present(alertController, animated: true)
+    }
 }

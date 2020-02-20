@@ -98,7 +98,7 @@
 				22570B02216AB95A00A7AA35 /* PunchTableViewController.swift */,
 				225E8F74238DBA7E0069CE42 /* ShowAllResultsTVC.swift */,
 				22A87B52236A39F600D3CC5A /* AboutPageTVC.swift */,
-				22A87B50236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift */,
+				22C6A98223B29D2D0027BB9F /* Extensions */,
 				22442BC02166EED4000CDCBD /* Model */,
 				223BDBEC2173F16A00ACB7F8 /* Style */,
 				22442BB52166EEA6000CDCBD /* Assets.xcassets */,
@@ -117,6 +117,14 @@
 				226B6B392368EC5200B261BE /* PunchBuilder.swift */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		22C6A98223B29D2D0027BB9F /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				22A87B50236A21FD00D3CC5A /* UIView+CurrentFirstResponder.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -352,13 +360,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 4C592246MX;
 				INFOPLIST_FILE = NumberBuilder/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberBuilder;
 				PRODUCT_NAME = NumberBuilder;
 				SWIFT_VERSION = 5.0;
@@ -371,13 +380,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 4C592246MX;
 				INFOPLIST_FILE = NumberBuilder/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.4;
 				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberBuilder;
 				PRODUCT_NAME = NumberBuilder;
 				SWIFT_VERSION = 5.0;

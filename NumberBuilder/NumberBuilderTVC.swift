@@ -127,6 +127,12 @@ class NumberBuilderTVC: UITableViewController, UIPickerViewDelegate, UIPickerVie
                 
                 punchTVC.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 punchTVC.navigationItem.leftItemsSupplementBackButton = true
+                
+                let previouslyRun = UserDefaults.standard.bool(forKey: "PreviouslyRun") // is false if never before run
+                if !previouslyRun {
+                    UserDefaults.standard.set(true, forKey: "PreviouslyRun")
+                    punchTVC.shouldShowHelpController = true
+                }
             }
         }
     }

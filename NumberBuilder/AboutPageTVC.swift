@@ -62,7 +62,7 @@ class AboutPageTVC: UITableViewController {
     
     
     @IBAction func reviewButtonTouched(_ sender: UIButton) {
-        guard let writeReviewURL = URL(string: "https://itunes.apple.com/app/id1448609572?action=write-review") // TODO: fix link
+        guard let writeReviewURL = URL(string: "https://itunes.apple.com/app/id1489526164?action=write-review") 
             else { fatalError("Expected a valid URL") }
         UIApplication.shared.open(writeReviewURL, options: [:], completionHandler: nil)
     }
