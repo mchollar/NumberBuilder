@@ -21,9 +21,9 @@ struct AboutView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 96, height: 96)
                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                        .cardShadow()
+                        .cardSurface()
                     Text("Number Builder")
-                        .font(.title2.bold())
+                        .font(.nbNumber(22))
                     Text("\(appVersion) (\(appBuild))")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
@@ -37,7 +37,8 @@ struct AboutView: View {
                 Button {
                     openReviewPage()
                 } label: {
-                    Label("Rate Number Builder", systemImage: "star")
+                    Label("Rate Number Builder", systemImage: "star.fill")
+                        .foregroundStyle(Color.nbAccent)
                 }
                 Button {
                     if MailComposeView.canSendMail {
@@ -46,10 +47,14 @@ struct AboutView: View {
                         isShowingMailUnavailableAlert = true
                     }
                 } label: {
-                    Label("Send Feedback", systemImage: "envelope")
+                    Label("Send Feedback", systemImage: "envelope.fill")
+                        .foregroundStyle(Color.nbAccent)
                 }
             }
+            .listRowBackground(Color.nbCardSurface)
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.nbBackground)
         .navigationTitle("About")
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $isShowingMailComposer) {
@@ -68,5 +73,11 @@ struct AboutView: View {
     private func openReviewPage() {
         guard let url = URL(string: "https://itunes.apple.com/app/id1489526164?action=write-review") else { return }
         UIApplication.shared.open(url)
+    }
+}
+
+#Preview("About") {
+    NavigationStack {
+        AboutView()
     }
 }

@@ -7,15 +7,15 @@ struct RollView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 28) {
-                diceRow
-                rollButton
-                targetField
-                calculateButton
+            VStack(spacing: 20) {
+                rollCard
+                targetCard
                 progressSection
             }
-            .padding(24)
+            .padding(20)
         }
+        .background(Color.nbBackground.ignoresSafeArea())
+        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Number Builder")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -24,6 +24,7 @@ struct RollView: View {
                 } label: {
                     Image(systemName: "info.circle")
                 }
+                .tint(.nbAccent)
             }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
@@ -42,6 +43,22 @@ struct RollView: View {
                 )
             }
         }
+    }
+
+    private var rollCard: some View {
+        VStack(spacing: 16) {
+            sectionLabel("Your Roll")
+            diceRow
+            Button {
+                targetFieldFocused = false
+                viewModel.rollDice()
+            } label: {
+                Label("Roll", systemImage: "die.face.5.fill")
+            }
+            .buttonStyle(.nbTonal(tint: .nbAccent))
+        }
+        .padding(20)
+        .cardSurface()
     }
 
     private var diceRow: some View {
@@ -65,46 +82,58 @@ struct RollView: View {
                 .pickerStyle(.wheel)
                 .frame(width: 90)
                 .clipped()
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color.primary.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
+                        )
+                )
             }
         }
     }
 
-    private var rollButton: some View {
-        Button {
-            targetFieldFocused = false
-            viewModel.rollDice()
-        } label: {
-            Label("Roll", systemImage: "die.face.5")
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.bordered)
-    }
-
-    private var targetField: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Target Number")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-            TextField("Enter a number", text: $viewModel.targetText)
+    private var targetCard: some View {
+        VStack(spacing: 16) {
+            sectionLabel("Target Number")
+            TextField("0", text: $viewModel.targetText)
                 .keyboardType(.numberPad)
-                .textFieldStyle(.roundedBorder)
+                .font(.nbNumber(40))
+                .multilineTextAlignment(.center)
                 .focused($targetFieldFocused)
+                .padding(.vertical, 14)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color.primary.opacity(0.05))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .strokeBorder(targetFieldFocused ? Color.nbAccent : Color.primary.opacity(0.1), lineWidth: targetFieldFocused ? 2 : 1)
+                        )
+                )
                 .onChange(of: viewModel.targetText) {
                     viewModel.resetForNewRoll()
                 }
+            Button {
+                targetFieldFocused = false
+                viewModel.calculate()
+            } label: {
+                Text("Calculate")
+            }
+            .buttonStyle(.nbPrimary(tint: .nbAccent, isEnabled: viewModel.canCalculate))
+            .disabled(!viewModel.canCalculate)
         }
+        .padding(20)
+        .cardSurface()
     }
 
-    private var calculateButton: some View {
-        Button {
-            targetFieldFocused = false
-            viewModel.calculate()
-        } label: {
-            Text("Calculate")
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.borderedProminent)
-        .disabled(!viewModel.canCalculate)
+    private func sectionLabel(_ text: String) -> some View {
+        Text(text.uppercased())
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .tracking(0.5)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
@@ -112,10 +141,20 @@ struct RollView: View {
         if viewModel.isSolving {
             VStack(spacing: 8) {
                 ProgressView()
+                    .tint(.nbAccent)
                 Text("Total Solutions Found: \(viewModel.progressCount)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
+            .frame(maxWidth: .infinity)
+            .padding(20)
+            .cardSurface()
         }
+    }
+}
+
+#Preview("Roll") {
+    NavigationStack {
+        RollView()
     }
 }
