@@ -1,9 +1,33 @@
 import SwiftUI
+import UIKit
 import NumberBuilderKit
+
+/// Phases for the die glyph that pops over a slot when Roll is tapped — the wheel picker itself
+/// is never animated (it's a real interactive control; scaling/rotating it looked broken).
+private enum DiePopPhase {
+    case hidden, pop
+
+    var scale: CGFloat {
+        switch self {
+        case .hidden: return 0.5
+        case .pop: return 1.35
+        }
+    }
+
+    var opacity: Double {
+        switch self {
+        case .hidden: return 0
+        case .pop: return 1
+        }
+    }
+}
 
 struct RollView: View {
     @State private var viewModel = RollViewModel()
     @FocusState private var targetFieldFocused: Bool
+    /// Bumped only by the Roll button — dice bouncing should never fire from manually scrolling
+    /// a wheel to pick a value by hand.
+    @State private var rollTrigger = 0
 
     var body: some View {
         ScrollView {
@@ -51,9 +75,12 @@ struct RollView: View {
             diceRow
             Button {
                 targetFieldFocused = false
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 viewModel.rollDice()
+                rollTrigger += 1
             } label: {
                 Label("Roll", systemImage: "die.face.5.fill")
+                    .symbolEffect(.bounce, value: rollTrigger)
             }
             .buttonStyle(.nbTonal(tint: .nbAccent))
         }
@@ -90,6 +117,28 @@ struct RollView: View {
                                 .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
                         )
                 )
+                .overlay {
+                    // A decorative die that pops over the slot on Roll and fades away, revealing
+                    // the (unanimated, still perfectly interactive) wheel underneath already
+                    // settled on its new value.
+                    Image("Dice\(viewModel.diceFaces[index])")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 36, height: 36)
+                        .padding(10)
+                        .background(Circle().fill(Color.nbCardSurface))
+                        .allowsHitTesting(false)
+                        .phaseAnimator([DiePopPhase.hidden, .pop, .hidden], trigger: rollTrigger) { view, phase in
+                            view
+                                .scaleEffect(phase.scale)
+                                .opacity(phase.opacity)
+                        } animation: { phase in
+                            switch phase {
+                            case .pop: .spring(response: 0.3, dampingFraction: 0.55).delay(Double(index) * 0.07)
+                            case .hidden: .easeOut(duration: 0.22).delay(Double(index) * 0.07)
+                            }
+                        }
+                }
             }
         }
     }
