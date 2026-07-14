@@ -67,6 +67,7 @@ public actor SolverEngine {
         var chosenDice: [DieValue] = []
         var chosenOperations: [MathOperation] = []
         var solutions: [Solution] = []
+        private var seenSolutions: Set<Solution> = []
         private var foundSinceLastYield = 0
 
         init(target: Int, variantSets: [[DieValue]], used: [Bool]) {
@@ -87,19 +88,24 @@ public actor SolverEngine {
 
             if chosenDice.count == variantSets.count {
                 if let result = accumulator, result == target {
-                    solutions.append(
-                        Solution(
-                            result: result,
-                            dice: chosenDice,
-                            operations: chosenOperations,
-                            tier: Self.tier(for: chosenDice)
-                        )
+                    let solution = Solution(
+                        result: result,
+                        dice: chosenDice,
+                        operations: chosenOperations,
+                        tier: Self.tier(for: chosenDice)
                     )
-                    foundSinceLastYield += 1
-                    if foundSinceLastYield >= 25 {
-                        continuation.yield(.progress(count: solutions.count))
-                        foundSinceLastYield = 0
-                        await Task.yield()
+                    // Two dice showing the same face (e.g. a roll of 5, 5, 6) are interchangeable,
+                    // so trying "die A's 5 then die B's 5" and "die B's 5 then die A's 5" produces
+                    // byte-for-byte identical solutions. Dedup here rather than post-hoc so the
+                    // live progress count and the final list agree.
+                    if seenSolutions.insert(solution).inserted {
+                        solutions.append(solution)
+                        foundSinceLastYield += 1
+                        if foundSinceLastYield >= 25 {
+                            continuation.yield(.progress(count: solutions.count))
+                            foundSinceLastYield = 0
+                            await Task.yield()
+                        }
                     }
                 }
                 return
@@ -112,6 +118,11 @@ public actor SolverEngine {
 
                     if let accumulator {
                         for operation in MathOperation.allCases {
+                            // A die worth 1 (typically from `^0`) makes `× 1` and `÷ 1` produce the
+                            // same next accumulator and the same solution space beneath it, so only
+                            // one needs exploring; skipping `÷` here is the source-level fix for
+                            // solutions that only differ by that redundant operation choice.
+                            if operation == .divide && variant.value == 1 { continue }
                             if let next = operation.apply(accumulator, variant.value) {
                                 chosenOperations.append(operation)
                                 await step(accumulator: next, continuation: continuation)

@@ -24,20 +24,34 @@ public struct DieValue: Hashable, Sendable, Comparable {
     }
 
     /// Every power/root variant of this die's rolled value, e.g. a rolled 6 can also stand in
-    /// as 6⁰=1, 6²=36, or (6² root 2)=6. Verification is done with exact integer arithmetic
-    /// (never trusting a `Double` comparison directly) so large bases don't silently round wrong.
+    /// as 6⁰=1 or 6²=36. Verification is done with exact integer arithmetic (never trusting a
+    /// `Double` comparison directly) so large bases don't silently round wrong.
+    ///
+    /// Deduplicated by the resulting `value`, keeping the simplest exponent/root that reaches
+    /// it (iteration order is exponent ascending, root=1 before root>1, so "simplest" falls out
+    /// for free). This is deliberate: for *any* base, `base^n` rooted by `n` always round-trips
+    /// back to `base` exactly (6² root 2 = 6, 6³ root 3 = 6, 6⁴ root 4 = 6, ...), so without
+    /// dedup every die contributes a pile of same-valued variants that only look like distinct
+    /// solving techniques. Each achievable value is still represented exactly once.
     public func variants(maxExponent: Int, allowExponents: Bool, allowRoots: Bool) -> [DieValue] {
         guard base != 1, allowExponents else { return [self] }
 
         var results: [DieValue] = []
+        var seenValues: Set<Int> = []
+
+        func append(_ candidate: DieValue) {
+            guard seenValues.insert(candidate.value).inserted else { return }
+            results.append(candidate)
+        }
+
         for exponent in 0...maxExponent {
             guard let raised = Self.integerPower(base, exponent) else { continue }
-            results.append(DieValue(base: base, exponent: exponent, root: 1, value: raised))
+            append(DieValue(base: base, exponent: exponent, root: 1, value: raised))
 
             guard allowRoots, exponent != 0 else { continue }
             for root in 2..<max(2, maxExponent) {
                 guard let rootValue = Self.integerRoot(of: raised, root: root) else { continue }
-                results.append(DieValue(base: base, exponent: exponent, root: root, value: rootValue))
+                append(DieValue(base: base, exponent: exponent, root: root, value: rootValue))
             }
         }
         return results
