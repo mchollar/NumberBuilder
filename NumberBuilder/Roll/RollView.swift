@@ -55,11 +55,16 @@ struct RollView: View {
                     }
                 )) {
                     ForEach(1...6, id: \.self) { face in
-                        Image("Dice\(face)").tag(face)
+                        Image("Dice\(face)")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 28, height: 28)
+                            .tag(face)
                     }
                 }
                 .pickerStyle(.wheel)
-                .frame(width: 90, height: 110)
+                .frame(width: 90)
+                .clipped()
             }
         }
     }
