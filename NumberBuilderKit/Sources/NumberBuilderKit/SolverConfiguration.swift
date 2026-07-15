@@ -28,13 +28,17 @@ public struct SolverConfiguration: Sendable, Hashable {
     public static let classicDiceSides = 6
 
     /// Caps the power/root search space so larger dice-count rule variants stay interactive.
-    /// Benchmarked empirically: 5 dice at `maxExponent` 5 took 134s (1.26M candidates); at 2 it
-    /// took ~1s. 4 dice stayed under a second even at `maxExponent` 5, so only 5 dice needs
-    /// scaling down given the plan's stated cap of 5 dice.
+    /// Benchmarked empirically against `SolverEngine`'s branch-and-bound pruning (see
+    /// `SolverEngineBenchmarkTests`): 5 dice at `maxExponent` 5 takes ~14s, at 3 takes ~4s, both
+    /// down from the pre-pruning brute force's 134s/10s. 3 is the sweet spot -- comfortably
+    /// interactive while allowing noticeably more exponent/root variety than the old cap of 2.
+    /// 4 dice stayed under a second even at `maxExponent` 5, so only 5 dice needs scaling down
+    /// given the plan's stated cap of 5 dice; the `default` case beyond that is unbenchmarked
+    /// and deliberately conservative since there's no current plan to support more than 5 dice.
     public static func recommendedMaxExponent(forDiceCount diceCount: Int) -> Int {
         switch diceCount {
         case ..<5: return 5
-        case 5: return 2
+        case 5: return 3
         default: return 1
         }
     }

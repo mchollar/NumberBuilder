@@ -113,6 +113,8 @@ public actor SolverEngine {
 
             for dieIndex in variantSets.indices where !used[dieIndex] {
                 used[dieIndex] = true
+                let remainingIndices = variantSets.indices.filter { !used[$0] }
+
                 for variant in variantSets[dieIndex] {
                     chosenDice.append(variant)
 
@@ -123,13 +125,14 @@ public actor SolverEngine {
                             // one needs exploring; skipping `÷` here is the source-level fix for
                             // solutions that only differ by that redundant operation choice.
                             if operation == .divide && variant.value == 1 { continue }
-                            if let next = operation.apply(accumulator, variant.value) {
+                            if let next = operation.apply(accumulator, variant.value),
+                               isTargetStillReachable(from: next, remainingIndices: remainingIndices) {
                                 chosenOperations.append(operation)
                                 await step(accumulator: next, continuation: continuation)
                                 chosenOperations.removeLast()
                             }
                         }
-                    } else {
+                    } else if isTargetStillReachable(from: variant.value, remainingIndices: remainingIndices) {
                         await step(accumulator: variant.value, continuation: continuation)
                     }
 
@@ -137,6 +140,63 @@ public actor SolverEngine {
                 }
                 used[dieIndex] = false
             }
+        }
+
+        /// A deliberately loose but *safe* bound on the search space: computes an interval
+        /// guaranteed to contain every value reachable from `accumulator` using the remaining
+        /// dice, in *any* order, via *any* operator sequence. This mirrors the real search's own
+        /// "try each remaining die next" branching exactly (rather than folding dice in one fixed
+        /// order, which turned out to understate the reachable range for some orderings and
+        /// unsafely prune valid solutions -- caught by cross-validating against a brute-force
+        /// reference in `PruningValidationTest` before this shape was settled on). Each die
+        /// contributes its full [min, max] variant range rather than a single value, and real
+        /// (non-integer) division is used rather than exact-only, both of which only ever widen
+        /// the bound -- so this can never wrongly exclude a target that's actually reachable, only
+        /// skip branches that have already gone somewhere no operator sequence could recover from.
+        private func isTargetStillReachable(from accumulator: Int, remainingIndices: [Int]) -> Bool {
+            guard !remainingIndices.isEmpty else { return true }
+            let range = reachableRange(lo: Double(accumulator), hi: Double(accumulator), remainingIndices: remainingIndices)
+            let targetValue = Double(target)
+            let epsilon = 1e-6
+            return targetValue >= range.lo - epsilon && targetValue <= range.hi + epsilon
+        }
+
+        private func reachableRange(lo: Double, hi: Double, remainingIndices: [Int]) -> (lo: Double, hi: Double) {
+            guard !remainingIndices.isEmpty else { return (lo, hi) }
+
+            var resultLo = Double.infinity
+            var resultHi = -Double.infinity
+
+            for position in remainingIndices.indices {
+                let dieIndex = remainingIndices[position]
+                var dieLo = Double.infinity
+                var dieHi = -Double.infinity
+                for variant in variantSets[dieIndex] {
+                    let value = Double(variant.value)
+                    dieLo = min(dieLo, value)
+                    dieHi = max(dieHi, value)
+                }
+                guard dieLo.isFinite else { continue }
+
+                let addLo = lo + dieLo, addHi = hi + dieHi
+                let subLo = lo - dieHi, subHi = hi - dieLo
+                let products = [lo * dieLo, lo * dieHi, hi * dieLo, hi * dieHi]
+                var newLo = min(addLo, subLo, products.min()!)
+                var newHi = max(addHi, subHi, products.max()!)
+                if dieLo > 0 {
+                    let quotients = [lo / dieLo, lo / dieHi, hi / dieLo, hi / dieHi]
+                    newLo = min(newLo, quotients.min()!)
+                    newHi = max(newHi, quotients.max()!)
+                }
+
+                var rest = remainingIndices
+                rest.remove(at: position)
+                let sub = reachableRange(lo: newLo, hi: newHi, remainingIndices: rest)
+                resultLo = min(resultLo, sub.lo)
+                resultHi = max(resultHi, sub.hi)
+            }
+
+            return (resultLo, resultHi)
         }
 
         private static func tier(for dice: [DieValue]) -> SolutionTier {
