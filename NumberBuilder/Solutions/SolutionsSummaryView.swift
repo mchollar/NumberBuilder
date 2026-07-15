@@ -21,9 +21,13 @@ struct SolutionsSummaryView: View {
             .listRowBackground(Color.clear)
             .listRowInsets(EdgeInsets())
 
-            tierSection(tier: .basic, title: "Basic Solutions", solutions: basic)
-            tierSection(tier: .exponents, title: "Using Exponents", solutions: exponents)
-            tierSection(tier: .rootsAndExponents, title: "Using Exponents & Roots", solutions: rootsAndExponents)
+            if solutions.isEmpty {
+                emptyState
+            } else {
+                tierSection(tier: .basic, title: "Basic Solutions", solutions: basic)
+                tierSection(tier: .exponents, title: "Using Exponents", solutions: exponents)
+                tierSection(tier: .rootsAndExponents, title: "Using Exponents & Roots", solutions: rootsAndExponents)
+            }
         }
         .scrollContentBackground(.hidden)
         .background(Color.nbBackground)
@@ -72,6 +76,26 @@ struct SolutionsSummaryView: View {
         .padding(20)
         .cardSurface()
         .padding(.vertical, 4)
+    }
+
+    private var emptyState: some View {
+        Section {
+            VStack(spacing: 12) {
+                Image(systemName: "exclamationmark.magnifyingglass")
+                    .font(.system(size: 36))
+                    .foregroundStyle(.secondary)
+                Text("No Solutions Found")
+                    .font(.nbNumber(20))
+                Text("There's no way to reach \(target) with \(diceFaces.map(String.init).joined(separator: ", ")).")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 28)
+            .padding(.horizontal, 20)
+        }
+        .listRowBackground(Color.nbCardSurface)
     }
 
     @ViewBuilder
@@ -127,5 +151,11 @@ struct SolutionsSummaryView: View {
 
     return NavigationStack {
         SolutionsSummaryView(solutions: sample, diceFaces: [5, 3, 6], target: 11)
+    }
+}
+
+#Preview("Results — No Solutions") {
+    NavigationStack {
+        SolutionsSummaryView(solutions: [], diceFaces: [1, 1, 1], target: 500)
     }
 }
