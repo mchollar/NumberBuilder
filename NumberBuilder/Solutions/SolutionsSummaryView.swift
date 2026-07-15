@@ -105,7 +105,7 @@ struct SolutionsSummaryView: View {
         • Using Exponents solutions also allow whole-number exponents.
         • Using Exponents & Roots solutions also allow fractional exponents (roots).
 
-        A number with an exponent or root shows its calculated value in square brackets [].
+        A number with an exponent or root shows a smaller line underneath with its fully calculated value.
         """
     }
 }

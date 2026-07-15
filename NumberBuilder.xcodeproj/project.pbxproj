@@ -18,6 +18,7 @@
 		6FD6C5D63A0EA8B6DF4A98C8 /* SolutionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97AF6308B444370840CA4E46 /* SolutionListView.swift */; };
 		744AF7B8D6E42795056415A3 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D7A94C019CAE2E93FD567F /* AboutView.swift */; };
 		2B12B0471252C67B391B05DF /* MailComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88480047CC6CDFBCC361413 /* MailComposeView.swift */; };
+		C058671309A4796B25C72C03 /* HowToPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */; };
 		825C951102D0D9DF47107862 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3501BDF235278053A3A86 /* ViewModifiers.swift */; };
 /* End PBXBuildFile section */
 
@@ -34,6 +35,7 @@
 		97AF6308B444370840CA4E46 /* SolutionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionListView.swift; sourceTree = "<group>"; };
 		56D7A94C019CAE2E93FD567F /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		A88480047CC6CDFBCC361413 /* MailComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposeView.swift; sourceTree = "<group>"; };
+		6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToPlayView.swift; sourceTree = "<group>"; };
 		0AF3501BDF235278053A3A86 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -112,6 +114,7 @@
 			children = (
 				56D7A94C019CAE2E93FD567F /* AboutView.swift */,
 				A88480047CC6CDFBCC361413 /* MailComposeView.swift */,
+				6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -210,6 +213,7 @@
 				6FD6C5D63A0EA8B6DF4A98C8 /* SolutionListView.swift in Sources */,
 				744AF7B8D6E42795056415A3 /* AboutView.swift in Sources */,
 				2B12B0471252C67B391B05DF /* MailComposeView.swift in Sources */,
+				C058671309A4796B25C72C03 /* HowToPlayView.swift in Sources */,
 				825C951102D0D9DF47107862 /* ViewModifiers.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -12,6 +12,8 @@ struct AboutView: View {
         Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
     }
 
+    private static let appStoreURL = URL(string: "https://itunes.apple.com/app/id1489526164")!
+
     var body: some View {
         List {
             Section {
@@ -34,6 +36,16 @@ struct AboutView: View {
             .listRowBackground(Color.clear)
 
             Section {
+                NavigationLink {
+                    HowToPlayView()
+                } label: {
+                    Label("How to Play", systemImage: "questionmark.circle.fill")
+                        .foregroundStyle(Color.nbAccent)
+                }
+            }
+            .listRowBackground(Color.nbCardSurface)
+
+            Section {
                 Button {
                     openReviewPage()
                 } label: {
@@ -50,6 +62,12 @@ struct AboutView: View {
                     Label("Send Feedback", systemImage: "envelope.fill")
                         .foregroundStyle(Color.nbAccent)
                 }
+                ShareLink(item: Self.appStoreURL) {
+                    Label("Share Number Builder", systemImage: "square.and.arrow.up.fill")
+                        .foregroundStyle(Color.nbAccent)
+                }
+            } footer: {
+                Text("No data is collected. No ads, ever.")
             }
             .listRowBackground(Color.nbCardSurface)
         }

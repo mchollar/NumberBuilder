@@ -32,6 +32,14 @@ extension SolutionTier {
         case .rootsAndExponents: return "Exponents & Roots"
         }
     }
+
+    var explanation: String {
+        switch self {
+        case .basic: return "Uses only +, −, ×, and ÷."
+        case .exponents: return "Also allows whole-number exponents, like 5²."
+        case .rootsAndExponents: return "Also allows roots — fractional exponents, like 5 to the ½."
+        }
+    }
 }
 
 // MARK: - Typography
