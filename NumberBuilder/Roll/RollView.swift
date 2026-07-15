@@ -91,23 +91,14 @@ struct RollView: View {
     private var diceRow: some View {
         HStack(spacing: 12) {
             ForEach(0..<3, id: \.self) { index in
-                Picker("Die \(index + 1)", selection: Binding(
+                DiceWheelPicker(selection: Binding(
                     get: { viewModel.diceFaces[index] },
                     set: { newValue in
                         viewModel.diceFaces[index] = newValue
                         viewModel.resetForNewRoll()
                     }
-                )) {
-                    ForEach(1...6, id: \.self) { face in
-                        Image("Dice\(face)")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 28, height: 28)
-                            .tag(face)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(width: 90)
+                ))
+                .id(index)
                 .clipped()
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -124,7 +115,7 @@ struct RollView: View {
                     Image("Dice\(viewModel.diceFaces[index])")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 36, height: 36)
+                        .frame(width: 52, height: 52)
                         .padding(10)
                         .background(Circle().fill(Color.nbCardSurface))
                         .allowsHitTesting(false)

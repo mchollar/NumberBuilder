@@ -12,6 +12,7 @@
 		59202EF6471D72022EEB0138 /* NumberBuilderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39699B6BD6DB993440EA057F /* NumberBuilderApp.swift */; };
 		23CBE153CCA3D14CAD08C2AB /* RollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B346A7032379315EF28FC40 /* RollView.swift */; };
 		6D477EFD5397340BD8D54B5D /* RollViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7289C40D7957E63653F07F80 /* RollViewModel.swift */; };
+		28AF5EE9F2896C266D1A211A /* DiceWheelPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */; };
 		3519A4D3F8B524BCC033AC17 /* SolutionExpressionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACD37971BD1FDC60825FA4C /* SolutionExpressionView.swift */; };
 		233ACB34FD379520A3BE5E89 /* SolutionsSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4D7FCB4DFB84D4D21745E1 /* SolutionsSummaryView.swift */; };
 		6FD6C5D63A0EA8B6DF4A98C8 /* SolutionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97AF6308B444370840CA4E46 /* SolutionListView.swift */; };
@@ -27,6 +28,7 @@
 		39699B6BD6DB993440EA057F /* NumberBuilderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberBuilderApp.swift; sourceTree = "<group>"; };
 		9B346A7032379315EF28FC40 /* RollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollView.swift; sourceTree = "<group>"; };
 		7289C40D7957E63653F07F80 /* RollViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollViewModel.swift; sourceTree = "<group>"; };
+		802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceWheelPicker.swift; sourceTree = "<group>"; };
 		4ACD37971BD1FDC60825FA4C /* SolutionExpressionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionExpressionView.swift; sourceTree = "<group>"; };
 		AF4D7FCB4DFB84D4D21745E1 /* SolutionsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionsSummaryView.swift; sourceTree = "<group>"; };
 		97AF6308B444370840CA4E46 /* SolutionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionListView.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 			children = (
 				9B346A7032379315EF28FC40 /* RollView.swift */,
 				7289C40D7957E63653F07F80 /* RollViewModel.swift */,
+				802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */,
 			);
 			path = Roll;
 			sourceTree = "<group>";
@@ -201,6 +204,7 @@
 				59202EF6471D72022EEB0138 /* NumberBuilderApp.swift in Sources */,
 				23CBE153CCA3D14CAD08C2AB /* RollView.swift in Sources */,
 				6D477EFD5397340BD8D54B5D /* RollViewModel.swift in Sources */,
+				28AF5EE9F2896C266D1A211A /* DiceWheelPicker.swift in Sources */,
 				3519A4D3F8B524BCC033AC17 /* SolutionExpressionView.swift in Sources */,
 				233ACB34FD379520A3BE5E89 /* SolutionsSummaryView.swift in Sources */,
 				6FD6C5D63A0EA8B6DF4A98C8 /* SolutionListView.swift in Sources */,
