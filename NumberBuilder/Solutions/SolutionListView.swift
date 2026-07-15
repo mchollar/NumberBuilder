@@ -12,6 +12,7 @@ struct SolutionListView: View {
                 .listRowBackground(Color.nbCardSurface)
         }
         .scrollContentBackground(.hidden)
+        .readableContentWidth()
         .background(Color.nbBackground)
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)

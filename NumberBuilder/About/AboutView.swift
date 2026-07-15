@@ -72,6 +72,7 @@ struct AboutView: View {
             .listRowBackground(Color.nbCardSurface)
         }
         .scrollContentBackground(.hidden)
+        .readableContentWidth()
         .background(Color.nbBackground)
         .navigationTitle("About")
         .navigationBarTitleDisplayMode(.inline)

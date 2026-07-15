@@ -30,6 +30,7 @@ struct SolutionsSummaryView: View {
             }
         }
         .scrollContentBackground(.hidden)
+        .readableContentWidth()
         .background(Color.nbBackground)
         .navigationTitle("Results")
         .navigationBarTitleDisplayMode(.inline)

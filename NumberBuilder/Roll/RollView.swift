@@ -37,6 +37,7 @@ struct RollView: View {
                 progressSection
             }
             .padding(20)
+            .readableContentWidth()
         }
         .background(Color.nbBackground.ignoresSafeArea())
         .scrollDismissesKeyboard(.interactively)

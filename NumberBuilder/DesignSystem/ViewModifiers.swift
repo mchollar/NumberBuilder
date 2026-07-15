@@ -129,3 +129,26 @@ extension ButtonStyle where Self == NBTonalButtonStyle {
     static var nbTonal: NBTonalButtonStyle { NBTonalButtonStyle() }
     static func nbTonal(tint: Color = .nbAccent) -> NBTonalButtonStyle { NBTonalButtonStyle(tint: tint) }
 }
+
+// MARK: - Adaptive width
+
+/// Constrains and centers content on wide screens (iPad, or an iPhone in landscape) so cards and
+/// lists don't stretch edge-to-edge on a big display; a no-op on compact-width screens.
+private struct ReadableContentWidthModifier: ViewModifier {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    var maxWidth: CGFloat
+
+    func body(content: Content) -> some View {
+        HStack {
+            Spacer(minLength: 0)
+            content.frame(maxWidth: horizontalSizeClass == .regular ? maxWidth : .infinity)
+            Spacer(minLength: 0)
+        }
+    }
+}
+
+extension View {
+    func readableContentWidth(_ maxWidth: CGFloat = 600) -> some View {
+        modifier(ReadableContentWidthModifier(maxWidth: maxWidth))
+    }
+}

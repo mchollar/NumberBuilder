@@ -37,6 +37,7 @@ struct HowToPlayView: View {
             .listRowBackground(Color.nbCardSurface)
         }
         .scrollContentBackground(.hidden)
+        .readableContentWidth()
         .background(Color.nbBackground)
         .navigationTitle("How to Play")
         .navigationBarTitleDisplayMode(.inline)
