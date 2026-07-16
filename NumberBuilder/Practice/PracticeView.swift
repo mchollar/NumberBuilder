@@ -1,8 +1,20 @@
 import SwiftUI
 import NumberBuilderKit
 
+/// Shared `UserDefaults` key for the Practice intro flag -- `DebugMenuView` also reads/writes
+/// this, so it lives here as a named constant rather than as a string literal duplicated in both
+/// files (a typo in a duplicated key wouldn't error, just silently point at a second default).
+enum DebugResettableFlag {
+    static let hasSeenPracticeIntroKey = "hasSeenPracticeIntro"
+}
+
 struct PracticeView: View {
     @State private var viewModel: PracticeViewModel
+    /// Flips true the first time this sheet is shown, so a newcomer sees the explainer exactly
+    /// once across every future launch -- persisted rather than session-only, since most players
+    /// won't revisit Practice again within the same run of the app.
+    @AppStorage(DebugResettableFlag.hasSeenPracticeIntroKey) private var hasSeenPracticeIntro = false
+    @State private var showingIntro = false
 
     /// Defaults to a fresh puzzle for real use; the override lets previews drive the view model
     /// into a specific state (e.g. mid-placement, to inspect `variantPicker`) without simulating
@@ -30,6 +42,16 @@ struct PracticeView: View {
         }
         .background(Color.nbBackground.ignoresSafeArea())
         .navigationTitle("Practice")
+        .onAppear {
+            guard !hasSeenPracticeIntro else { return }
+            hasSeenPracticeIntro = true
+            showingIntro = true
+        }
+        .sheet(isPresented: $showingIntro) {
+            NavigationStack {
+                HowToPlayView(initialMode: .practice, showsDoneButton: true)
+            }
+        }
     }
 
     private var tierPicker: some View {

@@ -70,6 +70,18 @@ struct AboutView: View {
                 Text("No data is collected. No ads, ever.")
             }
             .listRowBackground(Color.nbCardSurface)
+
+            #if DEBUG
+            Section {
+                NavigationLink {
+                    DebugMenuView()
+                } label: {
+                    Label("Debug Menu", systemImage: "ladybug.fill")
+                        .foregroundStyle(Color.nbAccent)
+                }
+            }
+            .listRowBackground(Color.nbCardSurface)
+            #endif
         }
         .scrollContentBackground(.hidden)
         .readableContentWidth()
