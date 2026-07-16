@@ -60,7 +60,7 @@ struct SolutionExpressionView: View {
     private func primaryDieView(_ die: DieValue) -> some View {
         HStack(alignment: .top, spacing: 1) {
             Text("\(die.base)")
-            if die.exponent != 1 {
+            if die.exponent != 1 || die.root != 1 {
                 Text(die.root == 1 ? "\(die.exponent)" : "\(die.exponent)/\(die.root)")
                     .font(.system(.caption2, design: .rounded, weight: .semibold))
                     .baselineOffset(10)

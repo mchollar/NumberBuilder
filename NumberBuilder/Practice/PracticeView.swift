@@ -2,7 +2,17 @@ import SwiftUI
 import NumberBuilderKit
 
 struct PracticeView: View {
-    @State private var viewModel = PracticeViewModel()
+    @State private var viewModel: PracticeViewModel
+
+    /// Defaults to a fresh puzzle for real use; the override lets previews drive the view model
+    /// into a specific state (e.g. mid-placement, to inspect `variantPicker`) without simulating
+    /// taps. Defaults to `nil` rather than a default-argument `PracticeViewModel()` -- default
+    /// argument expressions evaluate outside the initializer's actor context, which can't satisfy
+    /// `PracticeViewModel`'s `@MainActor` isolation.
+    @MainActor
+    init(viewModel: PracticeViewModel? = nil) {
+        _viewModel = State(initialValue: viewModel ?? PracticeViewModel())
+    }
 
     var body: some View {
         ScrollView {
@@ -10,7 +20,10 @@ struct PracticeView: View {
                 tierPicker
                 puzzleCard
                 workspaceCard
+                variantPicker
+                    .animation(.easeInOut(duration: 0.25), value: viewModel.activeVariantOptions)
                 operatorPicker
+                    .animation(.easeInOut(duration: 0.25), value: viewModel.isAwaitingOperation)
                 feedbackBanner
                 controls
             }
@@ -80,7 +93,7 @@ struct PracticeView: View {
     }
 
     private var workspaceCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 8) {
             sectionLabel("Your Answer")
             HStack(spacing: 6) {
                 ForEach(Array(workspaceTokens.enumerated()), id: \.offset) { _, token in
@@ -91,6 +104,17 @@ struct PracticeView: View {
             .lineLimit(1)
             .minimumScaleFactor(0.5)
             .frame(maxWidth: .infinity, alignment: .center)
+
+            // A separate line, not another token in the row above: a big target (e.g. 5 digits)
+            // would otherwise have to fight the dice/paren glyphs for the same shrunk-to-fit
+            // width and lose, truncating to "12,5...". On its own line it always gets the full
+            // card width to scale within.
+            Text("= \(viewModel.puzzle.target)")
+                .font(.nbNumber(28, weight: .bold))
+                .foregroundStyle(viewModel.tier.accentColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -114,6 +138,7 @@ struct PracticeView: View {
             }
             .padding(20)
             .cardSurface()
+            .transition(.opacity.combined(with: .move(edge: .top)))
         }
     }
 
@@ -191,7 +216,6 @@ struct PracticeView: View {
         case opSlot(Int)
         case openParen
         case closeParen
-        case equals
     }
 
     private var workspaceTokens: [WorkspaceToken] {
@@ -210,7 +234,6 @@ struct PracticeView: View {
                 tokens.append(.closeParen)
             }
         }
-        tokens.append(.equals)
         return tokens
     }
 
@@ -244,17 +267,13 @@ struct PracticeView: View {
             Text("(").foregroundStyle(.secondary)
         case .closeParen:
             Text(")").foregroundStyle(.secondary)
-        case .equals:
-            Text("= \(viewModel.puzzle.target)")
-                .fontWeight(.bold)
-                .foregroundStyle(viewModel.tier.accentColor)
         }
     }
 
     private func dieSlotView(_ die: DieValue) -> some View {
         HStack(alignment: .top, spacing: 1) {
             Text("\(die.base)")
-            if die.exponent != 1 {
+            if die.exponent != 1 || die.root != 1 {
                 Text(die.root == 1 ? "\(die.exponent)" : "\(die.exponent)/\(die.root)")
                     .font(.system(.caption2, design: .rounded, weight: .semibold))
                     .baselineOffset(10)
@@ -266,6 +285,79 @@ struct PracticeView: View {
     private var blankSlot: some View {
         Image(systemName: "square.dashed")
             .foregroundStyle(.secondary.opacity(0.4))
+    }
+
+    // MARK: - Variant picker
+
+    /// Shown right after a tray die lands, alongside `operatorPicker` -- lets the player
+    /// optionally raise that die to a power/root before moving on. Never shown for `.basic`,
+    /// since a plain die only ever has one legal "variant" (itself).
+    ///
+    /// Straight powers (root == 1) and root-derived values are split by a vertical divider --
+    /// `DieValue.variants` interleaves them (it walks exponents ascending, checking every root at
+    /// each one), so without a visual break the two techniques would blur together in one row.
+    ///
+    /// Horizontally scrollable rather than squeezed to fit the screen -- forcing every chip into
+    /// one fixed-width row (a 3-die puzzle can have 6+ options) made each one a cramped, tall
+    /// oval on iPhone and broke fractions like "3/2" onto three lines for lack of room.
+    @ViewBuilder
+    private var variantPicker: some View {
+        if viewModel.activeVariantOptions.count > 1 {
+            let powers = viewModel.activeVariantOptions.filter { $0.root == 1 }
+            let roots = viewModel.activeVariantOptions.filter { $0.root != 1 }
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 12) {
+                    ForEach(powers, id: \.self) { variant in
+                        variantButton(variant)
+                    }
+                    if !powers.isEmpty, !roots.isEmpty {
+                        Rectangle()
+                            .fill(Color.secondary.opacity(0.25))
+                            .frame(width: 1)
+                            .padding(.vertical, 6)
+                    }
+                    ForEach(roots, id: \.self) { variant in
+                        variantButton(variant)
+                    }
+                }
+                .padding(20)
+            }
+            .cardSurface()
+            .transition(.opacity.combined(with: .move(edge: .top)))
+        }
+    }
+
+    private func variantButton(_ variant: DieValue) -> some View {
+        let isSelected = viewModel.activeDieSlot.flatMap { viewModel.placedDice[$0] } == variant
+        return Button {
+            viewModel.selectVariant(variant)
+        } label: {
+            // `NBTonalButtonStyle`/`NBPrimaryButtonStyle` only add *vertical* padding -- they
+            // lean on `.frame(maxWidth: .infinity)` for horizontal breathing room, which works
+            // in a full-width row but does nothing in an unconstrained scroll view, so a
+            // single-character label like plain "4" would otherwise hug the pill's edges.
+            variantOptionLabel(variant)
+                .padding(.horizontal, 16)
+        }
+        .buttonStyle(
+            isSelected
+                ? AnyButtonStyle(.nbPrimary(tint: viewModel.tier.accentColor))
+                : AnyButtonStyle(.nbTonal(tint: viewModel.tier.accentColor))
+        )
+    }
+
+    /// Notation only, deliberately no computed value -- working out what a power/root equals is
+    /// part of the practice, not something the app should do for the player.
+    private func variantOptionLabel(_ die: DieValue) -> some View {
+        HStack(alignment: .top, spacing: 1) {
+            Text("\(die.base)")
+            if die.exponent != 1 || die.root != 1 {
+                Text(die.root == 1 ? "\(die.exponent)" : "\(die.exponent)/\(die.root)")
+                    .font(.system(.caption, design: .rounded, weight: .semibold))
+                    .baselineOffset(8)
+            }
+        }
+        .font(.nbNumber(20, weight: .bold))
     }
 }
 
@@ -286,5 +378,17 @@ private struct AnyButtonStyle: ButtonStyle {
 #Preview("Practice") {
     NavigationStack {
         PracticeView()
+    }
+}
+
+#Preview("Practice - Variant Picker (Roots)") {
+    // Places the first tray die that has more than one legal variant, entirely in code -- no
+    // simulated taps needed to inspect `variantPicker`'s layout on its own.
+    let viewModel = PracticeViewModel(tier: .rootsAndExponents)
+    if let trayIndex = viewModel.puzzle.dice.indices.first(where: { viewModel.canPlaceTrayDie(at: $0) }) {
+        viewModel.placeTrayDie(at: trayIndex)
+    }
+    return NavigationStack {
+        PracticeView(viewModel: viewModel)
     }
 }
