@@ -10,6 +10,7 @@ struct PracticeView: View {
                 tierPicker
                 puzzleCard
                 workspaceCard
+                operatorPicker
                 feedbackBanner
                 controls
             }
@@ -79,18 +80,41 @@ struct PracticeView: View {
     }
 
     private var workspaceCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             sectionLabel("Your Answer")
-            HStack(spacing: 4) {
+            HStack(spacing: 6) {
                 ForEach(Array(workspaceTokens.enumerated()), id: \.offset) { _, token in
                     workspaceToken(token)
                 }
             }
-            .font(.nbNumber(22, weight: .medium))
+            .font(.nbNumber(34, weight: .bold))
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .frame(maxWidth: .infinity, alignment: .center)
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardSurface()
+    }
+
+    @ViewBuilder
+    private var operatorPicker: some View {
+        if viewModel.isAwaitingOperation {
+            HStack(spacing: 12) {
+                ForEach(MathOperation.allCases, id: \.self) { operation in
+                    Button {
+                        viewModel.placeOperation(operation)
+                    } label: {
+                        Text(operation.symbol)
+                            .font(.nbNumber(22, weight: .bold))
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor))
+                }
+            }
+            .padding(20)
+            .cardSurface()
+        }
     }
 
     @ViewBuilder
