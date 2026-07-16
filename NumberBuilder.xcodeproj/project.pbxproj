@@ -8,35 +8,35 @@
 
 /* Begin PBXBuildFile section */
 		22442BB62166EEA6000CDCBD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 22442BB52166EEA6000CDCBD /* Assets.xcassets */; };
-		8105510B87087443EAB39C05 /* NumberBuilderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 210D164A8C076111ED33485A /* NumberBuilderKit */; };
-		59202EF6471D72022EEB0138 /* NumberBuilderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39699B6BD6DB993440EA057F /* NumberBuilderApp.swift */; };
-		23CBE153CCA3D14CAD08C2AB /* RollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B346A7032379315EF28FC40 /* RollView.swift */; };
-		6D477EFD5397340BD8D54B5D /* RollViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7289C40D7957E63653F07F80 /* RollViewModel.swift */; };
-		28AF5EE9F2896C266D1A211A /* DiceWheelPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */; };
-		3519A4D3F8B524BCC033AC17 /* SolutionExpressionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACD37971BD1FDC60825FA4C /* SolutionExpressionView.swift */; };
 		233ACB34FD379520A3BE5E89 /* SolutionsSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF4D7FCB4DFB84D4D21745E1 /* SolutionsSummaryView.swift */; };
+		23CBE153CCA3D14CAD08C2AB /* SolveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9B346A7032379315EF28FC40 /* SolveView.swift */; };
+		28AF5EE9F2896C266D1A211A /* DiceWheelPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */; };
+		2B12B0471252C67B391B05DF /* MailComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88480047CC6CDFBCC361413 /* MailComposeView.swift */; };
+		3519A4D3F8B524BCC033AC17 /* SolutionExpressionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4ACD37971BD1FDC60825FA4C /* SolutionExpressionView.swift */; };
+		59202EF6471D72022EEB0138 /* NumberBuilderApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39699B6BD6DB993440EA057F /* NumberBuilderApp.swift */; };
+		6D477EFD5397340BD8D54B5D /* SolveViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7289C40D7957E63653F07F80 /* SolveViewModel.swift */; };
 		6FD6C5D63A0EA8B6DF4A98C8 /* SolutionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97AF6308B444370840CA4E46 /* SolutionListView.swift */; };
 		744AF7B8D6E42795056415A3 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D7A94C019CAE2E93FD567F /* AboutView.swift */; };
-		2B12B0471252C67B391B05DF /* MailComposeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A88480047CC6CDFBCC361413 /* MailComposeView.swift */; };
-		C058671309A4796B25C72C03 /* HowToPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */; };
+		8105510B87087443EAB39C05 /* NumberBuilderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 210D164A8C076111ED33485A /* NumberBuilderKit */; };
 		825C951102D0D9DF47107862 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3501BDF235278053A3A86 /* ViewModifiers.swift */; };
+		C058671309A4796B25C72C03 /* HowToPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0AF3501BDF235278053A3A86 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
 		22442BAB2166EEA4000CDCBD /* NumberBuilder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NumberBuilder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22442BB52166EEA6000CDCBD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22442BBA2166EEA6000CDCBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		39699B6BD6DB993440EA057F /* NumberBuilderApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NumberBuilderApp.swift; sourceTree = "<group>"; };
-		9B346A7032379315EF28FC40 /* RollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollView.swift; sourceTree = "<group>"; };
-		7289C40D7957E63653F07F80 /* RollViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RollViewModel.swift; sourceTree = "<group>"; };
-		802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceWheelPicker.swift; sourceTree = "<group>"; };
 		4ACD37971BD1FDC60825FA4C /* SolutionExpressionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionExpressionView.swift; sourceTree = "<group>"; };
-		AF4D7FCB4DFB84D4D21745E1 /* SolutionsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionsSummaryView.swift; sourceTree = "<group>"; };
-		97AF6308B444370840CA4E46 /* SolutionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionListView.swift; sourceTree = "<group>"; };
 		56D7A94C019CAE2E93FD567F /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
-		A88480047CC6CDFBCC361413 /* MailComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposeView.swift; sourceTree = "<group>"; };
 		6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToPlayView.swift; sourceTree = "<group>"; };
-		0AF3501BDF235278053A3A86 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
+		7289C40D7957E63653F07F80 /* SolveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolveViewModel.swift; sourceTree = "<group>"; };
+		802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceWheelPicker.swift; sourceTree = "<group>"; };
+		97AF6308B444370840CA4E46 /* SolutionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionListView.swift; sourceTree = "<group>"; };
+		9B346A7032379315EF28FC40 /* SolveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolveView.swift; sourceTree = "<group>"; };
+		A88480047CC6CDFBCC361413 /* MailComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposeView.swift; sourceTree = "<group>"; };
+		AF4D7FCB4DFB84D4D21745E1 /* SolutionsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionsSummaryView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,7 +71,7 @@
 			isa = PBXGroup;
 			children = (
 				E175977336BD2D47F329BAF9 /* App */,
-				A2C66A5CF0005A9D716F5C53 /* Roll */,
+				A2C66A5CF0005A9D716F5C53 /* Solve */,
 				254CC027BAEA6A04AE1EDA3F /* Solutions */,
 				946579D276BE175D1041399A /* About */,
 				5A9BABAA54EC3091C6CE1124 /* DesignSystem */,
@@ -79,24 +79,6 @@
 				22442BBA2166EEA6000CDCBD /* Info.plist */,
 			);
 			path = NumberBuilder;
-			sourceTree = "<group>";
-		};
-		E175977336BD2D47F329BAF9 /* App */ = {
-			isa = PBXGroup;
-			children = (
-				39699B6BD6DB993440EA057F /* NumberBuilderApp.swift */,
-			);
-			path = App;
-			sourceTree = "<group>";
-		};
-		A2C66A5CF0005A9D716F5C53 /* Roll */ = {
-			isa = PBXGroup;
-			children = (
-				9B346A7032379315EF28FC40 /* RollView.swift */,
-				7289C40D7957E63653F07F80 /* RollViewModel.swift */,
-				802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */,
-			);
-			path = Roll;
 			sourceTree = "<group>";
 		};
 		254CC027BAEA6A04AE1EDA3F /* Solutions */ = {
@@ -109,6 +91,14 @@
 			path = Solutions;
 			sourceTree = "<group>";
 		};
+		5A9BABAA54EC3091C6CE1124 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				0AF3501BDF235278053A3A86 /* ViewModifiers.swift */,
+			);
+			path = DesignSystem;
+			sourceTree = "<group>";
+		};
 		946579D276BE175D1041399A /* About */ = {
 			isa = PBXGroup;
 			children = (
@@ -119,12 +109,22 @@
 			path = About;
 			sourceTree = "<group>";
 		};
-		5A9BABAA54EC3091C6CE1124 /* DesignSystem */ = {
+		A2C66A5CF0005A9D716F5C53 /* Solve */ = {
 			isa = PBXGroup;
 			children = (
-				0AF3501BDF235278053A3A86 /* ViewModifiers.swift */,
+				9B346A7032379315EF28FC40 /* SolveView.swift */,
+				7289C40D7957E63653F07F80 /* SolveViewModel.swift */,
+				802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */,
 			);
-			path = DesignSystem;
+			path = Solve;
+			sourceTree = "<group>";
+		};
+		E175977336BD2D47F329BAF9 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				39699B6BD6DB993440EA057F /* NumberBuilderApp.swift */,
+			);
+			path = App;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -205,8 +205,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				59202EF6471D72022EEB0138 /* NumberBuilderApp.swift in Sources */,
-				23CBE153CCA3D14CAD08C2AB /* RollView.swift in Sources */,
-				6D477EFD5397340BD8D54B5D /* RollViewModel.swift in Sources */,
+				23CBE153CCA3D14CAD08C2AB /* SolveView.swift in Sources */,
+				6D477EFD5397340BD8D54B5D /* SolveViewModel.swift in Sources */,
 				28AF5EE9F2896C266D1A211A /* DiceWheelPicker.swift in Sources */,
 				3519A4D3F8B524BCC033AC17 /* SolutionExpressionView.swift in Sources */,
 				233ACB34FD379520A3BE5E89 /* SolutionsSummaryView.swift in Sources */,
@@ -352,13 +352,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				INFOPLIST_FILE = NumberBuilder/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberBuilder;
 				PRODUCT_NAME = NumberBuilder;
 				SWIFT_VERSION = 5.0;
@@ -371,13 +371,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				INFOPLIST_FILE = NumberBuilder/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = Widgetilities.NumberBuilder;
 				PRODUCT_NAME = NumberBuilder;
 				SWIFT_VERSION = 5.0;

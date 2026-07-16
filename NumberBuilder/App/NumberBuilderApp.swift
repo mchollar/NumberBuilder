@@ -5,7 +5,7 @@ struct NumberBuilderApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                RollView()
+                SolveView()
             }
         }
     }

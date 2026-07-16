@@ -22,8 +22,8 @@ private enum DiePopPhase {
     }
 }
 
-struct RollView: View {
-    @State private var viewModel = RollViewModel()
+struct SolveView: View {
+    @State private var viewModel = SolveViewModel()
     @FocusState private var targetFieldFocused: Bool
     /// Bumped only by the Roll button — dice bouncing should never fire from manually scrolling
     /// a wheel to pick a value by hand.
@@ -194,8 +194,8 @@ struct RollView: View {
     }
 }
 
-#Preview("Roll") {
+#Preview("Solve") {
     NavigationStack {
-        RollView()
+        SolveView()
     }
 }

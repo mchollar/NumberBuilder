@@ -4,7 +4,7 @@ import NumberBuilderKit
 
 @Observable
 @MainActor
-final class RollViewModel {
+final class SolveViewModel {
     private let engine = SolverEngine()
     private var solveTask: Task<Void, Never>?
 
