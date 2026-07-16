@@ -18,6 +18,7 @@
 		6FD6C5D63A0EA8B6DF4A98C8 /* SolutionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97AF6308B444370840CA4E46 /* SolutionListView.swift */; };
 		744AF7B8D6E42795056415A3 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D7A94C019CAE2E93FD567F /* AboutView.swift */; };
 		8105510B87087443EAB39C05 /* NumberBuilderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 210D164A8C076111ED33485A /* NumberBuilderKit */; };
+		BB5EE82F6468FDBB409347CD /* PracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617CEE4E62871A522BE9FE43 /* PracticeView.swift */; };
 		825C951102D0D9DF47107862 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3501BDF235278053A3A86 /* ViewModifiers.swift */; };
 		C058671309A4796B25C72C03 /* HowToPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */; };
 /* End PBXBuildFile section */
@@ -37,6 +38,7 @@
 		9B346A7032379315EF28FC40 /* SolveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolveView.swift; sourceTree = "<group>"; };
 		A88480047CC6CDFBCC361413 /* MailComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposeView.swift; sourceTree = "<group>"; };
 		AF4D7FCB4DFB84D4D21745E1 /* SolutionsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionsSummaryView.swift; sourceTree = "<group>"; };
+		617CEE4E62871A522BE9FE43 /* PracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +74,7 @@
 			children = (
 				E175977336BD2D47F329BAF9 /* App */,
 				A2C66A5CF0005A9D716F5C53 /* Solve */,
+				6DA7BFCDCB9A827484823115 /* Practice */,
 				254CC027BAEA6A04AE1EDA3F /* Solutions */,
 				946579D276BE175D1041399A /* About */,
 				5A9BABAA54EC3091C6CE1124 /* DesignSystem */,
@@ -117,6 +120,14 @@
 				802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */,
 			);
 			path = Solve;
+			sourceTree = "<group>";
+		};
+		6DA7BFCDCB9A827484823115 /* Practice */ = {
+			isa = PBXGroup;
+			children = (
+				617CEE4E62871A522BE9FE43 /* PracticeView.swift */,
+			);
+			path = Practice;
 			sourceTree = "<group>";
 		};
 		E175977336BD2D47F329BAF9 /* App */ = {
@@ -208,6 +219,7 @@
 				23CBE153CCA3D14CAD08C2AB /* SolveView.swift in Sources */,
 				6D477EFD5397340BD8D54B5D /* SolveViewModel.swift in Sources */,
 				28AF5EE9F2896C266D1A211A /* DiceWheelPicker.swift in Sources */,
+				BB5EE82F6468FDBB409347CD /* PracticeView.swift in Sources */,
 				3519A4D3F8B524BCC033AC17 /* SolutionExpressionView.swift in Sources */,
 				233ACB34FD379520A3BE5E89 /* SolutionsSummaryView.swift in Sources */,
 				6FD6C5D63A0EA8B6DF4A98C8 /* SolutionListView.swift in Sources */,
