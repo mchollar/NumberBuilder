@@ -21,9 +21,7 @@ struct PracticeView: View {
                 puzzleCard
                 workspaceCard
                 variantPicker
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.activeVariantOptions)
                 operatorPicker
-                    .animation(.easeInOut(duration: 0.25), value: viewModel.isAwaitingOperation)
                 feedbackBanner
                 controls
             }
@@ -79,7 +77,9 @@ struct PracticeView: View {
                 let isAvailable = viewModel.canPlaceTrayDie(at: index)
                 let isUsed = viewModel.usedTrayIndices.contains(index)
                 Button {
-                    viewModel.placeTrayDie(at: index)
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        viewModel.placeTrayDie(at: index)
+                    }
                 } label: {
                     Image("Dice\(face)")
                         .resizable()
@@ -127,13 +127,15 @@ struct PracticeView: View {
             HStack(spacing: 12) {
                 ForEach(MathOperation.allCases, id: \.self) { operation in
                     Button {
-                        viewModel.placeOperation(operation)
+                        withAnimation(.easeInOut(duration: 0.25)) {
+                            viewModel.placeOperation(operation)
+                        }
                     } label: {
                         Text(operation.symbol)
-                            .font(.nbNumber(22, weight: .bold))
+                            .font(.nbNumber(35, weight: .bold))
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor))
+                    .buttonStyle(.nbTonal(tint: operation.accentColor))
                 }
             }
             .padding(20)
@@ -243,7 +245,9 @@ struct PracticeView: View {
         case .dieSlot(let index):
             if let die = viewModel.placedDice[index] {
                 Button {
-                    viewModel.removeDieSlot(index)
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        viewModel.removeDieSlot(index)
+                    }
                 } label: {
                     dieSlotView(die)
                 }
@@ -254,10 +258,12 @@ struct PracticeView: View {
         case .opSlot(let index):
             if let operation = viewModel.placedOperations[index] {
                 Button {
-                    viewModel.removeOperationSlot(index)
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        viewModel.removeOperationSlot(index)
+                    }
                 } label: {
                     Text(operation.symbol)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(operation.accentColor)
                 }
                 .buttonStyle(.plain)
             } else {
@@ -330,13 +336,19 @@ struct PracticeView: View {
     private func variantButton(_ variant: DieValue) -> some View {
         let isSelected = viewModel.activeDieSlot.flatMap { viewModel.placedDice[$0] } == variant
         return Button {
-            viewModel.selectVariant(variant)
+            withAnimation(.easeInOut(duration: 0.25)) {
+                viewModel.selectVariant(variant)
+            }
         } label: {
             // `NBTonalButtonStyle`/`NBPrimaryButtonStyle` only add *vertical* padding -- they
             // lean on `.frame(maxWidth: .infinity)` for horizontal breathing room, which works
             // in a full-width row but does nothing in an unconstrained scroll view, so a
-            // single-character label like plain "4" would otherwise hug the pill's edges.
+            // single-character label like plain "4" would otherwise hug the pill's edges. The
+            // `minWidth` on top makes every chip in a row at least as wide as the plain-value
+            // one (which has no superscript to pad it out), instead of the plain case reading
+            // narrower than its power/root siblings.
             variantOptionLabel(variant)
+                .frame(minWidth: 30)
                 .padding(.horizontal, 16)
         }
         .buttonStyle(

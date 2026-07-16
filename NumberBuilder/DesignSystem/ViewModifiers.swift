@@ -16,6 +16,20 @@ extension Color {
     static let nbCardSurface = Color("CardSurface")
 }
 
+extension MathOperation {
+    /// Consistent per-operator color, shared by every screen that renders an operator symbol
+    /// (Solve results, Practice's operator picker and placed workspace tokens) — distinct from
+    /// the tier accent colors so the two color systems don't blur together.
+    var accentColor: Color {
+        switch self {
+        case .add: return .green
+        case .subtract: return .orange
+        case .multiply: return .blue
+        case .divide: return .pink
+        }
+    }
+}
+
 extension SolutionTier {
     var accentColor: Color {
         switch self {

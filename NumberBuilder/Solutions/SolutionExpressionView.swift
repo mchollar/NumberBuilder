@@ -43,7 +43,7 @@ struct SolutionExpressionView: View {
             primaryDieView(die)
         case .op(let operation):
             Text(operation.symbol)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(operation.accentColor)
         case .openParen:
             Text("(")
                 .foregroundStyle(.secondary)
