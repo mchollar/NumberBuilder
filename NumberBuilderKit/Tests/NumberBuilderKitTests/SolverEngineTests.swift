@@ -6,6 +6,10 @@ final class SolverEngineTests: XCTestCase {
         // A strong general regression guard: independently re-evaluate every returned solution's
         // own dice/operations and confirm it actually reaches the target -- this is exactly the
         // kind of check that would have caught the shipped app's division bug (commit a666297).
+        // Uses the shared `evaluate` free function rather than SolverEngine's own internal
+        // accumulator loop, so this stays a genuinely independent check while also covering
+        // `evaluate` itself (SolverEngine.Search keeps its own incremental loop for pruning,
+        // it doesn't call this function).
         let configuration = SolverConfiguration(
             dice: [1, 2, 3, 4],
             target: 24,
@@ -16,18 +20,11 @@ final class SolverEngineTests: XCTestCase {
         XCTAssertFalse(solutions.isEmpty)
 
         for solution in solutions {
-            guard var accumulator = solution.dice.first?.value else {
-                XCTFail("Solution has no dice")
+            guard let recomputed = evaluate(dice: solution.dice, operations: solution.operations) else {
+                XCTFail("Solution claims an operation that isn't actually valid")
                 continue
             }
-            for (operation, die) in zip(solution.operations, solution.dice.dropFirst()) {
-                guard let next = operation.apply(accumulator, die.value) else {
-                    XCTFail("Solution claims an operation that isn't actually valid")
-                    return
-                }
-                accumulator = next
-            }
-            XCTAssertEqual(accumulator, solution.result)
+            XCTAssertEqual(recomputed, solution.result)
             XCTAssertEqual(solution.result, configuration.target)
         }
     }

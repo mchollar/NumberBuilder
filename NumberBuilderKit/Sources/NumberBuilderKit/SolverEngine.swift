@@ -92,7 +92,7 @@ public actor SolverEngine {
                         result: result,
                         dice: chosenDice,
                         operations: chosenOperations,
-                        tier: Self.tier(for: chosenDice)
+                        tier: SolutionTier.classify(dice: chosenDice)
                     )
                     // Two dice showing the same face (e.g. a roll of 5, 5, 6) are interchangeable,
                     // so trying "die A's 5 then die B's 5" and "die B's 5 then die A's 5" produces
@@ -197,15 +197,6 @@ public actor SolverEngine {
             }
 
             return (resultLo, resultHi)
-        }
-
-        private static func tier(for dice: [DieValue]) -> SolutionTier {
-            var usesExponent = false
-            for die in dice {
-                if die.root != 1 { return .rootsAndExponents }
-                if die.exponent != 1 { usesExponent = true }
-            }
-            return usesExponent ? .exponents : .basic
         }
     }
 }

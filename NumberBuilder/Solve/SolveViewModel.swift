@@ -22,13 +22,8 @@ final class SolveViewModel {
         return !isSolving
     }
 
-    /// Matches the shipped app's house rule: re-rolls until at most one die shows a 1.
     func rollDice() {
-        var faces: [Int]
-        repeat {
-            faces = (0..<3).map { _ in Int.random(in: 1...6) }
-        } while faces.filter({ $0 == 1 }).count > 1
-        diceFaces = faces
+        diceFaces = DiceRoller.roll()
         solutions = nil
         hasSolved = false
     }
