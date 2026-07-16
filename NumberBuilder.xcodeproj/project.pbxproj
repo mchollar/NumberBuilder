@@ -19,6 +19,7 @@
 		744AF7B8D6E42795056415A3 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D7A94C019CAE2E93FD567F /* AboutView.swift */; };
 		8105510B87087443EAB39C05 /* NumberBuilderKit in Frameworks */ = {isa = PBXBuildFile; productRef = 210D164A8C076111ED33485A /* NumberBuilderKit */; };
 		BB5EE82F6468FDBB409347CD /* PracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617CEE4E62871A522BE9FE43 /* PracticeView.swift */; };
+		0A507E60583C3EB450A0CB52 /* PracticeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FA70833D82910714D917CB /* PracticeViewModel.swift */; };
 		825C951102D0D9DF47107862 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3501BDF235278053A3A86 /* ViewModifiers.swift */; };
 		C058671309A4796B25C72C03 /* HowToPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */; };
 /* End PBXBuildFile section */
@@ -39,6 +40,7 @@
 		A88480047CC6CDFBCC361413 /* MailComposeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailComposeView.swift; sourceTree = "<group>"; };
 		AF4D7FCB4DFB84D4D21745E1 /* SolutionsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionsSummaryView.swift; sourceTree = "<group>"; };
 		617CEE4E62871A522BE9FE43 /* PracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeView.swift; sourceTree = "<group>"; };
+		F2FA70833D82910714D917CB /* PracticeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PracticeViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				617CEE4E62871A522BE9FE43 /* PracticeView.swift */,
+				F2FA70833D82910714D917CB /* PracticeViewModel.swift */,
 			);
 			path = Practice;
 			sourceTree = "<group>";
@@ -220,6 +223,7 @@
 				6D477EFD5397340BD8D54B5D /* SolveViewModel.swift in Sources */,
 				28AF5EE9F2896C266D1A211A /* DiceWheelPicker.swift in Sources */,
 				BB5EE82F6468FDBB409347CD /* PracticeView.swift in Sources */,
+				0A507E60583C3EB450A0CB52 /* PracticeViewModel.swift in Sources */,
 				3519A4D3F8B524BCC033AC17 /* SolutionExpressionView.swift in Sources */,
 				233ACB34FD379520A3BE5E89 /* SolutionsSummaryView.swift in Sources */,
 				6FD6C5D63A0EA8B6DF4A98C8 /* SolutionListView.swift in Sources */,
