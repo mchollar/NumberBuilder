@@ -32,16 +32,17 @@ struct DiceAppearanceView: View {
                     }
                 }
 
+                // No labels here on purpose -- unlike Color (where the same shape means
+                // different things depending on the word next to it), each style is visually
+                // self-explanatory on sight, so a kid can just tap the look they like.
                 optionSection(title: "Style") {
-                    ForEach(DiceRenderStyle.allCases) { option in
-                        optionRow(
-                            isSelected: style == option,
-                            label: option.label,
-                            swatch: DiceFaceView(value: 4, colorScheme: colorScheme, style: option, index: 1, tier: .exponents)
-                        ) {
-                            style = option
+                    HStack(spacing: 20) {
+                        ForEach(DiceRenderStyle.allCases) { option in
+                            styleSwatch(option)
                         }
                     }
+                    .padding(14)
+                    .cardSurface(cornerRadius: 16)
                 }
             }
             .padding(20)
@@ -99,6 +100,27 @@ struct DiceAppearanceView: View {
             )
         }
         .buttonStyle(.plain)
+    }
+
+    /// Style swatches skip the row/checkmark treatment `optionRow` uses for Color -- just the die
+    /// itself with a ring when selected. VoiceOver still gets `option.label` even though it's
+    /// never shown on screen.
+    private func styleSwatch(_ option: DiceRenderStyle) -> some View {
+        let isSelected = style == option
+        return Button {
+            style = option
+        } label: {
+            DiceFaceView(value: 4, colorScheme: colorScheme, style: option, index: 1, tier: .exponents)
+                .frame(width: 64, height: 64)
+                .padding(6)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .strokeBorder(isSelected ? Color.nbAccent : Color.clear, lineWidth: 3)
+                )
+        }
+        .buttonStyle(.plain)
+        .frame(maxWidth: .infinity)
+        .accessibilityLabel(option.label)
     }
 }
 

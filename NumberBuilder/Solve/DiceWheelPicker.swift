@@ -13,9 +13,9 @@ struct DiceWheelPicker: UIViewRepresentable {
     var colorScheme: DiceColorScheme = .primary
     var style: DiceRenderStyle = .filledColoredBackground
     /// Which of the three tray positions this is, 0-based -- forwarded to `DiceFaceView` for
-    /// `.operatorColors`, which rotates by position. Fixed for the lifetime of one picker
-    /// instance (each tray slot gets its own `DiceWheelPicker`), so it's not part of the
-    /// appearance-change cache invalidation in `updateUIView`.
+    /// `.rainbow`, which rotates by position. Fixed for the lifetime of one picker instance (each
+    /// tray slot gets its own `DiceWheelPicker`), so it's not part of the appearance-change cache
+    /// invalidation in `updateUIView`.
     var index: Int = 0
     var rowHeight: CGFloat = 64
     var imageSize: CGFloat = 52

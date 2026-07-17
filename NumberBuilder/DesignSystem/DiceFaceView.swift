@@ -9,9 +9,9 @@ struct DiceFaceView: View {
     let value: Int
     var colorScheme: DiceColorScheme = .primary
     var style: DiceRenderStyle = .filledColoredBackground
-    /// Which of the three tray positions this is, 0-based -- only used by `.operatorColors`
-    /// (rotates through the four operator hues) and `.tierColored` doesn't need it since tier is
-    /// a single app-wide value, not per-die.
+    /// Which of the three tray positions this is, 0-based -- only used by `.rainbow` (rotates
+    /// through red/yellow/blue); `.tierColored` doesn't need it since tier is a single app-wide
+    /// value, not per-die.
     var index: Int = 0
     /// The active `SolutionTier`, when there is one -- only Practice has a tier concept; Solve
     /// mode passes `nil` and `.tierColored` falls back to `.basic`'s color there.
@@ -123,9 +123,9 @@ struct DiceFaceView: View {
     }
 }
 
-/// Where the die's accent color comes from -- exploration options per the user's request to make
-/// this a pickable scheme rather than one fixed choice. `String` raw values so it can back an
-/// `@AppStorage` selection directly.
+/// Where the die's accent color comes from. `String` raw values so it can back an `@AppStorage`
+/// selection directly. Labels are written for the app's kid audience -- plain color/behavior
+/// words instead of the internal scheme names.
 enum DiceColorScheme: String, CaseIterable, Identifiable {
     var id: Self { self }
 
@@ -134,9 +134,10 @@ enum DiceColorScheme: String, CaseIterable, Identifiable {
     /// The active `SolutionTier`'s color in Practice; falls back to `.basic`'s color wherever
     /// there's no real tier to read (Solve mode).
     case tierColored
-    /// Rotates through the four `MathOperation` hues by tray position -- not semantically tied to
-    /// actual operators, just reusing that palette as a source of variety.
-    case operatorColors
+    /// Rotates through red/yellow/blue by tray position -- a fixed, kid-recognizable primary-color
+    /// set, independent of `MathOperation.accentColor` (which stays green/orange/blue/pink for
+    /// operator symbols elsewhere; this scheme just needed its own distinct palette).
+    case rainbow
     /// Neutral/plain -- no color at all, just ink-on-surface.
     case plain
 
@@ -144,18 +145,18 @@ enum DiceColorScheme: String, CaseIterable, Identifiable {
         switch self {
         case .primary: return .nbAccent
         case .tierColored: return (tier ?? .basic).accentColor
-        case .operatorColors:
-            let ops: [MathOperation] = [.add, .subtract, .multiply]
-            return ops[index % ops.count].accentColor
+        case .rainbow:
+            let colors: [Color] = [.red, .yellow, .blue]
+            return colors[index % colors.count]
         case .plain: return Color.primary
         }
     }
 
     var label: String {
         switch self {
-        case .primary: return "Primary Accent"
-        case .tierColored: return "Tier Colored"
-        case .operatorColors: return "Operator Colors"
+        case .primary: return "Red"
+        case .tierColored: return "By Difficulty"
+        case .rainbow: return "Rainbow"
         case .plain: return "Plain"
         }
     }
