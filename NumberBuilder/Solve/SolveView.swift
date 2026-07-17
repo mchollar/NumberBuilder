@@ -28,6 +28,8 @@ struct SolveView: View {
     /// Bumped only by the Roll button — dice bouncing should never fire from manually scrolling
     /// a wheel to pick a value by hand.
     @State private var rollTrigger = 0
+    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .primary
+    @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
 
     var body: some View {
         ScrollView {
@@ -92,13 +94,18 @@ struct SolveView: View {
     private var diceRow: some View {
         HStack(spacing: 12) {
             ForEach(0..<3, id: \.self) { index in
-                DiceWheelPicker(selection: Binding(
-                    get: { viewModel.diceFaces[index] },
-                    set: { newValue in
-                        viewModel.diceFaces[index] = newValue
-                        viewModel.resetForNewRoll()
-                    }
-                ))
+                DiceWheelPicker(
+                    selection: Binding(
+                        get: { viewModel.diceFaces[index] },
+                        set: { newValue in
+                            viewModel.diceFaces[index] = newValue
+                            viewModel.resetForNewRoll()
+                        }
+                    ),
+                    colorScheme: diceColorScheme,
+                    style: diceStyle,
+                    index: index
+                )
                 .id(index)
                 .clipped()
                 .background(
@@ -113,12 +120,8 @@ struct SolveView: View {
                     // A decorative die that pops over the slot on Roll and fades away, revealing
                     // the (unanimated, still perfectly interactive) wheel underneath already
                     // settled on its new value.
-                    Image("Dice\(viewModel.diceFaces[index])")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 52, height: 52)
-                        .padding(10)
-                        .background(Circle().fill(Color.nbCardSurface))
+                    DiceFaceView(value: viewModel.diceFaces[index], colorScheme: diceColorScheme, style: diceStyle, index: index, tier: nil)
+                        .frame(width: 64, height: 64)
                         .allowsHitTesting(false)
                         .phaseAnimator([DiePopPhase.hidden, .pop, .hidden], trigger: rollTrigger) { view, phase in
                             view

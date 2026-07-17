@@ -8,6 +8,8 @@ struct SolutionsSummaryView: View {
 
     @AppStorage("hasSeenResultsHelp") private var hasSeenResultsHelp = false
     @State private var showHelp = false
+    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .primary
+    @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
 
     private var basic: [Solution] { solutions.filter { $0.tier == .basic } }
     private var exponents: [Solution] { solutions.filter { $0.tier == .exponents } }
@@ -60,11 +62,9 @@ struct SolutionsSummaryView: View {
     private var scoreboard: some View {
         HStack(spacing: 16) {
             HStack(spacing: 6) {
-                ForEach(Array(diceFaces.enumerated()), id: \.offset) { _, face in
-                    Image("Dice\(face)")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 44, height: 44)
+                ForEach(Array(diceFaces.enumerated()), id: \.offset) { index, face in
+                    DiceFaceView(value: face, colorScheme: diceColorScheme, style: diceStyle, index: index, tier: nil)
+                        .frame(width: 56, height: 56)
                 }
             }
             Image(systemName: "arrow.right")

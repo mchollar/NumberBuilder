@@ -22,12 +22,15 @@
 		BB5EE82F6468FDBB409347CD /* PracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 617CEE4E62871A522BE9FE43 /* PracticeView.swift */; };
 		0A507E60583C3EB450A0CB52 /* PracticeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FA70833D82910714D917CB /* PracticeViewModel.swift */; };
 		825C951102D0D9DF47107862 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF3501BDF235278053A3A86 /* ViewModifiers.swift */; };
+		EB2D0A8806DCCA2D51D57259 /* DiceFaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64BE92643EE4EFAE136C0528 /* DiceFaceView.swift */; };
 		C058671309A4796B25C72C03 /* HowToPlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */; };
+		A12D23EFD61D8F0B46A8BA97 /* DiceAppearanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F444F5DDCCDDC79F4DAE1A70 /* DiceAppearanceView.swift */; };
 		178779CDFBB41F83D03552D9 /* DebugMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346ED3D646BAC3EDD6CAEA80 /* DebugMenuView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		0AF3501BDF235278053A3A86 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
+		64BE92643EE4EFAE136C0528 /* DiceFaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceFaceView.swift; sourceTree = "<group>"; };
 		22442BAB2166EEA4000CDCBD /* NumberBuilder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NumberBuilder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22442BB52166EEA6000CDCBD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		22442BBA2166EEA6000CDCBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -36,6 +39,7 @@
 		4ACD37971BD1FDC60825FA4C /* SolutionExpressionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolutionExpressionView.swift; sourceTree = "<group>"; };
 		56D7A94C019CAE2E93FD567F /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToPlayView.swift; sourceTree = "<group>"; };
+		F444F5DDCCDDC79F4DAE1A70 /* DiceAppearanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceAppearanceView.swift; sourceTree = "<group>"; };
 		346ED3D646BAC3EDD6CAEA80 /* DebugMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugMenuView.swift; sourceTree = "<group>"; };
 		7289C40D7957E63653F07F80 /* SolveViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolveViewModel.swift; sourceTree = "<group>"; };
 		802B42ADD89BAC305E6B2C71 /* DiceWheelPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiceWheelPicker.swift; sourceTree = "<group>"; };
@@ -105,6 +109,7 @@
 			isa = PBXGroup;
 			children = (
 				0AF3501BDF235278053A3A86 /* ViewModifiers.swift */,
+				64BE92643EE4EFAE136C0528 /* DiceFaceView.swift */,
 			);
 			path = DesignSystem;
 			sourceTree = "<group>";
@@ -115,6 +120,7 @@
 				56D7A94C019CAE2E93FD567F /* AboutView.swift */,
 				A88480047CC6CDFBCC361413 /* MailComposeView.swift */,
 				6BBD575E96F3ACFD4599C0FA /* HowToPlayView.swift */,
+				F444F5DDCCDDC79F4DAE1A70 /* DiceAppearanceView.swift */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -245,8 +251,10 @@
 				744AF7B8D6E42795056415A3 /* AboutView.swift in Sources */,
 				2B12B0471252C67B391B05DF /* MailComposeView.swift in Sources */,
 				C058671309A4796B25C72C03 /* HowToPlayView.swift in Sources */,
+				A12D23EFD61D8F0B46A8BA97 /* DiceAppearanceView.swift in Sources */,
 				178779CDFBB41F83D03552D9 /* DebugMenuView.swift in Sources */,
 				825C951102D0D9DF47107862 /* ViewModifiers.swift in Sources */,
+				EB2D0A8806DCCA2D51D57259 /* DiceFaceView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

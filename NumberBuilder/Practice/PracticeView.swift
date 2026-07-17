@@ -18,6 +18,8 @@ struct PracticeView: View {
     /// Bumped only when `feedback` transitions *into* `.correct`, so the checkmark's bounce
     /// fires once per win rather than replaying on every unrelated view update.
     @State private var correctTrigger = 0
+    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .primary
+    @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
 
     /// Defaults to a fresh puzzle for real use; the override lets previews drive the view model
     /// into a specific state (e.g. mid-placement, to inspect `variantPicker`) without simulating
@@ -96,6 +98,9 @@ struct PracticeView: View {
                 Text("\(viewModel.puzzle.target)")
                     .font(.nbNumber(32))
                     .foregroundStyle(viewModel.tier.accentColor)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.4)
+                    .layoutPriority(1)
             }
         }
         .padding(20)
@@ -112,10 +117,8 @@ struct PracticeView: View {
                         viewModel.placeTrayDie(at: index)
                     }
                 } label: {
-                    Image("Dice\(face)")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 44, height: 44)
+                    DiceFaceView(value: face, colorScheme: diceColorScheme, style: diceStyle, index: index, tier: viewModel.tier)
+                        .frame(width: 56, height: 56)
                         .opacity(isUsed ? 0.25 : (isAvailable ? 1 : 0.35))
                 }
                 .disabled(!isAvailable)

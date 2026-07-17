@@ -42,6 +42,12 @@ struct AboutView: View {
                     Label("How to Play", systemImage: "questionmark.circle.fill")
                         .foregroundStyle(Color.nbAccent)
                 }
+                NavigationLink {
+                    DiceAppearanceView()
+                } label: {
+                    Label("Dice Appearance", systemImage: "die.face.5.fill")
+                        .foregroundStyle(Color.nbAccent)
+                }
             }
             .listRowBackground(Color.nbCardSurface)
 
