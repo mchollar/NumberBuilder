@@ -26,6 +26,7 @@ final class SolveViewModel {
         diceFaces = DiceRoller.roll()
         solutions = nil
         hasSolved = false
+        AppLogger.solve.debug("Rolled dice: \(self.diceFaces)")
     }
 
     func calculate() {
@@ -35,6 +36,7 @@ final class SolveViewModel {
         hasSolved = false
         isSolving = true
         progressCount = 0
+        AppLogger.solve.debug("Calculating for dice \(self.diceFaces), target \(target)")
 
         let configuration = SolverConfiguration(dice: diceFaces, target: target)
         let engine = engine
@@ -47,6 +49,7 @@ final class SolveViewModel {
                     self.solutions = results
                     self.isSolving = false
                     self.hasSolved = true
+                    AppLogger.solve.debug("Found \(results.count) solutions")
                 }
             }
         }

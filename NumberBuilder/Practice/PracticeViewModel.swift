@@ -54,6 +54,7 @@ final class PracticeViewModel {
         feedback = .none
         activeDieSlot = nil
         activeVariantOptions = []
+        AppLogger.practice.debug("New puzzle: dice \(self.puzzle.dice), target \(self.puzzle.target), tier \(String(describing: self.tier))")
     }
 
     var usedTrayIndices: Set<Int> {
@@ -131,10 +132,16 @@ final class PracticeViewModel {
     /// raise it to a power/root before choosing the next operator. Falls back to whatever the
     /// pending operator does allow if plain itself isn't a legal choice right now.
     func placeTrayDie(at trayIndex: Int) {
-        guard isAwaitingDie, !usedTrayIndices.contains(trayIndex), let slot = nextDieSlot else { return }
+        guard isAwaitingDie, !usedTrayIndices.contains(trayIndex), let slot = nextDieSlot else {
+            AppLogger.practice.debug("Ignored tray tap at index \(trayIndex): not awaiting a die or already used")
+            return
+        }
         let variants = validVariants(for: trayIndex, atSlot: slot)
         let plain = variants.first { $0.exponent == 1 && $0.root == 1 }
-        guard let defaultVariant = plain ?? variants.first else { return }
+        guard let defaultVariant = plain ?? variants.first else {
+            AppLogger.practice.debug("Ignored tray tap at index \(trayIndex): no legal variant for slot \(slot)")
+            return
+        }
         placedDice[slot] = defaultVariant
         trayIndexForDieSlot[slot] = trayIndex
         activeDieSlot = slot
@@ -151,7 +158,10 @@ final class PracticeViewModel {
     }
 
     func placeOperation(_ operation: MathOperation) {
-        guard isAwaitingOperation, let slot = nextOperationSlot else { return }
+        guard isAwaitingOperation, let slot = nextOperationSlot else {
+            AppLogger.practice.debug("Ignored operator tap: not awaiting an operation")
+            return
+        }
         placedOperations[slot] = operation
         activeDieSlot = nil
         activeVariantOptions = []
@@ -202,5 +212,6 @@ final class PracticeViewModel {
         let operations = placedOperations.compactMap { $0 }
         guard let result = evaluate(dice: dice, operations: operations) else { return }
         feedback = result == puzzle.target ? .correct : .incorrect(got: result)
+        AppLogger.practice.debug("Submitted: got \(result), target \(self.puzzle.target), tier \(String(describing: self.tier))")
     }
 }
