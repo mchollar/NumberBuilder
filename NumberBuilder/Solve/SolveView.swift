@@ -51,7 +51,7 @@ struct SolveView: View {
                 } label: {
                     Image(systemName: "info.circle")
                 }
-                .tint(.nbAccent)
+                .tint(.primary)
             }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
@@ -85,7 +85,7 @@ struct SolveView: View {
                 Label("Roll", systemImage: "die.face.5.fill")
                     .symbolEffect(.bounce, value: rollTrigger)
             }
-            .buttonStyle(.nbTonal(tint: .nbAccent))
+            .buttonStyle(.nbTonal(tint: .primary))
         }
         .padding(20)
         .cardSurface()
@@ -153,7 +153,7 @@ struct SolveView: View {
                         .fill(Color.primary.opacity(0.05))
                         .overlay(
                             RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .strokeBorder(targetFieldFocused ? Color.nbAccent : Color.primary.opacity(0.1), lineWidth: targetFieldFocused ? 2 : 1)
+                                .strokeBorder(targetFieldFocused ? Color.primary : Color.primary.opacity(0.1), lineWidth: targetFieldFocused ? 2 : 1)
                         )
                 )
                 .onChange(of: viewModel.targetText) {
@@ -165,7 +165,7 @@ struct SolveView: View {
             } label: {
                 Text("Calculate")
             }
-            .buttonStyle(.nbPrimary(tint: .nbAccent, isEnabled: viewModel.canCalculate))
+            .buttonStyle(.nbNeutral(isEnabled: viewModel.canCalculate))
             .disabled(!viewModel.canCalculate)
         }
         .padding(20)
@@ -185,7 +185,7 @@ struct SolveView: View {
         if viewModel.isSolving {
             VStack(spacing: 8) {
                 ProgressView()
-                    .tint(.nbAccent)
+                    .tint(.primary)
                 Text("Total Solutions Found: \(viewModel.progressCount)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)

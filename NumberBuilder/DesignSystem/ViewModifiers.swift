@@ -133,6 +133,36 @@ struct NBTonalButtonStyle: ButtonStyle {
     }
 }
 
+/// Solid, appearance-inverted capsule button -- `Color.primary` fill (near-black in light mode,
+/// near-white in dark mode) with `Color(.systemBackground)` text (the adaptive opposite, so it
+/// always contrasts against its own fill without a hardcoded color that would break in one mode --
+/// the exact bug class the dice `.plain` scheme and `HowToPlayView`'s step badges both hit before).
+/// Used where a primary action should carry no hue at all -- Solve's Calculate button -- distinct
+/// from `NBPrimaryButtonStyle`, which stays available for tier/accent-tinted primary buttons
+/// (Practice's Submit/Reset) that are explicitly meant to keep their color.
+struct NBNeutralButtonStyle: ButtonStyle {
+    var isEnabled: Bool = true
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.nbNumber(17, weight: .semibold))
+            .foregroundStyle(isEnabled ? Color(.systemBackground) : Color.gray)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(
+                Capsule(style: .continuous)
+                    .fill(isEnabled ? Color.primary : Color.gray.opacity(0.35))
+            )
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+extension ButtonStyle where Self == NBNeutralButtonStyle {
+    static var nbNeutral: NBNeutralButtonStyle { NBNeutralButtonStyle() }
+    static func nbNeutral(isEnabled: Bool = true) -> NBNeutralButtonStyle { NBNeutralButtonStyle(isEnabled: isEnabled) }
+}
+
 extension ButtonStyle where Self == NBPrimaryButtonStyle {
     static var nbPrimary: NBPrimaryButtonStyle { NBPrimaryButtonStyle() }
     static func nbPrimary(tint: Color = .nbAccent, isEnabled: Bool = true) -> NBPrimaryButtonStyle {

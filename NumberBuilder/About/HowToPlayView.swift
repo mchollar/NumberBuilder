@@ -115,9 +115,9 @@ struct HowToPlayView: View {
         HStack(alignment: .top, spacing: 12) {
             Text("\(number)")
                 .font(.nbNumber(14, weight: .bold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Color(.systemBackground))
                 .frame(width: 22, height: 22)
-                .background(Circle().fill(Color.nbAccent))
+                .background(Circle().fill(Color.primary))
             Text(text)
                 .fixedSize(horizontal: false, vertical: true)
         }

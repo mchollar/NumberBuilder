@@ -40,13 +40,13 @@ struct AboutView: View {
                     HowToPlayView()
                 } label: {
                     Label("How to Play", systemImage: "questionmark.circle.fill")
-                        .foregroundStyle(Color.nbAccent)
+                        .foregroundStyle(Color.primary)
                 }
                 NavigationLink {
                     DiceAppearanceView()
                 } label: {
                     Label("Dice Appearance", systemImage: "die.face.5.fill")
-                        .foregroundStyle(Color.nbAccent)
+                        .foregroundStyle(Color.primary)
                 }
             }
             .listRowBackground(Color.nbCardSurface)
@@ -56,7 +56,7 @@ struct AboutView: View {
                     openReviewPage()
                 } label: {
                     Label("Rate Number Builder", systemImage: "star.fill")
-                        .foregroundStyle(Color.nbAccent)
+                        .foregroundStyle(Color.primary)
                 }
                 Button {
                     if MailComposeView.canSendMail {
@@ -66,11 +66,11 @@ struct AboutView: View {
                     }
                 } label: {
                     Label("Send Feedback", systemImage: "envelope.fill")
-                        .foregroundStyle(Color.nbAccent)
+                        .foregroundStyle(Color.primary)
                 }
                 ShareLink(item: Self.appStoreURL) {
                     Label("Share Number Builder", systemImage: "square.and.arrow.up.fill")
-                        .foregroundStyle(Color.nbAccent)
+                        .foregroundStyle(Color.primary)
                 }
             } footer: {
                 Text("No data is collected. No ads, ever.")
@@ -83,7 +83,7 @@ struct AboutView: View {
                     DebugMenuView()
                 } label: {
                     Label("Debug Menu", systemImage: "ladybug.fill")
-                        .foregroundStyle(Color.nbAccent)
+                        .foregroundStyle(Color.primary)
                 }
             }
             .listRowBackground(Color.nbCardSurface)

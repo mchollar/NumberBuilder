@@ -89,14 +89,14 @@ struct DiceAppearanceView: View {
                 Spacer()
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(Color.nbAccent)
+                        .foregroundStyle(Color.primary)
                 }
             }
             .padding(14)
             .cardSurface(cornerRadius: 16)
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .strokeBorder(isSelected ? Color.nbAccent : Color.clear, lineWidth: 2)
+                    .strokeBorder(isSelected ? Color.primary : Color.clear, lineWidth: 2)
             )
         }
         .buttonStyle(.plain)
@@ -115,7 +115,7 @@ struct DiceAppearanceView: View {
                 .padding(6)
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .strokeBorder(isSelected ? Color.nbAccent : Color.clear, lineWidth: 3)
+                        .strokeBorder(isSelected ? Color.primary : Color.clear, lineWidth: 3)
                 )
         }
         .buttonStyle(.plain)
