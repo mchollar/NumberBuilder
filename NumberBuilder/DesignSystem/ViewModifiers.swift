@@ -116,16 +116,17 @@ struct NBPrimaryButtonStyle: ButtonStyle {
 /// Tonal capsule button — secondary actions like "Roll" alongside a primary "Calculate".
 struct NBTonalButtonStyle: ButtonStyle {
     var tint: Color = .nbAccent
+    var isEnabled: Bool = true
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.nbNumber(17, weight: .semibold))
-            .foregroundStyle(tint)
+            .foregroundStyle(isEnabled ? tint : Color.gray)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
                 Capsule(style: .continuous)
-                    .fill(tint.opacity(0.15))
+                    .fill((isEnabled ? tint : Color.gray).opacity(0.15))
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
@@ -141,7 +142,9 @@ extension ButtonStyle where Self == NBPrimaryButtonStyle {
 
 extension ButtonStyle where Self == NBTonalButtonStyle {
     static var nbTonal: NBTonalButtonStyle { NBTonalButtonStyle() }
-    static func nbTonal(tint: Color = .nbAccent) -> NBTonalButtonStyle { NBTonalButtonStyle(tint: tint) }
+    static func nbTonal(tint: Color = .nbAccent, isEnabled: Bool = true) -> NBTonalButtonStyle {
+        NBTonalButtonStyle(tint: tint, isEnabled: isEnabled)
+    }
 }
 
 // MARK: - Adaptive width

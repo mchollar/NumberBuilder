@@ -30,6 +30,10 @@ final class PracticeViewModel {
     /// (or every plain-tier variant if there's nothing before it yet). Always includes the
     /// plain value placed on tap; more than one entry only past `.basic`.
     private(set) var activeVariantOptions: [DieValue] = []
+    /// True once the player has given up on the current puzzle via Reveal Answer -- locks every
+    /// further interaction (tray taps, variant/operator selection, Submit) until New Puzzle,
+    /// rather than treating the reveal as a hint they can still act on.
+    private(set) var isRevealed = false
 
     init(tier: SolutionTier = .basic) {
         self.tier = tier
@@ -54,7 +58,28 @@ final class PracticeViewModel {
         feedback = .none
         activeDieSlot = nil
         activeVariantOptions = []
+        isRevealed = false
         AppLogger.practice.debug("New puzzle: dice \(self.puzzle.dice), target \(self.puzzle.target), tier \(String(describing: self.tier))")
+    }
+
+    /// Clears every placed die/operator, feedback, and reveal state -- but keeps the same puzzle
+    /// (dice/target/tier), unlike `newPuzzle()` which generates a fresh one. Lets a player retry
+    /// the same roll after getting it wrong, revealing the answer, or even after solving it
+    /// correctly (there's often more than one valid expression for the same dice/target).
+    func resetEntries() {
+        placedDice = Array(repeating: nil, count: puzzle.dice.count)
+        placedOperations = Array(repeating: nil, count: puzzle.dice.count - 1)
+        trayIndexForDieSlot = Array(repeating: nil, count: puzzle.dice.count)
+        feedback = .none
+        activeDieSlot = nil
+        activeVariantOptions = []
+        isRevealed = false
+    }
+
+    /// True once this attempt has concluded -- a Submit happened (right or wrong) or the answer
+    /// was revealed. Drives the Submit button's relabeling to Reset.
+    var hasConcluded: Bool {
+        feedback != .none || isRevealed
     }
 
     var usedTrayIndices: Set<Int> {
@@ -65,19 +90,28 @@ final class PracticeViewModel {
     private var nextOperationSlot: Int? { placedOperations.firstIndex(where: { $0 == nil }) }
 
     /// True exactly when the next open slot is a die -- i.e. every operation before it is
-    /// already filled (or there are none yet, for the very first die).
+    /// already filled (or there are none yet, for the very first die). Always false once
+    /// revealed, which is what stops the tray/pickers from accepting further taps.
     var isAwaitingDie: Bool {
-        guard let dieSlot = nextDieSlot else { return false }
+        guard !isRevealed, let dieSlot = nextDieSlot else { return false }
         return placedOperations.prefix(dieSlot).allSatisfy { $0 != nil }
     }
 
     var isAwaitingOperation: Bool {
-        guard let opSlot = nextOperationSlot else { return false }
+        guard !isRevealed, let opSlot = nextOperationSlot else { return false }
         return placedDice[opSlot] != nil
     }
 
     var isComplete: Bool {
         placedDice.allSatisfy { $0 != nil } && placedOperations.allSatisfy { $0 != nil }
+    }
+
+    /// Whether there's anything to undo -- the most recent placement, mirroring `isAwaitingDie`'s
+    /// own account of "what happened last": a die still open for a variant swap (including the
+    /// final die, which stays open until Submit), or else the last-placed operator.
+    var canUndo: Bool {
+        guard !isRevealed else { return false }
+        return activeDieSlot != nil || placedOperations.contains { $0 != nil }
     }
 
     /// The value built from dice `[0..<slot)` combined by operators `[0..<slot-1)`, or nil
@@ -152,7 +186,7 @@ final class PracticeViewModel {
     /// Swaps the active slot's die for a different power/root of the same value -- freely
     /// re-selectable until the next operator locks the slot in.
     func selectVariant(_ variant: DieValue) {
-        guard let slot = activeDieSlot else { return }
+        guard !isRevealed, let slot = activeDieSlot else { return }
         placedDice[slot] = variant
         feedback = .none
     }
@@ -171,7 +205,7 @@ final class PracticeViewModel {
     /// Removing a die (or operation) also clears everything after it, since the whole chain
     /// depended on it -- this doubles as the entire undo mechanism, no separate button needed.
     func removeDieSlot(_ index: Int) {
-        guard placedDice[index] != nil else { return }
+        guard !isRevealed, placedDice[index] != nil else { return }
         for i in index..<placedDice.count {
             placedDice[i] = nil
             trayIndexForDieSlot[i] = nil
@@ -187,7 +221,7 @@ final class PracticeViewModel {
     /// Undoing an operator hands the die right before it back to `activeDieSlot`, exactly as if
     /// it had just been tapped from the tray -- variant options recompute the same way.
     func removeOperationSlot(_ index: Int) {
-        guard placedOperations[index] != nil else { return }
+        guard !isRevealed, placedOperations[index] != nil else { return }
         placedOperations[index] = nil
         for i in (index + 1)..<placedDice.count {
             placedDice[i] = nil
@@ -206,8 +240,34 @@ final class PracticeViewModel {
         feedback = .none
     }
 
+    /// Undoes the single most recent placement -- a still-open die (including the final die,
+    /// which stays "open" until Submit) or, failing that, the last-placed operator. Reuses
+    /// `removeDieSlot`/`removeOperationSlot` rather than duplicating their cascade-clear logic.
+    func undoLast() {
+        guard canUndo else { return }
+        if let slot = activeDieSlot {
+            removeDieSlot(slot)
+        } else if let lastOpIndex = placedOperations.lastIndex(where: { $0 != nil }) {
+            removeOperationSlot(lastOpIndex)
+        }
+    }
+
+    /// Gives up on the current puzzle -- shows `puzzle.exampleSolution` (already built for free
+    /// by `PracticeGenerator`) and locks every further interaction until Reset/New Puzzle.
+    /// Deliberately not recoverable: revealing is treated as the end of this attempt, not a hint
+    /// you keep playing after. Leaves `feedback` untouched on purpose -- clearing it used to wipe
+    /// an existing "Not quite" banner, which made revealing after a wrong Submit look like a win
+    /// (the answer card appearing with no error message nearby read as success).
+    func revealAnswer() {
+        guard !isRevealed else { return }
+        isRevealed = true
+        activeDieSlot = nil
+        activeVariantOptions = []
+        AppLogger.practice.debug("Revealed answer for dice \(self.puzzle.dice), target \(self.puzzle.target)")
+    }
+
     func submit() {
-        guard isComplete else { return }
+        guard isComplete, !isRevealed else { return }
         let dice = placedDice.compactMap { $0 }
         let operations = placedOperations.compactMap { $0 }
         guard let result = evaluate(dice: dice, operations: operations) else { return }

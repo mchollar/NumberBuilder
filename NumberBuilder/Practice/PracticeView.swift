@@ -15,6 +15,9 @@ struct PracticeView: View {
     /// won't revisit Practice again within the same run of the app.
     @AppStorage(DebugResettableFlag.hasSeenPracticeIntroKey) private var hasSeenPracticeIntro = false
     @State private var showingIntro = false
+    /// Bumped only when `feedback` transitions *into* `.correct`, so the checkmark's bounce
+    /// fires once per win rather than replaying on every unrelated view update.
+    @State private var correctTrigger = 0
 
     /// Defaults to a fresh puzzle for real use; the override lets previews drive the view model
     /// into a specific state (e.g. mid-placement, to inspect `variantPicker`) without simulating
@@ -32,6 +35,7 @@ struct PracticeView: View {
                 tierPicker
                 puzzleCard
                 workspaceCard
+                revealedAnswerCard
                 variantPicker
                 operatorPicker
                 feedbackBanner
@@ -50,6 +54,11 @@ struct PracticeView: View {
         .sheet(isPresented: $showingIntro) {
             NavigationStack {
                 HowToPlayView(initialMode: .practice, showsDoneButton: true)
+            }
+        }
+        .onChange(of: viewModel.feedback) { _, newValue in
+            if case .correct = newValue {
+                correctTrigger += 1
             }
         }
     }
@@ -143,6 +152,23 @@ struct PracticeView: View {
         .cardSurface()
     }
 
+    /// Shown after Reveal Answer -- reuses `SolutionExpressionView` (Solve mode's own results
+    /// renderer) rather than a bespoke label, so a revealed expression looks exactly like the
+    /// real thing instead of a second, slightly-different notation the player has to learn.
+    @ViewBuilder
+    private var revealedAnswerCard: some View {
+        if viewModel.isRevealed {
+            VStack(alignment: .leading, spacing: 8) {
+                sectionLabel("Answer")
+                SolutionExpressionView(solution: viewModel.puzzle.exampleSolution, tint: viewModel.tier.accentColor)
+            }
+            .padding(20)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .cardSurface()
+            .transition(.opacity.combined(with: .move(edge: .top)))
+        }
+    }
+
     @ViewBuilder
     private var operatorPicker: some View {
         if viewModel.isAwaitingOperation {
@@ -172,12 +198,17 @@ struct PracticeView: View {
         case .none:
             EmptyView()
         case .correct:
-            Text("Correct! 🎉")
-                .font(.nbNumber(18))
-                .foregroundStyle(.white)
-                .frame(maxWidth: .infinity)
-                .padding(16)
-                .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.nbAccent))
+            HStack(spacing: 10) {
+                Image(systemName: "checkmark.seal.fill")
+                    .symbolEffect(.bounce, value: correctTrigger)
+                Text("Correct!")
+            }
+            .font(.nbNumber(18))
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(16)
+            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.nbAccent))
+            .transition(.scale(scale: 0.85).combined(with: .opacity))
         case .incorrect(let got):
             VStack(spacing: 4) {
                 Text("Not quite")
@@ -189,21 +220,52 @@ struct PracticeView: View {
             .frame(maxWidth: .infinity)
             .padding(16)
             .cardSurface(cornerRadius: 16)
+            .transition(.opacity.combined(with: .move(edge: .top)))
         }
     }
 
     private var controls: some View {
         VStack(spacing: 12) {
             Button {
-                viewModel.submit()
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.65)) {
+                    if viewModel.hasConcluded {
+                        viewModel.resetEntries()
+                    } else {
+                        viewModel.submit()
+                    }
+                }
             } label: {
-                Text("Submit")
+                Text(viewModel.hasConcluded ? "Reset" : "Submit")
             }
-            .buttonStyle(.nbPrimary(tint: viewModel.tier.accentColor, isEnabled: viewModel.isComplete))
-            .disabled(!viewModel.isComplete)
+            .buttonStyle(.nbPrimary(tint: viewModel.tier.accentColor, isEnabled: viewModel.hasConcluded || viewModel.isComplete))
+            .disabled(!viewModel.hasConcluded && !viewModel.isComplete)
+
+            HStack(spacing: 12) {
+                Button {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        viewModel.undoLast()
+                    }
+                } label: {
+                    Label("Undo", systemImage: "arrow.uturn.backward")
+                }
+                .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor, isEnabled: viewModel.canUndo))
+                .disabled(!viewModel.canUndo)
+
+                Button {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        viewModel.revealAnswer()
+                    }
+                } label: {
+                    Label("Reveal Answer", systemImage: "eye.fill")
+                }
+                .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor, isEnabled: !viewModel.isRevealed))
+                .disabled(viewModel.isRevealed)
+            }
 
             Button {
-                viewModel.newPuzzle()
+                withAnimation(.easeInOut(duration: 0.25)) {
+                    viewModel.newPuzzle()
+                }
             } label: {
                 Text("New Puzzle")
             }
