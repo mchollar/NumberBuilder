@@ -36,11 +36,9 @@ struct PracticeView: View {
             VStack(spacing: 20) {
                 tierPicker
                 puzzleCard
-                workspaceCard
-                revealedAnswerCard
+                answerCard
                 variantPicker
                 operatorPicker
-                feedbackBanner
                 controls
             }
             .padding(20)
@@ -138,7 +136,14 @@ struct PracticeView: View {
             .strokeBorder(isActive ? viewModel.tier.accentColor : Color.clear, lineWidth: 2.5)
     }
 
-    private var workspaceCard: some View {
+    /// Everything about the player's attempt lives in one card now -- the built expression, the
+    /// correct/incorrect status once there's one to show (never phrased as a bare "= N" the way
+    /// this used to be, which reads as a claim about the player's own expression rather than a
+    /// goal reminder -- that ambiguity is exactly what made revealing-without-submitting look like
+    /// a correct answer even when it wasn't), and the revealed solution folded in below a divider
+    /// instead of spawning a second floating card. No standing target restatement either -- the
+    /// roll card above already shows it; see `statusLine`'s doc comment.
+    private var answerCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionLabel("Your Answer")
             HStack(spacing: 6) {
@@ -151,35 +156,61 @@ struct PracticeView: View {
             .minimumScaleFactor(0.5)
             .frame(maxWidth: .infinity, alignment: .center)
 
-            // A separate line, not another token in the row above: a big target (e.g. 5 digits)
-            // would otherwise have to fight the dice/paren glyphs for the same shrunk-to-fit
-            // width and lose, truncating to "12,5...". On its own line it always gets the full
-            // card width to scale within.
-            Text("= \(viewModel.puzzle.target)")
-                .font(.nbNumber(28, weight: .bold))
-                .foregroundStyle(viewModel.tier.accentColor)
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-                .frame(maxWidth: .infinity, alignment: .center)
+            // No standing "Target: N" line here -- the roll card right above already shows the
+            // target, and repeating it a few inches lower added nothing until there was an actual
+            // result to react to. The target only resurfaces once `statusLine` has something to
+            // compare it against (a Submit or a Reveal), folded into that one line instead of
+            // living here permanently.
+            statusLine
+
+            if viewModel.isRevealed {
+                Divider()
+                VStack(alignment: .leading, spacing: 6) {
+                    sectionLabel("Here's One Way")
+                    // Reuses `SolutionExpressionView` (Solve mode's own results renderer) rather
+                    // than a bespoke label, so a revealed expression looks exactly like the real
+                    // thing instead of a second, slightly-different notation to learn.
+                    SolutionExpressionView(solution: viewModel.puzzle.exampleSolution, tint: viewModel.tier.accentColor)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
         }
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardSurface()
     }
 
-    /// Shown after Reveal Answer -- reuses `SolutionExpressionView` (Solve mode's own results
-    /// renderer) rather than a bespoke label, so a revealed expression looks exactly like the
-    /// real thing instead of a second, slightly-different notation the player has to learn.
     @ViewBuilder
-    private var revealedAnswerCard: some View {
-        if viewModel.isRevealed {
-            VStack(alignment: .leading, spacing: 8) {
-                sectionLabel("Answer")
-                SolutionExpressionView(solution: viewModel.puzzle.exampleSolution, tint: viewModel.tier.accentColor)
+    private var statusLine: some View {
+        switch viewModel.feedback {
+        case .none:
+            EmptyView()
+        case .correct:
+            // The target only ever reappears here, folded into the one moment it's actually
+            // doing work: confirming the match, not restating a number already visible above.
+            // Fixed green rather than `tier.accentColor` -- Basic's tier color is the same red
+            // `.incorrect` uses below, which made a correct answer look like an error on that tier.
+            HStack(spacing: 8) {
+                Image(systemName: "checkmark.circle.fill")
+                    .symbolEffect(.bounce, value: correctTrigger)
+                Text("Correct! = \(viewModel.puzzle.target)")
             }
-            .padding(20)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .cardSurface()
+            .font(.nbNumber(24, weight: .bold))
+            .foregroundStyle(.green)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .transition(.scale(scale: 0.85).combined(with: .opacity))
+        case .incorrect(let got):
+            // Both numbers in one line, read as a false equation -- clearer at a glance than a
+            // sentence, and the only place the target needs to show up at all once there's
+            // something real to compare it against.
+            HStack(spacing: 8) {
+                Image(systemName: "xmark.circle.fill")
+                Text("\(got) ≠ \(viewModel.puzzle.target)")
+            }
+            .font(.nbNumber(24, weight: .bold))
+            .foregroundStyle(.red)
+            .frame(maxWidth: .infinity, alignment: .center)
             .transition(.opacity.combined(with: .move(edge: .top)))
         }
     }
@@ -209,38 +240,6 @@ struct PracticeView: View {
         .cardSurface()
         .overlay(highlightBorder(isActive))
         .animation(.easeInOut(duration: 0.25), value: isActive)
-    }
-
-    @ViewBuilder
-    private var feedbackBanner: some View {
-        switch viewModel.feedback {
-        case .none:
-            EmptyView()
-        case .correct:
-            HStack(spacing: 10) {
-                Image(systemName: "checkmark.seal.fill")
-                    .symbolEffect(.bounce, value: correctTrigger)
-                Text("Correct!")
-            }
-            .font(.nbNumber(18))
-            .foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(16)
-            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(Color.nbAccent))
-            .transition(.scale(scale: 0.85).combined(with: .opacity))
-        case .incorrect(let got):
-            VStack(spacing: 4) {
-                Text("Not quite")
-                    .font(.nbNumber(16))
-                Text("You got \(got) — target is \(viewModel.puzzle.target)")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(16)
-            .cardSurface(cornerRadius: 16)
-            .transition(.opacity.combined(with: .move(edge: .top)))
-        }
     }
 
     private var controls: some View {
@@ -521,6 +520,89 @@ private struct AnyButtonStyle: ButtonStyle {
     if let trayIndex = viewModel.puzzle.dice.indices.first(where: { viewModel.canPlaceTrayDie(at: $0) }) {
         viewModel.placeTrayDie(at: trayIndex)
     }
+    return NavigationStack {
+        PracticeView(viewModel: viewModel)
+    }
+}
+
+/// Builds and places `puzzle.exampleSolution` exactly, tray tap by tray tap, via the view model's
+/// own public API -- guarantees a complete, *correct* workspace without simulating touches or
+/// needing to reverse-engineer a valid answer by hand for every preview.
+@MainActor
+private func buildExampleSolution(_ viewModel: PracticeViewModel) {
+    let solution = viewModel.puzzle.exampleSolution
+    for (index, die) in solution.dice.enumerated() {
+        guard let trayIndex = viewModel.puzzle.dice.indices.first(where: { idx in
+            !viewModel.usedTrayIndices.contains(idx) && viewModel.puzzle.dice[idx] == die.base
+        }) else { continue }
+        viewModel.placeTrayDie(at: trayIndex)
+        if viewModel.activeDieSlot != nil,
+           let match = viewModel.activeVariantOptions.first(where: { $0.exponent == die.exponent && $0.root == die.root }) {
+            viewModel.selectVariant(match)
+        }
+        if index < solution.operations.count {
+            viewModel.placeOperation(solution.operations[index])
+        }
+    }
+}
+
+/// Places every tray die at its plain value, joined with `+` -- a complete workspace that's
+/// virtually never the target (targets aren't generated as a plain left-to-right sum), which is
+/// all a "here's what an incorrect attempt looks like" preview needs.
+@MainActor
+private func buildNaiveWrongGuess(_ viewModel: PracticeViewModel) {
+    let diceCount = viewModel.puzzle.dice.count
+    for index in 0..<diceCount {
+        guard let trayIndex = viewModel.puzzle.dice.indices.first(where: { !viewModel.usedTrayIndices.contains($0) }) else { continue }
+        viewModel.placeTrayDie(at: trayIndex)
+        if index < diceCount - 1 {
+            viewModel.placeOperation(.add)
+        }
+    }
+}
+
+#Preview("Answer Card - Complete, Unsubmitted") {
+    let viewModel = PracticeViewModel(tier: .exponents)
+    buildExampleSolution(viewModel)
+    return NavigationStack {
+        PracticeView(viewModel: viewModel)
+    }
+}
+
+#Preview("Answer Card - Correct") {
+    let viewModel = PracticeViewModel(tier: .exponents)
+    buildExampleSolution(viewModel)
+    viewModel.submit()
+    return NavigationStack {
+        PracticeView(viewModel: viewModel)
+    }
+}
+
+#Preview("Answer Card - Incorrect") {
+    let viewModel = PracticeViewModel(tier: .basic)
+    buildNaiveWrongGuess(viewModel)
+    viewModel.submit()
+    return NavigationStack {
+        PracticeView(viewModel: viewModel)
+    }
+}
+
+#Preview("Answer Card - Revealed (never submitted)") {
+    // The exact scenario that started this redesign: an incorrect, complete workspace, revealed
+    // without ever tapping Submit.
+    let viewModel = PracticeViewModel(tier: .basic)
+    buildNaiveWrongGuess(viewModel)
+    viewModel.revealAnswer()
+    return NavigationStack {
+        PracticeView(viewModel: viewModel)
+    }
+}
+
+#Preview("Answer Card - Revealed after Incorrect") {
+    let viewModel = PracticeViewModel(tier: .basic)
+    buildNaiveWrongGuess(viewModel)
+    viewModel.submit()
+    viewModel.revealAnswer()
     return NavigationStack {
         PracticeView(viewModel: viewModel)
     }
