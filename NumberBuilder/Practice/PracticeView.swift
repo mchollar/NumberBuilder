@@ -121,6 +121,18 @@ struct PracticeView: View {
                 .disabled(!isAvailable)
             }
         }
+        .padding(8)
+        .overlay(highlightBorder(viewModel.isAwaitingDie, cornerRadius: 14))
+        .animation(.easeInOut(duration: 0.25), value: viewModel.isAwaitingDie)
+    }
+
+    /// The moving "it's this section's turn" indicator shared by the dice tray, variant row, and
+    /// operator row -- all three stay visible and in place the whole puzzle now (see
+    /// `variantPicker`/`operatorPicker`'s doc comments for why they used to reveal/hide instead),
+    /// so this border is what actually shows the player where to look next.
+    private func highlightBorder(_ isActive: Bool, cornerRadius: CGFloat = 20) -> some View {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+            .strokeBorder(isActive ? viewModel.tier.accentColor : Color.clear, lineWidth: 2.5)
     }
 
     private var workspaceCard: some View {
@@ -169,27 +181,31 @@ struct PracticeView: View {
         }
     }
 
-    @ViewBuilder
+    /// Always on screen from the first frame, rather than appearing only once a die is placed --
+    /// the operator symbols are the same every turn regardless of puzzle state, so there's
+    /// nothing to wait to compute. `highlightBorder`/disabled-dimming show whether it's actually
+    /// this row's turn instead of the row itself popping in and out.
     private var operatorPicker: some View {
-        if viewModel.isAwaitingOperation {
-            HStack(spacing: 12) {
-                ForEach(MathOperation.allCases, id: \.self) { operation in
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.25)) {
-                            viewModel.placeOperation(operation)
-                        }
-                    } label: {
-                        Text(operation.symbol)
-                            .font(.nbNumber(35, weight: .bold))
-                            .frame(maxWidth: .infinity)
+        let isActive = viewModel.isAwaitingOperation
+        return HStack(spacing: 12) {
+            ForEach(MathOperation.allCases, id: \.self) { operation in
+                Button {
+                    withAnimation(.easeInOut(duration: 0.25)) {
+                        viewModel.placeOperation(operation)
                     }
-                    .buttonStyle(.nbTonal(tint: operation.accentColor))
+                } label: {
+                    Text(operation.symbol)
+                        .font(.nbNumber(35, weight: .bold))
+                        .frame(maxWidth: .infinity)
                 }
+                .buttonStyle(.nbTonal(tint: operation.accentColor, isEnabled: isActive))
+                .disabled(!isActive)
             }
-            .padding(20)
-            .cardSurface()
-            .transition(.opacity.combined(with: .move(edge: .top)))
         }
+        .padding(20)
+        .cardSurface()
+        .overlay(highlightBorder(isActive))
+        .animation(.easeInOut(duration: 0.25), value: isActive)
     }
 
     @ViewBuilder
@@ -379,9 +395,15 @@ struct PracticeView: View {
 
     // MARK: - Variant picker
 
-    /// Shown right after a tray die lands, alongside `operatorPicker` -- lets the player
-    /// optionally raise that die to a power/root before moving on. Never shown for `.basic`,
-    /// since a plain die only ever has one legal "variant" (itself).
+    /// Always on screen (from the first frame, alongside `operatorPicker`) for every tier except
+    /// `.basic` -- a plain die only ever has one legal "variant" (itself), so there's never
+    /// anything to choose there and the row would just sit permanently empty all puzzle long.
+    /// For the two harder tiers, though, it's present the whole time: empty/disabled before a die
+    /// is active (its content is die-specific, so there's nothing real to show pre-emptively),
+    /// populated and highlighted once a die lands with more than one option. Both the variant row
+    /// and `operatorPicker` can be highlighted together right after a die lands -- changing the
+    /// variant and choosing the next operator are both legal next taps at that point, it's not a
+    /// strict one-at-a-time sequence.
     ///
     /// Straight powers (root == 1) and root-derived values are split by a vertical divider --
     /// `DieValue.variants` interleaves them (it walks exponents ascending, checking every root at
@@ -392,28 +414,40 @@ struct PracticeView: View {
     /// oval on iPhone and broke fractions like "3/2" onto three lines for lack of room.
     @ViewBuilder
     private var variantPicker: some View {
-        if viewModel.activeVariantOptions.count > 1 {
-            let powers = viewModel.activeVariantOptions.filter { $0.root == 1 }
-            let roots = viewModel.activeVariantOptions.filter { $0.root != 1 }
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(powers, id: \.self) { variant in
-                        variantButton(variant)
+        if viewModel.tier != .basic {
+            let isActive = viewModel.activeDieSlot != nil && viewModel.activeVariantOptions.count > 1
+            Group {
+                if isActive {
+                    let powers = viewModel.activeVariantOptions.filter { $0.root == 1 }
+                    let roots = viewModel.activeVariantOptions.filter { $0.root != 1 }
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(powers, id: \.self) { variant in
+                                variantButton(variant)
+                            }
+                            if !powers.isEmpty, !roots.isEmpty {
+                                Rectangle()
+                                    .fill(Color.secondary.opacity(0.25))
+                                    .frame(width: 1)
+                                    .padding(.vertical, 6)
+                            }
+                            ForEach(roots, id: \.self) { variant in
+                                variantButton(variant)
+                            }
+                        }
+                        .padding(20)
                     }
-                    if !powers.isEmpty, !roots.isEmpty {
-                        Rectangle()
-                            .fill(Color.secondary.opacity(0.25))
-                            .frame(width: 1)
-                            .padding(.vertical, 6)
-                    }
-                    ForEach(roots, id: \.self) { variant in
-                        variantButton(variant)
-                    }
+                } else {
+                    Text("—")
+                        .font(.nbNumber(20, weight: .bold))
+                        .foregroundStyle(.secondary.opacity(0.4))
+                        .frame(maxWidth: .infinity, minHeight: 20)
+                        .padding(20)
                 }
-                .padding(20)
             }
             .cardSurface()
-            .transition(.opacity.combined(with: .move(edge: .top)))
+            .overlay(highlightBorder(isActive))
+            .animation(.easeInOut(duration: 0.25), value: isActive)
         }
     }
 
