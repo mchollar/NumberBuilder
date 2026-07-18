@@ -16,7 +16,7 @@ struct NumberBuilderApp: App {
                     PracticeView()
                 }
                 .tabItem {
-                    Label("Challenge", systemImage: "pencil.and.ruler.fill")
+                    Label("Challenge", systemImage: "star.fill")
                 }
             }
             .tint(.nbAccent)
