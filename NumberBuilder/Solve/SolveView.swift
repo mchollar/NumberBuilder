@@ -58,17 +58,8 @@ struct SolveView: View {
                 Button("Done") { targetFieldFocused = false }
             }
         }
-        .navigationDestination(isPresented: Binding(
-            get: { viewModel.hasSolved },
-            set: { if !$0 { viewModel.hasSolved = false } }
-        )) {
-            if let solutions = viewModel.solutions {
-                SolutionsSummaryView(
-                    solutions: solutions,
-                    diceFaces: viewModel.diceFaces,
-                    target: viewModel.target ?? 0
-                )
-            }
+        .navigationDestination(item: solveResultBinding) { result in
+            SolutionsSummaryView(solutions: result.solutions, diceFaces: result.diceFaces, target: result.target)
         }
     }
 
@@ -195,6 +186,31 @@ struct SolveView: View {
             .cardSurface()
         }
     }
+
+    /// `navigationDestination(item:)` instead of the boolean `isPresented:` form -- the latter is
+    /// where a real iPadOS 26 SwiftUI bug lives: with it, this screen's own `.navigationTitle`
+    /// silently fails to render on iPad's floating tab bar (confirmed by removing it and watching
+    /// the title come back), while `PracticeView`, which has no `navigationDestination` at all,
+    /// was unaffected. The `item:` form carries the same push-when-solved behavior without
+    /// tripping it.
+    private var solveResultBinding: Binding<SolveResult?> {
+        Binding(
+            get: {
+                guard viewModel.hasSolved, let solutions = viewModel.solutions, let target = viewModel.target else { return nil }
+                return SolveResult(solutions: solutions, diceFaces: viewModel.diceFaces, target: target)
+            },
+            set: { if $0 == nil { viewModel.hasSolved = false } }
+        )
+    }
+}
+
+/// Bundles a finished solve's results for `navigationDestination(item:)` -- `Hashable` so SwiftUI
+/// can use it as the destination's identity (no separate `id` needed, `Solution` is already
+/// `Hashable`/`Sendable`).
+private struct SolveResult: Hashable {
+    let solutions: [Solution]
+    let diceFaces: [Int]
+    let target: Int
 }
 
 #Preview("Solve") {
