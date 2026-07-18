@@ -188,6 +188,12 @@ struct NBOutlineButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
+                // A brief tint wash while held -- the scale-down alone was too subtle to read as
+                // "this responded to my touch" on an otherwise-transparent outline button.
+                Capsule(style: .continuous)
+                    .fill(tint.opacity(configuration.isPressed ? 0.18 : 0))
+            )
+            .background(
                 Capsule(style: .continuous)
                     .strokeBorder(tint, lineWidth: 1.5)
             )
