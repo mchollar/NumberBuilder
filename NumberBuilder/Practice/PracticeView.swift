@@ -115,9 +115,20 @@ struct PracticeView: View {
                         viewModel.placeTrayDie(at: index)
                     }
                 } label: {
-                    DiceFaceView(value: face, colorScheme: diceColorScheme, style: diceStyle, index: index, tier: viewModel.tier)
-                        .frame(width: 56, height: 56)
-                        .opacity(isUsed ? 0.25 : (isAvailable ? 1 : 0.35))
+                    // A used die reads as "this slot is empty, its die went into the answer above"
+                    // rather than just a fainter copy of itself -- matches `blankSlot`'s dashed
+                    // square in the answer card, so the same "nothing here" language is reused
+                    // instead of inventing a second one.
+                    if isUsed {
+                        Image(systemName: "square.dashed")
+                            .font(.system(size: 26))
+                            .foregroundStyle(.secondary.opacity(0.4))
+                            .frame(width: 56, height: 56)
+                    } else {
+                        DiceFaceView(value: face, colorScheme: diceColorScheme, style: diceStyle, index: index, tier: viewModel.tier)
+                            .frame(width: 56, height: 56)
+                            .opacity(isAvailable ? 1 : 0.35)
+                    }
                 }
                 .disabled(!isAvailable)
             }
@@ -243,7 +254,12 @@ struct PracticeView: View {
     }
 
     private var controls: some View {
-        VStack(spacing: 12) {
+        // Once the puzzle is solved, "Reset" (retry the same roll) shouldn't outrank "New Puzzle"
+        // (move on) as the primary action -- a win state's main CTA is "keep going," not "do that
+        // again." Incorrect/revealed states keep Reset as primary, since retrying the same puzzle
+        // is genuinely the likely next move there.
+        let isCorrect = viewModel.feedback == .correct
+        return VStack(spacing: 12) {
             Button {
                 withAnimation(.spring(response: 0.35, dampingFraction: 0.65)) {
                     if viewModel.hasConcluded {
@@ -255,7 +271,11 @@ struct PracticeView: View {
             } label: {
                 Text(viewModel.hasConcluded ? "Reset" : "Submit")
             }
-            .buttonStyle(.nbPrimary(tint: viewModel.tier.accentColor, isEnabled: viewModel.hasConcluded || viewModel.isComplete))
+            .buttonStyle(
+                isCorrect
+                    ? AnyButtonStyle(.nbTonal(tint: viewModel.tier.accentColor))
+                    : AnyButtonStyle(.nbPrimary(tint: viewModel.tier.accentColor, isEnabled: viewModel.hasConcluded || viewModel.isComplete))
+            )
             .disabled(!viewModel.hasConcluded && !viewModel.isComplete)
 
             HStack(spacing: 12) {
@@ -287,7 +307,11 @@ struct PracticeView: View {
             } label: {
                 Text("New Puzzle")
             }
-            .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor))
+            .buttonStyle(
+                isCorrect
+                    ? AnyButtonStyle(.nbPrimary(tint: viewModel.tier.accentColor))
+                    : AnyButtonStyle(.nbTonal(tint: viewModel.tier.accentColor))
+            )
         }
     }
 
