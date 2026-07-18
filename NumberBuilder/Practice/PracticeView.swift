@@ -46,6 +46,7 @@ struct PracticeView: View {
         }
         .background(Color.nbBackground.ignoresSafeArea())
         .navigationTitle("Challenge")
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink {

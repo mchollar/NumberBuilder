@@ -45,6 +45,7 @@ struct SolveView: View {
         .background(Color.nbBackground.ignoresSafeArea())
         .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Number Builder")
+        .navigationBarTitleDisplayMode(.large)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink {
