@@ -9,14 +9,14 @@ struct NumberBuilderApp: App {
                     SolveView()
                 }
                 .tabItem {
-                    Label("Solve", systemImage: "die.face.5.fill")
+                    Label("Explore", systemImage: "die.face.5.fill")
                 }
 
                 NavigationStack {
                     PracticeView()
                 }
                 .tabItem {
-                    Label("Practice", systemImage: "pencil.and.ruler.fill")
+                    Label("Challenge", systemImage: "pencil.and.ruler.fill")
                 }
             }
             .tint(.nbAccent)

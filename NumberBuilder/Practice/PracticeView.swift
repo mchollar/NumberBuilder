@@ -45,7 +45,7 @@ struct PracticeView: View {
             .readableContentWidth()
         }
         .background(Color.nbBackground.ignoresSafeArea())
-        .navigationTitle("Practice")
+        .navigationTitle("Challenge")
         .onAppear {
             guard !hasSeenPracticeIntro else { return }
             hasSeenPracticeIntro = true

@@ -7,8 +7,8 @@ import NumberBuilderKit
 /// open pre-selected to Practice via `initialMode`, no scroll-position hack needed.
 struct HowToPlayView: View {
     enum Mode: String, CaseIterable, Hashable {
-        case solve = "Solve"
-        case practice = "Practice"
+        case solve = "Explore"
+        case practice = "Challenge"
     }
 
     @State private var mode: Mode
@@ -72,7 +72,7 @@ struct HowToPlayView: View {
     @ViewBuilder
     private var practiceContent: some View {
         Section {
-            Text("Practice hands you a roll and a target — you build the answer yourself, tapping dice and operators into place left to right.")
+            Text("Challenge hands you a roll and a target — you build the answer yourself, tapping dice and operators into place left to right.")
         }
         .listRowBackground(Color.nbCardSurface)
 
