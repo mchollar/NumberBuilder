@@ -111,12 +111,16 @@ private enum BruteForceReference {
     static func solve(_ configuration: SolverConfiguration) -> [Solution] {
         guard !configuration.dice.isEmpty, configuration.target > 0 else { return [] }
 
+        // Must match SolverEngine.run's own variant computation exactly -- otherwise this
+        // "reference" would be comparing the pruned search against a differently-shaped search
+        // space instead of validating the pruning itself, and could report spurious mismatches
+        // (or worse, mask a real one).
         let variantSets: [[DieValue]] = configuration.dice.map { face in
-            DieValue(base: face).variants(
-                maxExponent: configuration.maxExponent,
+            DieValue.practiceVariants(
+                base: face,
                 allowExponents: configuration.allowExponents,
                 allowRoots: configuration.allowRoots
-            )
+            ).filter { $0.exponent <= configuration.maxExponent }
         }
 
         var search = Search(target: configuration.target, variantSets: variantSets, used: Array(repeating: false, count: configuration.dice.count))

@@ -37,9 +37,12 @@ final class SolverEngineBenchmarkTests: XCTestCase {
     }
 
     func testRecommendedMaxExponentDoesNotShortchangeThreeDice() async {
-        // The classic 3-dice game keeps its full maxExponent of 5, matching v1.0.4 exactly.
+        // 9, not 5 -- raised so this ceiling never clips `DieValue.practiceVariants`' own
+        // per-base table (base 2 needs up to 9, base 4's root search needs up to 9 to reach
+        // 4^(7/2)=128 and 4^(9/2)=512). The classic 3-dice game should see everything Challenge
+        // mode can generate, not a narrower flat cap.
         let configuration = SolverConfiguration(dice: [1, 2, 3], target: 6)
-        XCTAssertEqual(configuration.maxExponent, 5)
+        XCTAssertEqual(configuration.maxExponent, 9)
     }
 
     private func time(_ configuration: SolverConfiguration) async -> (Duration, Int) {

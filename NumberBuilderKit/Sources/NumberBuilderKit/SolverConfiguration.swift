@@ -35,9 +35,16 @@ public struct SolverConfiguration: Sendable, Hashable {
     /// 4 dice stayed under a second even at `maxExponent` 5, so only 5 dice needs scaling down
     /// given the plan's stated cap of 5 dice; the `default` case beyond that is unbenchmarked
     /// and deliberately conservative since there's no current plan to support more than 5 dice.
+    ///
+    /// 9 (not 5) for under-5-dice configs specifically so this ceiling never clips
+    /// `DieValue.practiceVariants`' own per-base table (bases 2/3 legitimately need up to 9/6,
+    /// and base 4's root search needs up to 9) -- `SolverEngine` intersects the two, so this is
+    /// just "don't cut off Explore mode's search before it even reaches what Challenge mode can
+    /// already generate," not a performance-driven number for the classic 3-dice game the way the
+    /// 5-dice/6+-dice cases below still are.
     public static func recommendedMaxExponent(forDiceCount diceCount: Int) -> Int {
         switch diceCount {
-        case ..<5: return 5
+        case ..<5: return 9
         case 5: return 3
         default: return 1
         }

@@ -69,6 +69,18 @@ final class SolverEngineTests: XCTestCase {
         XCTAssertTrue(solutions.allSatisfy { $0.tier == .basic })
     }
 
+    /// The user-reported bug this whole change fixed: Challenge mode generated dice [4, 1, 3] ->
+    /// target 126 (using 4^(7/2)=128, then -3, +1), but Explore mode reported no solution for the
+    /// exact same roll and target -- because it was still computing variants at a flat
+    /// `maxExponent` of 5 rather than `DieValue.practiceVariants`' per-base table, so 4^(7/2)
+    /// (which needs exponent 7) was never in its search space at all. Explore should always be
+    /// able to find anything Challenge can generate.
+    func testFindsTheFractionalExponentSolutionExploreUsedToMiss() async {
+        let configuration = SolverConfiguration(dice: [4, 1, 3], target: 126)
+        let solutions = await solve(configuration)
+        XCTAssertTrue(solutions.contains { $0.dice.contains { $0.base == 4 && $0.exponent == 7 && $0.root == 2 } })
+    }
+
     func testCancellationStopsTheSearch() async {
         let engine = SolverEngine()
         let configuration = SolverConfiguration(dice: [1, 2, 3, 4], target: 24)

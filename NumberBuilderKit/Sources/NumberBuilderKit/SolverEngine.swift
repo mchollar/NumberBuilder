@@ -29,12 +29,21 @@ public actor SolverEngine {
             return
         }
 
+        // `practiceVariants` matches Challenge mode's own per-base exponent table exactly
+        // (higher for small bases like 2/3, base 4's extra root search for 128/512) rather than
+        // one flat number applied to every base -- without it, Explore could report "no solution"
+        // for a target Challenge had just generated moments earlier (e.g. 4^(7/2)=128 needing
+        // exponent 7, out of reach of the old flat cap of 5). Still intersected with
+        // `configuration.maxExponent` so the 5-dice/6+-dice performance ceilings below remain in
+        // effect -- practiceVariants' own table only ever gets to apply in full when the ceiling
+        // is high enough to not clip it, which `recommendedMaxExponent` guarantees for the
+        // classic under-5-dice case.
         let variantSets: [[DieValue]] = configuration.dice.map { face in
-            DieValue(base: face).variants(
-                maxExponent: configuration.maxExponent,
+            DieValue.practiceVariants(
+                base: face,
                 allowExponents: configuration.allowExponents,
                 allowRoots: configuration.allowRoots
-            )
+            ).filter { $0.exponent <= configuration.maxExponent }
         }
 
         var search = Search(
