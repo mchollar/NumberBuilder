@@ -24,6 +24,15 @@ struct HowToPlayView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            Text("Number Builder has two modes: Explore and Challenge.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 20)
+                .padding(.top, 4)
+                .padding(.bottom, 12)
+
             Picker("Mode", selection: $mode) {
                 ForEach(Mode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
@@ -55,7 +64,7 @@ struct HowToPlayView: View {
     @ViewBuilder
     private var solveContent: some View {
         Section {
-            Text("Roll three dice, then try to reach a target number by combining them with math — strictly left to right, just like the real game, with no operator precedence to worry about.")
+            Text("A tool to help you when you're stuck: enter your dice and a target number, and see every way to combine them to reach it — strictly left to right, with no operator precedence to worry about.")
         }
         .listRowBackground(Color.nbCardSurface)
 

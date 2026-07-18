@@ -7,7 +7,7 @@ import NumberBuilderKit
 /// `DiceAppearanceSettings`, set from `DiceAppearanceView`, reached from `AboutView`).
 struct DiceFaceView: View {
     let value: Int
-    var colorScheme: DiceColorScheme = .primary
+    var colorScheme: DiceColorScheme = .rainbow
     var style: DiceRenderStyle = .filledColoredBackground
     /// Which of the three tray positions this is, 0-based -- only used by `.rainbow` (rotates
     /// through red/yellow/blue); `.tierColored` doesn't need it since tier is a single app-wide
@@ -129,34 +129,38 @@ struct DiceFaceView: View {
 enum DiceColorScheme: String, CaseIterable, Identifiable {
     var id: Self { self }
 
+    /// Rotates through red/yellow/blue by tray position -- a fixed, kid-recognizable primary-color
+    /// set, independent of `MathOperation.accentColor` (which stays green/orange/blue/pink for
+    /// operator symbols elsewhere; this scheme just needed its own distinct palette). The app's
+    /// own default -- listed and cased first for that reason, even though the case name itself
+    /// (and its persisted `@AppStorage` rawValue) stays `rainbow` for compatibility.
+    case rainbow
     /// Single consistent color (the app's own primary accent), regardless of context.
     case primary
     /// The active `SolutionTier`'s color in Practice; falls back to `.basic`'s color wherever
     /// there's no real tier to read (Solve mode).
     case tierColored
-    /// Rotates through red/yellow/blue by tray position -- a fixed, kid-recognizable primary-color
-    /// set, independent of `MathOperation.accentColor` (which stays green/orange/blue/pink for
-    /// operator symbols elsewhere; this scheme just needed its own distinct palette).
-    case rainbow
     /// Neutral/plain -- no color at all, just ink-on-surface.
     case plain
 
     func color(forIndex index: Int, tier: SolutionTier?) -> Color {
         switch self {
-        case .primary: return .nbAccent
-        case .tierColored: return (tier ?? .basic).accentColor
         case .rainbow:
             let colors: [Color] = [.red, .yellow, .blue]
             return colors[index % colors.count]
+        case .primary: return .nbAccent
+        case .tierColored: return (tier ?? .basic).accentColor
         case .plain: return Color.primary
         }
     }
 
+    /// Labels are written for the app's kid audience -- `.rainbow` reads "Primary Colors" rather
+    /// than the case name because it actually renders a fixed red/yellow/blue set, not a rainbow.
     var label: String {
         switch self {
+        case .rainbow: return "Primary Colors"
         case .primary: return "Red"
         case .tierColored: return "By Difficulty"
-        case .rainbow: return "Rainbow"
         case .plain: return "Plain"
         }
     }

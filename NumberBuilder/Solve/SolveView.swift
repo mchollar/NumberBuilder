@@ -28,7 +28,7 @@ struct SolveView: View {
     /// Bumped only by the Roll button — dice bouncing should never fire from manually scrolling
     /// a wheel to pick a value by hand.
     @State private var rollTrigger = 0
-    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .primary
+    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .rainbow
     @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
 
     var body: some View {

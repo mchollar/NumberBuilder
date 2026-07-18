@@ -12,7 +12,7 @@ enum DiceAppearanceSettings {
 /// actual drawing; this screen is just a picker over its two axes (color source, render style)
 /// plus a live preview so a choice is visible before committing to it.
 struct DiceAppearanceView: View {
-    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var colorScheme: DiceColorScheme = .primary
+    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var colorScheme: DiceColorScheme = .rainbow
     @AppStorage(DiceAppearanceSettings.styleKey) private var style: DiceRenderStyle = .filledColoredBackground
 
     var body: some View {

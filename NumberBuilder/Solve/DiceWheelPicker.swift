@@ -10,7 +10,7 @@ import UIKit
 /// sized to fit.
 struct DiceWheelPicker: UIViewRepresentable {
     @Binding var selection: Int
-    var colorScheme: DiceColorScheme = .primary
+    var colorScheme: DiceColorScheme = .rainbow
     var style: DiceRenderStyle = .filledColoredBackground
     /// Which of the three tray positions this is, 0-based -- forwarded to `DiceFaceView` for
     /// `.rainbow`, which rotates by position. Fixed for the lifetime of one picker instance (each

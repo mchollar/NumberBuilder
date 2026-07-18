@@ -18,7 +18,7 @@ struct PracticeView: View {
     /// Bumped only when `feedback` transitions *into* `.correct`, so the checkmark's bounce
     /// fires once per win rather than replaying on every unrelated view update.
     @State private var correctTrigger = 0
-    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .primary
+    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .rainbow
     @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
 
     /// Defaults to a fresh puzzle for real use; the override lets previews drive the view model

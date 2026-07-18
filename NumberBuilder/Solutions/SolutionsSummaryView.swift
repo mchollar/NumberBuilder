@@ -8,7 +8,7 @@ struct SolutionsSummaryView: View {
 
     @AppStorage("hasSeenResultsHelp") private var hasSeenResultsHelp = false
     @State private var showHelp = false
-    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .primary
+    @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .rainbow
     @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
 
     private var basic: [Solution] { solutions.filter { $0.tier == .basic } }
