@@ -48,9 +48,9 @@ struct SolveView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink {
-                    AboutView()
+                    SettingsView()
                 } label: {
-                    Image(systemName: "info.circle")
+                    Image(systemName: "gearshape")
                 }
                 .tint(.primary)
             }

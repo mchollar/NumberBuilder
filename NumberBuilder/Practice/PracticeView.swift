@@ -46,6 +46,16 @@ struct PracticeView: View {
         }
         .background(Color.nbBackground.ignoresSafeArea())
         .navigationTitle("Challenge")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                NavigationLink {
+                    SettingsView()
+                } label: {
+                    Image(systemName: "gearshape")
+                }
+                .tint(.primary)
+            }
+        }
         .onAppear {
             guard !hasSeenPracticeIntro else { return }
             hasSeenPracticeIntro = true

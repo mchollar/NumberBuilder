@@ -1,18 +1,22 @@
 import SwiftUI
-import UIKit
 
+/// Purely informational -- icon/name/version, then static developer/copyright facts. Everything
+/// actionable (Rate, Feedback, Share, the debug menu) lives in `SettingsView` now, which is also
+/// where this screen is reached from.
 struct AboutView: View {
-    @State private var isShowingMailComposer = false
-    @State private var isShowingMailUnavailableAlert = false
-
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
     }
     private var appBuild: String {
         Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
     }
-
-    private static let appStoreURL = URL(string: "https://itunes.apple.com/app/id1489526164")!
+    /// Number Builder itself dates from 2020 -- distinct from Widgetilities LLC's own 2019
+    /// founding date, which isn't what a copyright notice on this particular app should reflect.
+    /// Computed rather than a fixed "2020–2026" so the range doesn't quietly go stale on its own.
+    private var copyrightYearRange: String {
+        let currentYear = Calendar.current.component(.year, from: Date())
+        return currentYear > 2020 ? "2020–\(currentYear)" : "2020"
+    }
 
     var body: some View {
         List {
@@ -26,7 +30,7 @@ struct AboutView: View {
                         .cardSurface()
                     Text("Number Builder")
                         .font(.nbNumber(22))
-                    Text("\(appVersion) (\(appBuild))")
+                    Text("Version \(appVersion) (\(appBuild))")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -36,80 +40,26 @@ struct AboutView: View {
             .listRowBackground(Color.clear)
 
             Section {
-                NavigationLink {
-                    HowToPlayView()
-                } label: {
-                    Label("How to Play", systemImage: "questionmark.circle.fill")
-                        .foregroundStyle(Color.primary)
-                }
-                NavigationLink {
-                    DiceAppearanceView()
-                } label: {
-                    Label("Dice Appearance", systemImage: "die.face.5.fill")
-                        .foregroundStyle(Color.primary)
-                }
+                infoRow("Developer", "Widgetilities LLC")
+                infoRow("Copyright", "© \(copyrightYearRange)")
             }
             .listRowBackground(Color.nbCardSurface)
-
-            Section {
-                Button {
-                    openReviewPage()
-                } label: {
-                    Label("Rate Number Builder", systemImage: "star.fill")
-                        .foregroundStyle(Color.primary)
-                }
-                Button {
-                    if MailComposeView.canSendMail {
-                        isShowingMailComposer = true
-                    } else {
-                        isShowingMailUnavailableAlert = true
-                    }
-                } label: {
-                    Label("Send Feedback", systemImage: "envelope.fill")
-                        .foregroundStyle(Color.primary)
-                }
-                ShareLink(item: Self.appStoreURL) {
-                    Label("Share Number Builder", systemImage: "square.and.arrow.up.fill")
-                        .foregroundStyle(Color.primary)
-                }
-            } footer: {
-                Text("No data is collected. No ads, ever.")
-            }
-            .listRowBackground(Color.nbCardSurface)
-
-            #if DEBUG
-            Section {
-                NavigationLink {
-                    DebugMenuView()
-                } label: {
-                    Label("Debug Menu", systemImage: "ladybug.fill")
-                        .foregroundStyle(Color.primary)
-                }
-            }
-            .listRowBackground(Color.nbCardSurface)
-            #endif
         }
         .scrollContentBackground(.hidden)
         .readableContentWidth()
         .background(Color.nbBackground)
         .navigationTitle("About")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $isShowingMailComposer) {
-            MailComposeView(
-                recipient: "support@widgetilities.com",
-                subject: "Feedback for Number Builder \(appVersion)"
-            )
-        }
-        .alert("Unable to Send Mail", isPresented: $isShowingMailUnavailableAlert) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text("Please check settings and enable Mail.")
-        }
     }
 
-    private func openReviewPage() {
-        guard let url = URL(string: "https://itunes.apple.com/app/id1489526164?action=write-review") else { return }
-        UIApplication.shared.open(url)
+    private func infoRow(_ label: String, _ value: String) -> some View {
+        HStack {
+            Text(label)
+                .foregroundStyle(Color.primary)
+            Spacer()
+            Text(value)
+                .foregroundStyle(.secondary)
+        }
     }
 }
 
