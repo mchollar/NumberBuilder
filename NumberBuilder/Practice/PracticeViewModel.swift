@@ -9,8 +9,11 @@ import NumberBuilderKit
 @Observable
 @MainActor
 final class PracticeViewModel {
-    private(set) var tier: SolutionTier
+    private(set) var level: PracticeLevel
     private(set) var puzzle: PracticeGenerator.Puzzle
+    /// Convenience for every call site that only cares which techniques are in play (dice/tier
+    /// coloring, the variant picker) -- fully implied by `level` now, not a separate choice.
+    var tier: SolutionTier { level.tier }
     private(set) var placedDice: [DieValue?]
     private(set) var placedOperations: [MathOperation?]
     private(set) var trayIndexForDieSlot: [Int?]
@@ -35,23 +38,23 @@ final class PracticeViewModel {
     /// rather than treating the reveal as a hint they can still act on.
     private(set) var isRevealed = false
 
-    init(tier: SolutionTier = .basic) {
-        self.tier = tier
-        let puzzle = PracticeGenerator.generate(tier: tier)
+    init(level: PracticeLevel = .one) {
+        self.level = level
+        let puzzle = PracticeGenerator.generate(level: level)
         self.puzzle = puzzle
         self.placedDice = Array(repeating: nil, count: puzzle.dice.count)
         self.placedOperations = Array(repeating: nil, count: puzzle.dice.count - 1)
         self.trayIndexForDieSlot = Array(repeating: nil, count: puzzle.dice.count)
     }
 
-    func selectTier(_ newTier: SolutionTier) {
-        guard newTier != tier else { return }
-        tier = newTier
+    func selectLevel(_ newLevel: PracticeLevel) {
+        guard newLevel != level else { return }
+        level = newLevel
         newPuzzle()
     }
 
     func newPuzzle() {
-        puzzle = PracticeGenerator.generate(tier: tier)
+        puzzle = PracticeGenerator.generate(level: level)
         placedDice = Array(repeating: nil, count: puzzle.dice.count)
         placedOperations = Array(repeating: nil, count: puzzle.dice.count - 1)
         trayIndexForDieSlot = Array(repeating: nil, count: puzzle.dice.count)
@@ -135,9 +138,8 @@ final class PracticeViewModel {
     /// for `.basic`, several for the harder tiers.
     private func availableVariants(at trayIndex: Int) -> [DieValue] {
         let face = puzzle.dice[trayIndex]
-        let maxExponent = SolverConfiguration.recommendedMaxExponent(forDiceCount: puzzle.dice.count)
-        return DieValue(base: face).variants(
-            maxExponent: maxExponent,
+        return DieValue.practiceVariants(
+            base: face,
             allowExponents: tier != .basic,
             allowRoots: tier == .rootsAndExponents
         )

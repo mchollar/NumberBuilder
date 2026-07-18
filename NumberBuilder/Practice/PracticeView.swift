@@ -34,7 +34,7 @@ struct PracticeView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                tierPicker
+                levelPicker
                 puzzleCard
                 answerCard
                 variantPicker
@@ -73,24 +73,47 @@ struct PracticeView: View {
         }
     }
 
-    private var tierPicker: some View {
-        HStack(spacing: 8) {
-            ForEach(SolutionTier.allCases, id: \.self) { tier in
-                Button {
-                    viewModel.selectTier(tier)
-                } label: {
-                    Text(compactTitle(for: tier))
-                        .font(.footnote.weight(.semibold))
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity)
+    /// One row, not two -- an earlier design split "which techniques" (tier) and "how intense"
+    /// (a separate toggle) into two stacked button rows, which took up too much vertical space
+    /// for a single difficulty choice. `PracticeLevel` bundles both into one ordered dial, shown
+    /// as a stepper with its own explanation directly underneath so the level is self-describing
+    /// without a trip to How to Play.
+    private var levelPicker: some View {
+        VStack(spacing: 6) {
+            HStack {
+                levelStepButton(systemImage: "chevron.left", isEnabled: viewModel.level != .one) {
+                    viewModel.selectLevel(viewModel.level.previous)
                 }
-                .buttonStyle(
-                    viewModel.tier == tier
-                        ? AnyButtonStyle(.nbPrimary(tint: tier.accentColor))
-                        : AnyButtonStyle(.nbTonal(tint: tier.accentColor))
-                )
+                Spacer()
+                Text("Level \(viewModel.level.rawValue)")
+                    .font(.nbNumber(20, weight: .bold))
+                    .foregroundStyle(viewModel.tier.accentColor)
+                    .contentTransition(.numericText())
+                Spacer()
+                levelStepButton(systemImage: "chevron.right", isEnabled: viewModel.level != .six) {
+                    viewModel.selectLevel(viewModel.level.next)
+                }
             }
+            Text(viewModel.level.description)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
         }
+    }
+
+    private func levelStepButton(systemImage: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                action()
+            }
+        } label: {
+            Image(systemName: systemImage)
+                .font(.title3.weight(.semibold))
+                .frame(width: 44, height: 44)
+        }
+        .foregroundStyle(isEnabled ? viewModel.tier.accentColor : Color.secondary.opacity(0.3))
+        .disabled(!isEnabled)
     }
 
     private var puzzleCard: some View {
@@ -332,17 +355,6 @@ struct PracticeView: View {
             .tracking(0.5)
     }
 
-    /// `SolutionTier.shortTitle` ("Exponents & Roots") wraps to two lines in this narrow a pill,
-    /// making it taller than its siblings -- a shorter, picker-specific label keeps the row
-    /// uniform. `shortTitle` itself is unchanged for the places it already reads fine (Solve
-    /// mode's results, How to Play).
-    private func compactTitle(for tier: SolutionTier) -> String {
-        switch tier {
-        case .basic: return "Basic"
-        case .exponents: return "Exponents"
-        case .rootsAndExponents: return "Roots"
-        }
-    }
 
     // MARK: - Workspace tokens
 
@@ -550,7 +562,7 @@ private struct AnyButtonStyle: ButtonStyle {
 #Preview("Practice - Variant Picker (Roots)") {
     // Places the first tray die that has more than one legal variant, entirely in code -- no
     // simulated taps needed to inspect `variantPicker`'s layout on its own.
-    let viewModel = PracticeViewModel(tier: .rootsAndExponents)
+    let viewModel = PracticeViewModel(level: .five)
     if let trayIndex = viewModel.puzzle.dice.indices.first(where: { viewModel.canPlaceTrayDie(at: $0) }) {
         viewModel.placeTrayDie(at: trayIndex)
     }
@@ -596,7 +608,7 @@ private func buildNaiveWrongGuess(_ viewModel: PracticeViewModel) {
 }
 
 #Preview("Answer Card - Complete, Unsubmitted") {
-    let viewModel = PracticeViewModel(tier: .exponents)
+    let viewModel = PracticeViewModel(level: .three)
     buildExampleSolution(viewModel)
     return NavigationStack {
         PracticeView(viewModel: viewModel)
@@ -604,7 +616,7 @@ private func buildNaiveWrongGuess(_ viewModel: PracticeViewModel) {
 }
 
 #Preview("Answer Card - Correct") {
-    let viewModel = PracticeViewModel(tier: .exponents)
+    let viewModel = PracticeViewModel(level: .three)
     buildExampleSolution(viewModel)
     viewModel.submit()
     return NavigationStack {
@@ -613,7 +625,7 @@ private func buildNaiveWrongGuess(_ viewModel: PracticeViewModel) {
 }
 
 #Preview("Answer Card - Incorrect") {
-    let viewModel = PracticeViewModel(tier: .basic)
+    let viewModel = PracticeViewModel(level: .one)
     buildNaiveWrongGuess(viewModel)
     viewModel.submit()
     return NavigationStack {
@@ -624,7 +636,7 @@ private func buildNaiveWrongGuess(_ viewModel: PracticeViewModel) {
 #Preview("Answer Card - Revealed (never submitted)") {
     // The exact scenario that started this redesign: an incorrect, complete workspace, revealed
     // without ever tapping Submit.
-    let viewModel = PracticeViewModel(tier: .basic)
+    let viewModel = PracticeViewModel(level: .one)
     buildNaiveWrongGuess(viewModel)
     viewModel.revealAnswer()
     return NavigationStack {
@@ -633,7 +645,7 @@ private func buildNaiveWrongGuess(_ viewModel: PracticeViewModel) {
 }
 
 #Preview("Answer Card - Revealed after Incorrect") {
-    let viewModel = PracticeViewModel(tier: .basic)
+    let viewModel = PracticeViewModel(level: .one)
     buildNaiveWrongGuess(viewModel)
     viewModel.submit()
     viewModel.revealAnswer()

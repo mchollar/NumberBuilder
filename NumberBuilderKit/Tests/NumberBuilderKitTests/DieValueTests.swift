@@ -63,4 +63,40 @@ final class DieValueTests: XCTestCase {
     func testIntegerPowerOverflowReturnsNilInsteadOfWrapping() {
         XCTAssertNil(DieValue.integerPower(Int.max, 2))
     }
+
+    /// All five root values from N2K's own training table (4^1/2, 4^3/2, 4^5/2, 4^7/2, 4^9/2 =
+    /// 2, 8, 32, 128, 512) should be selectable -- the standard `maxExponent` cap of 5 alone only
+    /// reaches the first three; `practiceVariants` searches wider for base 4 specifically to
+    /// surface the other two.
+    func testPracticeVariantsSurfacesAllFiveOfBaseFoursRootValues() {
+        let variants = DieValue.practiceVariants(base: 4, allowExponents: true, allowRoots: true)
+        let rootValues = Set(variants.filter { $0.root != 1 }.map(\.value))
+        XCTAssertEqual(rootValues, [2, 8, 32, 128, 512])
+    }
+
+    /// The wider search for base 4's roots shouldn't leak newly-reachable huge *plain* powers
+    /// (4^6 through 4^9) into the offered choices -- only the root-derived values are the point.
+    func testPracticeVariantsDoesNotExposePlainPowersBeyondTheStandardCap() {
+        let variants = DieValue.practiceVariants(base: 4, allowExponents: true, allowRoots: true)
+        XCTAssertFalse(variants.contains { $0.root == 1 && $0.exponent > 5 })
+    }
+
+    /// Per-base plain exponent ceiling meets or exceeds what N2K's own training table bothers to
+    /// tabulate: much higher for 2 and 3 (whose table goes to 2^9 and 3^6) than for 5 and 6
+    /// (whose table stops at square/cube). 4 keeps the same lower ceiling as 5/6 for its own
+    /// plain powers -- its extra headroom is for root search only (see the root-value test above).
+    func testPracticeVariantsHighestPlainExponentMatchesPerBaseCeiling() {
+        let expectedCeiling: [Int: Int] = [2: 9, 3: 6, 4: 5, 5: 5, 6: 5]
+        for (base, ceiling) in expectedCeiling {
+            let variants = DieValue.practiceVariants(base: base, allowExponents: true, allowRoots: true)
+            let highestPlainExponent = variants.filter { $0.root == 1 }.map(\.exponent).max()
+            XCTAssertEqual(highestPlainExponent, ceiling, "base \(base) should offer plain exponents up to \(ceiling)")
+        }
+    }
+
+    /// Base 1 is unaffected by any of this -- always just the identity value.
+    func testPracticeVariantsForBaseOneIsUnaffected() {
+        let practice = DieValue.practiceVariants(base: 1, allowExponents: true, allowRoots: true)
+        XCTAssertEqual(practice, [DieValue(base: 1)])
+    }
 }

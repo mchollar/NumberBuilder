@@ -51,7 +51,7 @@ extension SolutionTier {
         switch self {
         case .basic: return "Uses only +, −, ×, and ÷."
         case .exponents: return "Also allows whole-number exponents, like 5²."
-        case .rootsAndExponents: return "Also allows roots — fractional exponents, like 5 to the ½."
+        case .rootsAndExponents: return "Also allows fractional exponents — a power and a root combined, like 4 to the 3/2, or occasionally a plain root like the square root of 4."
         }
     }
 }

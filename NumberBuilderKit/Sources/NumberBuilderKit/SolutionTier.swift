@@ -1,8 +1,12 @@
 /// Which of the three difficulty tiers a `Solution` falls into, ordered easiest to hardest.
-public enum SolutionTier: CaseIterable, Sendable, Hashable {
+public enum SolutionTier: Int, CaseIterable, Sendable, Hashable, Comparable {
     case basic
     case exponents
     case rootsAndExponents
+
+    public static func < (lhs: SolutionTier, rhs: SolutionTier) -> Bool {
+        lhs.rawValue < rhs.rawValue
+    }
 
     /// Classifies a fully-built expression by the most advanced technique any die uses -- any
     /// root bumps it to `.rootsAndExponents` regardless of other dice; otherwise any non-1
