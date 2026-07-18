@@ -34,11 +34,12 @@ struct SolveView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                rollCard
-                targetCard
+                puzzleCard
+                calculateButton
                 progressSection
             }
-            .padding(20)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 20)
             .readableContentWidth()
         }
         .background(Color.nbBackground.ignoresSafeArea())
@@ -63,7 +64,12 @@ struct SolveView: View {
         }
     }
 
-    private var rollCard: some View {
+    /// Roll and Calculate used to live in two separate stacked cards -- merged the roll/target
+    /// setup into one so the screen reads as a single continuous flow instead of two visually
+    /// identical gray boxes. Calculate itself stays outside this card as its own element (per the
+    /// reference mock) -- it's the one primary action for the whole screen, not part of the setup
+    /// card's own content.
+    private var puzzleCard: some View {
         VStack(spacing: 16) {
             sectionLabel("Your Roll")
             diceRow
@@ -76,10 +82,44 @@ struct SolveView: View {
                 Label("Roll", systemImage: "die.face.5.fill")
                     .symbolEffect(.bounce, value: rollTrigger)
             }
-            .buttonStyle(.nbTonal(tint: .primary))
+            .buttonStyle(.nbOutline(tint: .rollAccent))
+
+            Divider()
+                .padding(.vertical, 4)
+
+            sectionLabel("Target Number")
+            TextField("0", text: $viewModel.targetText)
+                .keyboardType(.numberPad)
+                .font(.nbNumber(40))
+                .multilineTextAlignment(.center)
+                .focused($targetFieldFocused)
+                .padding(.vertical, 14)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .fill(Color.innerSurface)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .strokeBorder(targetFieldFocused ? Color.primary : Color.primary.opacity(0.15), lineWidth: targetFieldFocused ? 2 : 1)
+                        )
+                )
+                .onChange(of: viewModel.targetText) {
+                    viewModel.resetForNewRoll()
+                }
         }
         .padding(20)
         .cardSurface()
+    }
+
+    private var calculateButton: some View {
+        Button {
+            targetFieldFocused = false
+            viewModel.calculate()
+        } label: {
+            Text("Calculate")
+        }
+        .buttonStyle(.nbNeutral(isEnabled: viewModel.canCalculate))
+        .disabled(!viewModel.canCalculate)
     }
 
     private var diceRow: some View {
@@ -98,14 +138,19 @@ struct SolveView: View {
                     index: index
                 )
                 .id(index)
+                // UIPickerView's own intrinsic size (320x216) wins over the `sizeThatFits`
+                // override during SwiftUI's *ideal*-size layout pass (used e.g. when a parent
+                // stack up the tree computes how much space it wants), even though rendering
+                // itself already respects the smaller reported size. Left unpinned, that
+                // oversized ideal size was ballooning every ancestor's width all the way up to
+                // the screen-edge ScrollView content, silently defeating any `.padding()` applied
+                // above it. Pinning an explicit frame here forces SwiftUI to treat this as a fixed
+                // 112x192 leaf everywhere, not just in the final render.
+                .frame(width: 112, height: 192) // must match DiceWheelPicker's columnWidth/rowHeight*visibleRows defaults
                 .clipped()
                 .background(
                     RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color.primary.opacity(0.05))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 1)
-                        )
+                        .fill(Color.innerSurface)
                 )
                 .overlay {
                     // A decorative die that pops over the slot on Roll and fades away, revealing
@@ -127,40 +172,6 @@ struct SolveView: View {
                 }
             }
         }
-    }
-
-    private var targetCard: some View {
-        VStack(spacing: 16) {
-            sectionLabel("Target Number")
-            TextField("0", text: $viewModel.targetText)
-                .keyboardType(.numberPad)
-                .font(.nbNumber(40))
-                .multilineTextAlignment(.center)
-                .focused($targetFieldFocused)
-                .padding(.vertical, 14)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color.primary.opacity(0.05))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .strokeBorder(targetFieldFocused ? Color.primary : Color.primary.opacity(0.1), lineWidth: targetFieldFocused ? 2 : 1)
-                        )
-                )
-                .onChange(of: viewModel.targetText) {
-                    viewModel.resetForNewRoll()
-                }
-            Button {
-                targetFieldFocused = false
-                viewModel.calculate()
-            } label: {
-                Text("Calculate")
-            }
-            .buttonStyle(.nbNeutral(isEnabled: viewModel.canCalculate))
-            .disabled(!viewModel.canCalculate)
-        }
-        .padding(20)
-        .cardSurface()
     }
 
     private func sectionLabel(_ text: String) -> some View {

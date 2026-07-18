@@ -25,7 +25,7 @@ struct DiceWheelPicker: UIViewRepresentable {
     private var totalHeight: CGFloat { rowHeight * CGFloat(visibleRows) }
 
     func makeUIView(context: Context) -> UIPickerView {
-        let picker = UIPickerView()
+        let picker = ClearHighlightPickerView()
         picker.dataSource = context.coordinator
         picker.delegate = context.coordinator
         picker.selectRow(selection - 1, inComponent: 0, animated: false)
@@ -106,6 +106,10 @@ struct DiceWheelPicker: UIViewRepresentable {
                 imageView = reusedImageView
             } else {
                 container = UIView()
+                // Every row (selected or not) reads as one flat surface with a die on top; the
+                // system's own selection-highlight chrome is separately neutralized in
+                // ClearHighlightPickerView below.
+                container.backgroundColor = UIColor(named: "InnerSurface")
                 imageView = UIImageView()
                 imageView.contentMode = .scaleAspectFit
                 imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -123,6 +127,25 @@ struct DiceWheelPicker: UIViewRepresentable {
 
         func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
             parent.selection = row + 1
+        }
+    }
+}
+
+/// `UIPickerView` draws its own translucent, rounded-rect selection-indicator behind the
+/// centered row as standard chrome (a system behavior since iOS 14 -- `showsSelectionIndicator`
+/// is deprecated and does nothing here, and there's no public API to disable or restyle it). It
+/// showed through as a stray gray halo behind the selected die, visible in both light and dark
+/// mode, even after each row's own container got an opaque background (that fix wasn't enough --
+/// the indicator is a separate layer the picker draws on top, not something behind our content).
+/// The common workaround: clear the background color of the picker's own top-level chrome
+/// subviews after every layout pass. Safe here because our row containers (returned from
+/// `viewForRow`) already provide their own opaque fill and don't depend on the picker's internal
+/// scrolling container having a visible background of its own.
+private final class ClearHighlightPickerView: UIPickerView {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        for subview in subviews {
+            subview.backgroundColor = .clear
         }
     }
 }

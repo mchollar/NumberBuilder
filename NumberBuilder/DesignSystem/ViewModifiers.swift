@@ -76,6 +76,10 @@ private struct CardSurfaceModifier: ViewModifier {
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
                     .fill(Color.nbCardSurface)
             )
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(Color.cardBorder, lineWidth: 1)
+            )
             .shadow(color: .black.opacity(0.12), radius: 10, y: 4)
     }
 }
@@ -146,12 +150,20 @@ struct NBNeutralButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.nbNumber(17, weight: .semibold))
-            .foregroundStyle(isEnabled ? Color(.systemBackground) : Color.gray)
+            .foregroundStyle(isEnabled ? Color(.systemBackground) : Color.mutedText)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
                 Capsule(style: .continuous)
-                    .fill(isEnabled ? Color.primary : Color.gray.opacity(0.35))
+                    .fill(isEnabled ? Color.primary : Color.innerSurface)
+            )
+            .overlay(
+                // The disabled fill (innerSurface) sits close in lightness to the new softer page
+                // background -- without this, the capsule's own edges were nearly invisible,
+                // reading as a borderless rectangle rather than a button. The enabled state
+                // (solid black/white) already has plenty of contrast on its own.
+                Capsule(style: .continuous)
+                    .strokeBorder(isEnabled ? Color.clear : Color.primary.opacity(0.15), lineWidth: 1)
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
             .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
@@ -161,6 +173,38 @@ struct NBNeutralButtonStyle: ButtonStyle {
 extension ButtonStyle where Self == NBNeutralButtonStyle {
     static var nbNeutral: NBNeutralButtonStyle { NBNeutralButtonStyle() }
     static func nbNeutral(isEnabled: Bool = true) -> NBNeutralButtonStyle { NBNeutralButtonStyle(isEnabled: isEnabled) }
+}
+
+/// Outline/ghost capsule button — transparent fill, a colored border and text, no background
+/// wash. Quieter than `NBTonalButtonStyle` (which fills with a translucent tint) -- used for
+/// Solve's Roll button, so it reads as a secondary action next to the solid neutral Calculate.
+struct NBOutlineButtonStyle: ButtonStyle {
+    var tint: Color = .nbAccent
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.nbNumber(17, weight: .semibold))
+            .foregroundStyle(tint)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(
+                Capsule(style: .continuous)
+                    .strokeBorder(tint, lineWidth: 1.5)
+            )
+            // A stroke-only background has a transparent interior, so without an explicit hit
+            // shape SwiftUI only registers taps on the label/border pixels themselves -- the
+            // empty middle of the pill didn't respond at all. This makes the whole capsule
+            // tappable, matching every other button style here (which get this for free from
+            // their opaque fill).
+            .contentShape(Capsule())
+            .scaleEffect(configuration.isPressed ? 0.97 : 1)
+            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+    }
+}
+
+extension ButtonStyle where Self == NBOutlineButtonStyle {
+    static var nbOutline: NBOutlineButtonStyle { NBOutlineButtonStyle() }
+    static func nbOutline(tint: Color = .nbAccent) -> NBOutlineButtonStyle { NBOutlineButtonStyle(tint: tint) }
 }
 
 extension ButtonStyle where Self == NBPrimaryButtonStyle {
