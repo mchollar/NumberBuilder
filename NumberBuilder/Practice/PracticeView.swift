@@ -72,6 +72,21 @@ struct PracticeView: View {
                 correctTrigger += 1
             }
         }
+        .navigationDestination(item: allSolutionsResultBinding) { result in
+            SolutionsSummaryView(solutions: result.solutions, diceFaces: result.diceFaces, target: result.target)
+        }
+    }
+
+    /// `navigationDestination(item:)`, not the boolean `isPresented:` form -- see `SolveView`'s
+    /// own identical note on the real iPadOS bug that form trips.
+    private var allSolutionsResultBinding: Binding<AllSolutionsResult?> {
+        Binding(
+            get: {
+                guard viewModel.hasLoadedAllSolutions, let solutions = viewModel.allSolutions else { return nil }
+                return AllSolutionsResult(solutions: solutions, diceFaces: viewModel.puzzle.dice, target: viewModel.puzzle.target)
+            },
+            set: { if $0 == nil { viewModel.hasLoadedAllSolutions = false } }
+        )
     }
 
     /// One row, not two -- an earlier design split "which techniques" (tier) and "how intense"
@@ -212,10 +227,30 @@ struct PracticeView: View {
                 Divider()
                 VStack(alignment: .leading, spacing: 6) {
                     sectionLabel("Here's One Way")
-                    // Reuses `SolutionExpressionView` (Solve mode's own results renderer) rather
-                    // than a bespoke label, so a revealed expression looks exactly like the real
-                    // thing instead of a second, slightly-different notation to learn.
-                    SolutionExpressionView(solution: viewModel.puzzle.exampleSolution, tint: viewModel.tier.accentColor)
+                    HStack(alignment: .firstTextBaseline) {
+                        // Reuses `SolutionExpressionView` (Solve mode's own results renderer)
+                        // rather than a bespoke label, so a revealed expression looks exactly
+                        // like the real thing instead of a second, slightly-different notation
+                        // to learn.
+                        SolutionExpressionView(solution: viewModel.puzzle.exampleSolution, tint: viewModel.tier.accentColor)
+                        Spacer()
+                        // The one example above is just one way -- this hands the same dice/
+                        // target to the real solver (via `PuzzleSolver`, shared with Solve mode)
+                        // and pushes Explore's own results screen once it's done, matching
+                        // Explore's exact solve-then-push interaction rather than inventing a
+                        // second navigation pattern.
+                        Button {
+                            viewModel.showAllSolutions()
+                        } label: {
+                            HStack(spacing: 2) {
+                                Text("Show all")
+                                Image(systemName: "chevron.right")
+                            }
+                            .font(.footnote.weight(.semibold))
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(viewModel.tier.accentColor)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .transition(.opacity.combined(with: .move(edge: .top)))
@@ -538,6 +573,14 @@ struct PracticeView: View {
         }
         .font(.nbNumber(20, weight: .bold))
     }
+}
+
+/// Bundles a "Show all" solve's results for `navigationDestination(item:)` -- mirrors `SolveView`'s
+/// own `SolveResult` exactly, just named for where it's produced.
+private struct AllSolutionsResult: Hashable {
+    let solutions: [Solution]
+    let diceFaces: [Int]
+    let target: Int
 }
 
 /// Type-erases `NBPrimaryButtonStyle`/`NBTonalButtonStyle` so the tier picker can switch between

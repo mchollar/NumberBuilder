@@ -5,15 +5,15 @@ import NumberBuilderKit
 @Observable
 @MainActor
 final class SolveViewModel {
-    private let engine = SolverEngine()
-    private var solveTask: Task<Void, Never>?
+    private let solver = PuzzleSolver()
 
     var diceFaces: [Int] = [1, 2, 3]
     var targetText: String = ""
-    var isSolving = false
-    var progressCount = 0
-    var solutions: [Solution]?
     var hasSolved = false
+
+    var isSolving: Bool { solver.isSolving }
+    var progressCount: Int { solver.progressCount }
+    var solutions: [Solution]? { solver.solutions }
 
     var target: Int? { Int(targetText) }
 
@@ -24,41 +24,23 @@ final class SolveViewModel {
 
     func rollDice() {
         diceFaces = DiceRoller.roll()
-        solutions = nil
+        solver.cancel()
         hasSolved = false
         AppLogger.solve.debug("Rolled dice: \(self.diceFaces)")
     }
 
     func calculate() {
         guard let target else { return }
-        solveTask?.cancel()
-        solutions = nil
         hasSolved = false
-        isSolving = true
-        progressCount = 0
         AppLogger.solve.debug("Calculating for dice \(self.diceFaces), target \(target)")
-
-        let configuration = SolverConfiguration(dice: diceFaces, target: target)
-        let engine = engine
-        solveTask = Task {
-            for await event in await engine.solve(configuration) {
-                switch event {
-                case .progress(let count):
-                    self.progressCount = count
-                case .finished(let results):
-                    self.solutions = results
-                    self.isSolving = false
-                    self.hasSolved = true
-                    AppLogger.solve.debug("Found \(results.count) solutions")
-                }
-            }
+        solver.solve(dice: diceFaces, target: target) { [weak self] results in
+            self?.hasSolved = true
+            AppLogger.solve.debug("Found \(results.count) solutions")
         }
     }
 
     func resetForNewRoll() {
-        solveTask?.cancel()
-        isSolving = false
-        solutions = nil
+        solver.cancel()
         hasSolved = false
     }
 }

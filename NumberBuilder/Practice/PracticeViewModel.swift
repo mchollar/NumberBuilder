@@ -38,6 +38,14 @@ final class PracticeViewModel {
     /// rather than treating the reveal as a hint they can still act on.
     private(set) var isRevealed = false
 
+    /// Drives "Show all" -- runs the puzzle's own dice/target through the real solver (same as
+    /// Explore mode would) so a player can see every way to reach the target, not just the one
+    /// `exampleSolution` a reveal shows. Shares `PuzzleSolver` with `SolveViewModel` rather than
+    /// duplicating the solve/progress-tracking logic.
+    private let allSolutionsSolver = PuzzleSolver()
+    var hasLoadedAllSolutions = false
+    var allSolutions: [Solution]? { allSolutionsSolver.solutions }
+
     init(level: PracticeLevel = .one) {
         self.level = level
         let puzzle = PracticeGenerator.generate(level: level)
@@ -266,6 +274,18 @@ final class PracticeViewModel {
         activeDieSlot = nil
         activeVariantOptions = []
         AppLogger.practice.debug("Revealed answer for dice \(self.puzzle.dice), target \(self.puzzle.target)")
+    }
+
+    /// Solves the puzzle's own dice/target for real, independent of `level` -- "Show all" means
+    /// genuinely everything reachable, the same as visiting Explore directly with this roll and
+    /// target, not just techniques consistent with what this puzzle's level happened to allow.
+    func showAllSolutions() {
+        hasLoadedAllSolutions = false
+        AppLogger.practice.debug("Solving all solutions for dice \(self.puzzle.dice), target \(self.puzzle.target)")
+        allSolutionsSolver.solve(dice: puzzle.dice, target: puzzle.target) { [weak self] results in
+            self?.hasLoadedAllSolutions = true
+            AppLogger.practice.debug("Found \(results.count) total solutions")
+        }
     }
 
     func submit() {
