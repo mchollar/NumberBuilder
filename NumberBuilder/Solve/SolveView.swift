@@ -108,6 +108,7 @@ struct SolveView: View {
                     viewModel.resetForNewRoll()
                 }
         }
+        .frame(maxWidth: .infinity)
         .padding(20)
         .cardSurface()
     }
@@ -123,57 +124,82 @@ struct SolveView: View {
         .disabled(!viewModel.canCalculate)
     }
 
+    /// Three dice pickers at `DiceWheelPicker`'s "big dice" max size (112x192, from an earlier
+    /// explicit request) don't leave room for both the card's own padding and a real outer screen
+    /// margin on every device -- 3x112 + 2x12 gaps alone is 360pt, which is nearly the *entire*
+    /// width of a compact iPhone once the card's padding is added, leaving next to nothing for the
+    /// margin around the card itself. Rather than a fixed size, that 112pt is now a ceiling: a
+    /// `GeometryReader` reads however much width is actually proposed here (already shrunk by the
+    /// screen's outer padding and the card's own internal padding, since `puzzleCard` now accepts
+    /// its proposed width instead of demanding its full natural size) and scales every dice
+    /// dimension down together, proportionally, only as far as needed to fit. On iPad (or any
+    /// screen with room -- `readableContentWidth()` caps the column at 600pt, well over the 360pt
+    /// these need at full size), the scale factor is always 1 and nothing shrinks.
     private var diceRow: some View {
-        HStack(spacing: 12) {
-            ForEach(0..<3, id: \.self) { index in
-                DiceWheelPicker(
-                    selection: Binding(
-                        get: { viewModel.diceFaces[index] },
-                        set: { newValue in
-                            viewModel.diceFaces[index] = newValue
-                            viewModel.resetForNewRoll()
-                        }
-                    ),
-                    colorScheme: diceColorScheme,
-                    style: diceStyle,
-                    index: index
-                )
-                .id(index)
-                // UIPickerView's own intrinsic size (320x216) wins over the `sizeThatFits`
-                // override during SwiftUI's *ideal*-size layout pass (used e.g. when a parent
-                // stack up the tree computes how much space it wants), even though rendering
-                // itself already respects the smaller reported size. Left unpinned, that
-                // oversized ideal size was ballooning every ancestor's width all the way up to
-                // the screen-edge ScrollView content, silently defeating any `.padding()` applied
-                // above it. Pinning an explicit frame here forces SwiftUI to treat this as a fixed
-                // 112x192 leaf everywhere, not just in the final render.
-                .frame(width: 112, height: 192) // must match DiceWheelPicker's columnWidth/rowHeight*visibleRows defaults
-                .clipped()
-                .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .fill(Color.innerSurface)
-                )
-                .overlay {
-                    // A decorative die that pops over the slot on Roll and fades away, revealing
-                    // the (unanimated, still perfectly interactive) wheel underneath already
-                    // settled on its new value.
-                    DiceFaceView(value: viewModel.diceFaces[index], colorScheme: diceColorScheme, style: diceStyle, index: index, tier: nil)
-                        .frame(width: 64, height: 64)
-                        .allowsHitTesting(false)
-                        .phaseAnimator([DiePopPhase.hidden, .pop, .hidden], trigger: rollTrigger) { view, phase in
-                            view
-                                .scaleEffect(phase.scale)
-                                .opacity(phase.opacity)
-                        } animation: { phase in
-                            switch phase {
-                            case .pop: .spring(response: 0.3, dampingFraction: 0.55).delay(Double(index) * 0.07)
-                            case .hidden: .easeOut(duration: 0.22).delay(Double(index) * 0.07)
+        GeometryReader { proxy in
+            let maxRowWidth = DiceWheelPicker.maxColumnWidth * 3 + diceGap * 2
+            let scale = proxy.size.width > 0 ? min(1, proxy.size.width / maxRowWidth) : 1
+            let dieWidth = DiceWheelPicker.maxColumnWidth * scale
+            let dieHeight = DiceWheelPicker.maxRowHeight * 3 * scale
+
+            HStack(spacing: diceGap * scale) {
+                ForEach(0..<3, id: \.self) { index in
+                    DiceWheelPicker(
+                        selection: Binding(
+                            get: { viewModel.diceFaces[index] },
+                            set: { newValue in
+                                viewModel.diceFaces[index] = newValue
+                                viewModel.resetForNewRoll()
                             }
-                        }
+                        ),
+                        colorScheme: diceColorScheme,
+                        style: diceStyle,
+                        index: index,
+                        rowHeight: DiceWheelPicker.maxRowHeight * scale,
+                        imageSize: DiceWheelPicker.maxImageSize * scale,
+                        columnWidth: dieWidth
+                    )
+                    .id(index)
+                    // UIPickerView's own intrinsic size (320x216) wins over the `sizeThatFits`
+                    // override during SwiftUI's *ideal*-size layout pass (used e.g. when a parent
+                    // stack up the tree computes how much space it wants), even though rendering
+                    // itself already respects the smaller reported size. Left unpinned, that
+                    // oversized ideal size ballooned every ancestor's width. Pinning an explicit
+                    // frame here (matching the picker's own columnWidth/rowHeight*visibleRows)
+                    // forces SwiftUI to treat this as a fixed leaf everywhere, not just in the
+                    // final render.
+                    .frame(width: dieWidth, height: dieHeight)
+                    .clipped()
+                    .background(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .fill(Color.innerSurface)
+                    )
+                    .overlay {
+                        // A decorative die that pops over the slot on Roll and fades away, revealing
+                        // the (unanimated, still perfectly interactive) wheel underneath already
+                        // settled on its new value.
+                        DiceFaceView(value: viewModel.diceFaces[index], colorScheme: diceColorScheme, style: diceStyle, index: index, tier: nil)
+                            .frame(width: 64 * scale, height: 64 * scale)
+                            .allowsHitTesting(false)
+                            .phaseAnimator([DiePopPhase.hidden, .pop, .hidden], trigger: rollTrigger) { view, phase in
+                                view
+                                    .scaleEffect(phase.scale)
+                                    .opacity(phase.opacity)
+                            } animation: { phase in
+                                switch phase {
+                                case .pop: .spring(response: 0.3, dampingFraction: 0.55).delay(Double(index) * 0.07)
+                                case .hidden: .easeOut(duration: 0.22).delay(Double(index) * 0.07)
+                                }
+                            }
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(height: DiceWheelPicker.maxRowHeight * 3)
     }
+
+    private var diceGap: CGFloat { 12 }
 
     private func sectionLabel(_ text: String) -> some View {
         Text(text.uppercased())

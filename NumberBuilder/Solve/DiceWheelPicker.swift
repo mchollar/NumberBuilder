@@ -17,10 +17,17 @@ struct DiceWheelPicker: UIViewRepresentable {
     /// tray slot gets its own `DiceWheelPicker`), so it's not part of the appearance-change cache
     /// invalidation in `updateUIView`.
     var index: Int = 0
-    var rowHeight: CGFloat = 64
-    var imageSize: CGFloat = 52
-    var columnWidth: CGFloat = 112
+    var rowHeight: CGFloat = Self.maxRowHeight
+    var imageSize: CGFloat = Self.maxImageSize
+    var columnWidth: CGFloat = Self.maxColumnWidth
     var visibleRows: Int = 3
+
+    /// The "big dice" size from an earlier explicit request -- callers on a width-constrained
+    /// screen (see `SolveView.diceRow`) scale these down proportionally to fit; everywhere else
+    /// (iPad, or any screen with room) these stay the ceiling, not a fixed value.
+    static let maxRowHeight: CGFloat = 64
+    static let maxImageSize: CGFloat = 52
+    static let maxColumnWidth: CGFloat = 112
 
     private var totalHeight: CGFloat { rowHeight * CGFloat(visibleRows) }
 
@@ -43,11 +50,19 @@ struct DiceWheelPicker: UIViewRepresentable {
     }
 
     func updateUIView(_ picker: UIPickerView, context: Context) {
-        let appearanceChanged = context.coordinator.parent.colorScheme != colorScheme
-            || context.coordinator.parent.style != style
+        let previous = context.coordinator.parent
+        // `imageSize` affects the cached rendered images themselves (they're bitmaps drawn at a
+        // specific size), not just layout, so it invalidates the cache the same way colorScheme/
+        // style do. `columnWidth`/`rowHeight` are pure geometry -- no cache impact, but still need
+        // a reload so the picker re-queries `widthForComponent`/`rowHeightForComponent`, since
+        // `UIPickerView` doesn't do that on its own just because a Swift property changed.
+        let appearanceChanged = previous.colorScheme != colorScheme || previous.style != style || previous.imageSize != imageSize
+        let sizeChanged = previous.columnWidth != columnWidth || previous.rowHeight != rowHeight
         context.coordinator.parent = self
         if appearanceChanged {
             context.coordinator.imageCache.removeAll()
+        }
+        if appearanceChanged || sizeChanged {
             picker.reloadAllComponents()
         }
         let targetRow = selection - 1
@@ -104,6 +119,13 @@ struct DiceWheelPicker: UIViewRepresentable {
             if let reused = view, let reusedImageView = reused.subviews.first as? UIImageView {
                 container = reused
                 imageView = reusedImageView
+                // A reused row's width/height constraints were set to whatever `imageSize` was
+                // the first time this row was ever laid out -- if the picker has since been
+                // resized (e.g. `SolveView.diceRow`'s GeometryReader-driven scale), those are
+                // stale unless refreshed here too.
+                for constraint in imageView.constraints where constraint.firstAttribute == .width || constraint.firstAttribute == .height {
+                    constraint.constant = parent.imageSize
+                }
             } else {
                 container = UIView()
                 // Every row (selected or not) reads as one flat surface with a die on top; the
