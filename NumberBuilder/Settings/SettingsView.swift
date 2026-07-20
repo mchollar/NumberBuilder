@@ -63,6 +63,16 @@ struct SettingsView: View {
 
             Section {
                 NavigationLink {
+                    PurchasesView()
+                } label: {
+                    Label("Purchases", systemImage: "cart.fill")
+                        .foregroundStyle(Color.primary)
+                }
+            }
+            .listRowBackground(Color.nbCardSurface)
+
+            Section {
+                NavigationLink {
                     AboutView()
                 } label: {
                     Label("About Number Builder", systemImage: "info.circle.fill")

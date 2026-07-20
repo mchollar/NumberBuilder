@@ -46,6 +46,19 @@ final class PracticeViewModel {
     var hasLoadedAllSolutions = false
     var allSolutions: [Solution]? { allSolutionsSolver.solutions }
 
+    /// True once the current puzzle's first conclusion has already been counted toward the free
+    /// trial -- guards `recordConclusionIfNeeded()` so retrying the *same* puzzle via `Reset` and
+    /// concluding again doesn't burn a second credit (Reset's whole purpose is trying a different
+    /// expression for the same dice/target, which should stay free).
+    private var hasCountedCurrentPuzzle = false
+    /// True when the free trial is exhausted and Challenge hasn't been unlocked -- `PracticeView`
+    /// shows `PaywallView` instead of the normal puzzle content whenever this is true. Set at
+    /// init (in case the trial was already exhausted in a previous session) and re-checked on
+    /// every `newPuzzle()` attempt, not on every puzzle generation eagerly -- an already-concluded
+    /// puzzle stays visible/retryable via Reset even after the cap is hit, since nothing re-checks
+    /// access until the *next* new-puzzle attempt.
+    private(set) var isPaywalled: Bool
+
     init(level: PracticeLevel = .one) {
         self.level = level
         let puzzle = PracticeGenerator.generate(level: level)
@@ -53,6 +66,7 @@ final class PracticeViewModel {
         self.placedDice = Array(repeating: nil, count: puzzle.dice.count)
         self.placedOperations = Array(repeating: nil, count: puzzle.dice.count - 1)
         self.trayIndexForDieSlot = Array(repeating: nil, count: puzzle.dice.count)
+        self.isPaywalled = !PurchaseManager.shared.hasChallengeAccess
     }
 
     func selectLevel(_ newLevel: PracticeLevel) {
@@ -62,6 +76,12 @@ final class PracticeViewModel {
     }
 
     func newPuzzle() {
+        guard PurchaseManager.shared.hasChallengeAccess else {
+            isPaywalled = true
+            AppLogger.practice.debug("New puzzle blocked -- free trial exhausted")
+            return
+        }
+        isPaywalled = false
         puzzle = PracticeGenerator.generate(level: level)
         placedDice = Array(repeating: nil, count: puzzle.dice.count)
         placedOperations = Array(repeating: nil, count: puzzle.dice.count - 1)
@@ -70,7 +90,16 @@ final class PracticeViewModel {
         activeDieSlot = nil
         activeVariantOptions = []
         isRevealed = false
+        hasCountedCurrentPuzzle = false
         AppLogger.practice.debug("New puzzle: dice \(self.puzzle.dice), target \(self.puzzle.target), tier \(String(describing: self.tier))")
+    }
+
+    /// Counts this puzzle toward the free trial the first time it concludes -- called from both
+    /// `submit()` and `revealAnswer()`, the app's only two "this attempt is over" moments.
+    private func recordConclusionIfNeeded() {
+        guard !hasCountedCurrentPuzzle else { return }
+        hasCountedCurrentPuzzle = true
+        PurchaseManager.shared.recordFreePuzzleCompletion()
     }
 
     /// Clears every placed die/operator, feedback, and reveal state -- but keeps the same puzzle
@@ -273,6 +302,7 @@ final class PracticeViewModel {
         isRevealed = true
         activeDieSlot = nil
         activeVariantOptions = []
+        recordConclusionIfNeeded()
         AppLogger.practice.debug("Revealed answer for dice \(self.puzzle.dice), target \(self.puzzle.target)")
     }
 
@@ -294,6 +324,7 @@ final class PracticeViewModel {
         let operations = placedOperations.compactMap { $0 }
         guard let result = evaluate(dice: dice, operations: operations) else { return }
         feedback = result == puzzle.target ? .correct : .incorrect(got: result)
+        recordConclusionIfNeeded()
         AppLogger.practice.debug("Submitted: got \(result), target \(self.puzzle.target), tier \(String(describing: self.tier))")
     }
 }

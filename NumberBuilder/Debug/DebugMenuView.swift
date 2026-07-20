@@ -16,6 +16,23 @@ struct DebugMenuView: View {
                 Text("Turn off to see the Practice intro sheet again next time you open the Practice tab.")
             }
             .listRowBackground(Color.nbCardSurface)
+
+            #if DEBUG
+            Section {
+                Toggle("Force Challenge Unlocked", isOn: Binding(
+                    get: { PurchaseManager.shared.isUnlocked },
+                    set: { PurchaseManager.shared.debugSetUnlocked($0) }
+                ))
+                Button("Reset Free Puzzle Counter", role: .destructive) {
+                    PurchaseManager.shared.debugResetFreePuzzlesUsed()
+                }
+            } header: {
+                Text("In-App Purchase")
+            } footer: {
+                Text("Free puzzles used: \(PurchaseManager.shared.freePuzzlesUsed)/\(PurchaseManager.freeTrialLimit)")
+            }
+            .listRowBackground(Color.nbCardSurface)
+            #endif
         }
         .scrollContentBackground(.hidden)
         .readableContentWidth()

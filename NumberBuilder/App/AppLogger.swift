@@ -11,4 +11,5 @@ enum AppLogger {
 
     static let solve = Logger(subsystem: subsystem, category: "Solve")
     static let practice = Logger(subsystem: subsystem, category: "Practice")
+    static let purchase = Logger(subsystem: subsystem, category: "Purchase")
 }

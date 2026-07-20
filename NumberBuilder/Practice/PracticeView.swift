@@ -1,11 +1,14 @@
 import SwiftUI
 import NumberBuilderKit
 
-/// Shared `UserDefaults` key for the Practice intro flag -- `DebugMenuView` also reads/writes
-/// this, so it lives here as a named constant rather than as a string literal duplicated in both
-/// files (a typo in a duplicated key wouldn't error, just silently point at a second default).
+/// Shared `UserDefaults` keys the Debug Menu can reset -- centralized as named constants rather
+/// than string literals duplicated across files (a typo in a duplicated key wouldn't error, just
+/// silently point at a second default).
 enum DebugResettableFlag {
     static let hasSeenPracticeIntroKey = "hasSeenPracticeIntro"
+    /// How many free Challenge puzzles have been completed/revealed toward the trial limit --
+    /// read/written by `PurchaseManager`, reset here by `DebugMenuView` for testing.
+    static let freeChallengePuzzlesUsedKey = "freeChallengePuzzlesUsed"
 }
 
 struct PracticeView: View {
@@ -20,6 +23,9 @@ struct PracticeView: View {
     @State private var correctTrigger = 0
     @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .rainbow
     @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
+    /// The *voluntary* look at the paywall, reached by tapping the trial banner before the cap is
+    /// hit -- distinct from `viewModel.isPaywalled`'s forced, non-dismissable body substitution.
+    @State private var showingPaywallSheet = false
 
     /// Defaults to a fresh puzzle for real use; the override lets previews drive the view model
     /// into a specific state (e.g. mid-placement, to inspect `variantPicker`) without simulating
@@ -32,19 +38,13 @@ struct PracticeView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                levelPicker
-                puzzleCard
-                answerCard
-                variantPicker
-                operatorPicker
-                controls
+        Group {
+            if viewModel.isPaywalled {
+                PaywallView()
+            } else {
+                normalContent
             }
-            .padding(20)
-            .readableContentWidth()
         }
-        .background(Color.nbBackground.ignoresSafeArea())
         .navigationTitle("Challenge")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -67,14 +67,76 @@ struct PracticeView: View {
                 HowToPlayView(initialMode: .practice, showsDoneButton: true)
             }
         }
+        .sheet(isPresented: $showingPaywallSheet) {
+            PaywallView(onDismiss: { showingPaywallSheet = false })
+        }
         .onChange(of: viewModel.feedback) { _, newValue in
             if case .correct = newValue {
                 correctTrigger += 1
             }
         }
+        .onChange(of: PurchaseManager.shared.isUnlocked) { _, isUnlocked in
+            // Resume play automatically once a purchase/restore lands while paywalled -- no
+            // reason to make the player manually retry New Puzzle after paying for exactly that.
+            if isUnlocked, viewModel.isPaywalled {
+                viewModel.newPuzzle()
+            }
+        }
         .navigationDestination(item: allSolutionsResultBinding) { result in
             SolutionsSummaryView(solutions: result.solutions, diceFaces: result.diceFaces, target: result.target)
         }
+    }
+
+    private var normalContent: some View {
+        // The trial banner is pinned above the `ScrollView` in a plain `VStack` rather than via
+        // `.safeAreaInset(edge: .top)` -- that combination silently suppresses the navigation
+        // bar's large title (the space stays reserved, but the title text itself never draws),
+        // a real SwiftUI quirk, not something specific to this screen's content.
+        VStack(spacing: 0) {
+            if !PurchaseManager.shared.isUnlocked {
+                trialBanner
+            }
+            ScrollView {
+                VStack(spacing: 20) {
+                    levelPicker
+                    puzzleCard
+                    answerCard
+                    variantPicker
+                    operatorPicker
+                    controls
+                }
+                .padding(20)
+                .readableContentWidth()
+            }
+            .background(Color.nbBackground.ignoresSafeArea())
+        }
+    }
+
+    /// Tells players about the free trial up front (visible from puzzle 1, not only once they're
+    /// running low) rather than only surfacing it once they hit the cap. Pinned above the
+    /// scrolling content via `.safeAreaInset` so it stays visible without scrolling away.
+    private var trialBanner: some View {
+        Button {
+            showingPaywallSheet = true
+        } label: {
+            HStack {
+                Text("🎉 Free Trial — \(remainingFreePuzzles) puzzle\(remainingFreePuzzles == 1 ? "" : "s") left")
+                    .font(.footnote.weight(.semibold))
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity)
+            .background(Color.nbCardSurface)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(viewModel.tier.accentColor)
+    }
+
+    private var remainingFreePuzzles: Int {
+        max(0, PurchaseManager.freeTrialLimit - PurchaseManager.shared.freePuzzlesUsed)
     }
 
     /// `navigationDestination(item:)`, not the boolean `isPresented:` form -- see `SolveView`'s
