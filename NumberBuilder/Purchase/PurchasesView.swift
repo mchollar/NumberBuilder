@@ -142,9 +142,11 @@ struct PurchasesView: View {
     }
 }
 
+#if DEBUG
 #Preview("Purchases - Unlocked") {
     PurchaseManager.shared.debugSetUnlocked(true)
     return NavigationStack {
         PurchasesView()
     }
 }
+#endif
