@@ -1,6 +1,6 @@
 /// Rolls raw dice faces under the game's house rule: at most one face may show a 1 (rerolling
 /// until that holds), since the game is difficult to play with two 1s and a third number.
-/// Shared by Solve mode's Roll button and Practice mode's puzzle generator, which both need it.
+/// Shared by Solve mode's Roll button and Challenge mode's puzzle generator, which both need it.
 public enum DiceRoller {
     public static func roll(
         count: Int = SolverConfiguration.classicDiceCount,

@@ -13,7 +13,7 @@ struct DiceFaceView: View {
     /// through red/yellow/blue); `.tierColored` doesn't need it since tier is a single app-wide
     /// value, not per-die.
     var index: Int = 0
-    /// The active `SolutionTier`, when there is one -- only Practice has a tier concept; Solve
+    /// The active `SolutionTier`, when there is one -- only Challenge has a tier concept; Solve
     /// mode passes `nil` and `.tierColored` falls back to `.basic`'s color there.
     var tier: SolutionTier?
 
@@ -137,7 +137,7 @@ enum DiceColorScheme: String, CaseIterable, Identifiable {
     case rainbow
     /// Single consistent color (the app's own primary accent), regardless of context.
     case primary
-    /// The active `SolutionTier`'s color in Practice; falls back to `.basic`'s color wherever
+    /// The active `SolutionTier`'s color in Challenge; falls back to `.basic`'s color wherever
     /// there's no real tier to read (Solve mode).
     case tierColored
     /// Neutral/plain -- no color at all, just ink-on-surface.

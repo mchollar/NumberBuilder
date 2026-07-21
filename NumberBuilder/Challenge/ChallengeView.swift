@@ -5,18 +5,18 @@ import NumberBuilderKit
 /// than string literals duplicated across files (a typo in a duplicated key wouldn't error, just
 /// silently point at a second default).
 enum DebugResettableFlag {
-    static let hasSeenPracticeIntroKey = "hasSeenPracticeIntro"
+    static let hasSeenChallengeIntroKey = "hasSeenChallengeIntro"
     /// How many free Challenge puzzles have been completed/revealed toward the trial limit --
     /// read/written by `PurchaseManager`, reset here by `DebugMenuView` for testing.
     static let freeChallengePuzzlesUsedKey = "freeChallengePuzzlesUsed"
 }
 
-struct PracticeView: View {
-    @State private var viewModel: PracticeViewModel
+struct ChallengeView: View {
+    @State private var viewModel: ChallengeViewModel
     /// Flips true the first time this sheet is shown, so a newcomer sees the explainer exactly
     /// once across every future launch -- persisted rather than session-only, since most players
-    /// won't revisit Practice again within the same run of the app.
-    @AppStorage(DebugResettableFlag.hasSeenPracticeIntroKey) private var hasSeenPracticeIntro = false
+    /// won't revisit Challenge again within the same run of the app.
+    @AppStorage(DebugResettableFlag.hasSeenChallengeIntroKey) private var hasSeenChallengeIntro = false
     @State private var showingIntro = false
     /// Bumped only when `feedback` transitions *into* `.correct`, so the checkmark's bounce
     /// fires once per win rather than replaying on every unrelated view update.
@@ -29,12 +29,12 @@ struct PracticeView: View {
 
     /// Defaults to a fresh puzzle for real use; the override lets previews drive the view model
     /// into a specific state (e.g. mid-placement, to inspect `variantPicker`) without simulating
-    /// taps. Defaults to `nil` rather than a default-argument `PracticeViewModel()` -- default
+    /// taps. Defaults to `nil` rather than a default-argument `ChallengeViewModel()` -- default
     /// argument expressions evaluate outside the initializer's actor context, which can't satisfy
-    /// `PracticeViewModel`'s `@MainActor` isolation.
+    /// `ChallengeViewModel`'s `@MainActor` isolation.
     @MainActor
-    init(viewModel: PracticeViewModel? = nil) {
-        _viewModel = State(initialValue: viewModel ?? PracticeViewModel())
+    init(viewModel: ChallengeViewModel? = nil) {
+        _viewModel = State(initialValue: viewModel ?? ChallengeViewModel())
     }
 
     var body: some View {
@@ -58,13 +58,13 @@ struct PracticeView: View {
             }
         }
         .onAppear {
-            guard !hasSeenPracticeIntro else { return }
-            hasSeenPracticeIntro = true
+            guard !hasSeenChallengeIntro else { return }
+            hasSeenChallengeIntro = true
             showingIntro = true
         }
         .sheet(isPresented: $showingIntro) {
             NavigationStack {
-                HowToPlayView(initialMode: .practice, showsDoneButton: true)
+                HowToPlayView(initialMode: .challenge, showsDoneButton: true)
             }
         }
         .sheet(isPresented: $showingPaywallSheet) {
@@ -156,7 +156,7 @@ struct PracticeView: View {
 
     /// One row, not two -- an earlier design split "which techniques" (tier) and "how intense"
     /// (a separate toggle) into two stacked button rows, which took up too much vertical space
-    /// for a single difficulty choice. `PracticeLevel` bundles both into one ordered dial, shown
+    /// for a single difficulty choice. `ChallengeLevel` bundles both into one ordered dial, shown
     /// as a stepper with its own explanation directly underneath so the level is self-describing
     /// without a trip to How to Play.
     private var levelPicker: some View {
@@ -626,7 +626,7 @@ struct PracticeView: View {
     }
 
     /// Notation only, deliberately no computed value -- working out what a power/root equals is
-    /// part of the practice, not something the app should do for the player.
+    /// part of the challenge, not something the app should do for the player.
     private func variantOptionLabel(_ die: DieValue) -> some View {
         HStack(alignment: .top, spacing: 1) {
             Text("\(die.base)")
@@ -662,21 +662,21 @@ private struct AnyButtonStyle: ButtonStyle {
     }
 }
 
-#Preview("Practice") {
+#Preview("Challenge") {
     NavigationStack {
-        PracticeView()
+        ChallengeView()
     }
 }
 
-#Preview("Practice - Variant Picker (Roots)") {
+#Preview("Challenge - Variant Picker (Roots)") {
     // Places the first tray die that has more than one legal variant, entirely in code -- no
     // simulated taps needed to inspect `variantPicker`'s layout on its own.
-    let viewModel = PracticeViewModel(level: .five)
+    let viewModel = ChallengeViewModel(level: .five)
     if let trayIndex = viewModel.puzzle.dice.indices.first(where: { viewModel.canPlaceTrayDie(at: $0) }) {
         viewModel.placeTrayDie(at: trayIndex)
     }
     return NavigationStack {
-        PracticeView(viewModel: viewModel)
+        ChallengeView(viewModel: viewModel)
     }
 }
 
@@ -684,7 +684,7 @@ private struct AnyButtonStyle: ButtonStyle {
 /// own public API -- guarantees a complete, *correct* workspace without simulating touches or
 /// needing to reverse-engineer a valid answer by hand for every preview.
 @MainActor
-private func buildExampleSolution(_ viewModel: PracticeViewModel) {
+private func buildExampleSolution(_ viewModel: ChallengeViewModel) {
     let solution = viewModel.puzzle.exampleSolution
     for (index, die) in solution.dice.enumerated() {
         guard let trayIndex = viewModel.puzzle.dice.indices.first(where: { idx in
@@ -705,7 +705,7 @@ private func buildExampleSolution(_ viewModel: PracticeViewModel) {
 /// virtually never the target (targets aren't generated as a plain left-to-right sum), which is
 /// all a "here's what an incorrect attempt looks like" preview needs.
 @MainActor
-private func buildNaiveWrongGuess(_ viewModel: PracticeViewModel) {
+private func buildNaiveWrongGuess(_ viewModel: ChallengeViewModel) {
     let diceCount = viewModel.puzzle.dice.count
     for index in 0..<diceCount {
         guard let trayIndex = viewModel.puzzle.dice.indices.first(where: { !viewModel.usedTrayIndices.contains($0) }) else { continue }
@@ -717,48 +717,48 @@ private func buildNaiveWrongGuess(_ viewModel: PracticeViewModel) {
 }
 
 #Preview("Answer Card - Complete, Unsubmitted") {
-    let viewModel = PracticeViewModel(level: .three)
+    let viewModel = ChallengeViewModel(level: .three)
     buildExampleSolution(viewModel)
     return NavigationStack {
-        PracticeView(viewModel: viewModel)
+        ChallengeView(viewModel: viewModel)
     }
 }
 
 #Preview("Answer Card - Correct") {
-    let viewModel = PracticeViewModel(level: .three)
+    let viewModel = ChallengeViewModel(level: .three)
     buildExampleSolution(viewModel)
     viewModel.submit()
     return NavigationStack {
-        PracticeView(viewModel: viewModel)
+        ChallengeView(viewModel: viewModel)
     }
 }
 
 #Preview("Answer Card - Incorrect") {
-    let viewModel = PracticeViewModel(level: .one)
+    let viewModel = ChallengeViewModel(level: .one)
     buildNaiveWrongGuess(viewModel)
     viewModel.submit()
     return NavigationStack {
-        PracticeView(viewModel: viewModel)
+        ChallengeView(viewModel: viewModel)
     }
 }
 
 #Preview("Answer Card - Revealed (never submitted)") {
     // The exact scenario that started this redesign: an incorrect, complete workspace, revealed
     // without ever tapping Submit.
-    let viewModel = PracticeViewModel(level: .one)
+    let viewModel = ChallengeViewModel(level: .one)
     buildNaiveWrongGuess(viewModel)
     viewModel.revealAnswer()
     return NavigationStack {
-        PracticeView(viewModel: viewModel)
+        ChallengeView(viewModel: viewModel)
     }
 }
 
 #Preview("Answer Card - Revealed after Incorrect") {
-    let viewModel = PracticeViewModel(level: .one)
+    let viewModel = ChallengeViewModel(level: .one)
     buildNaiveWrongGuess(viewModel)
     viewModel.submit()
     viewModel.revealAnswer()
     return NavigationStack {
-        PracticeView(viewModel: viewModel)
+        ChallengeView(viewModel: viewModel)
     }
 }

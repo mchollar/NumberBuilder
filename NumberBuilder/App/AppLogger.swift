@@ -10,6 +10,6 @@ enum AppLogger {
     private static let subsystem = Bundle.main.bundleIdentifier ?? "Widgetilities.NumberBuilder"
 
     static let solve = Logger(subsystem: subsystem, category: "Solve")
-    static let practice = Logger(subsystem: subsystem, category: "Practice")
+    static let challenge = Logger(subsystem: subsystem, category: "Challenge")
     static let purchase = Logger(subsystem: subsystem, category: "Purchase")
 }

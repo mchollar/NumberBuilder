@@ -4,16 +4,16 @@ import SwiftUI
 /// flags, and eventually IAP entitlement/purchase state) without deleting and reinstalling the
 /// app. Never compiled into a release build -- `AboutView` only links to this behind `#if DEBUG`.
 struct DebugMenuView: View {
-    @AppStorage(DebugResettableFlag.hasSeenPracticeIntroKey) private var hasSeenPracticeIntro = false
+    @AppStorage(DebugResettableFlag.hasSeenChallengeIntroKey) private var hasSeenChallengeIntro = false
 
     var body: some View {
         List {
             Section {
-                Toggle("Practice intro seen", isOn: $hasSeenPracticeIntro)
+                Toggle("Challenge intro seen", isOn: $hasSeenChallengeIntro)
             } header: {
                 Text("Onboarding")
             } footer: {
-                Text("Turn off to see the Practice intro sheet again next time you open the Practice tab.")
+                Text("Turn off to see the Challenge intro sheet again next time you open the Challenge tab.")
             }
             .listRowBackground(Color.nbCardSurface)
 

@@ -33,7 +33,7 @@ struct SolveView: View {
 
     /// Defaults to a fresh view model for real use; the override lets previews (and marketing/App
     /// Store screenshot captures) drive it into a specific state without simulating taps -- mirrors
-    /// `PracticeView`'s identical init for the same reason.
+    /// `ChallengeView`'s identical init for the same reason.
     @MainActor
     init(viewModel: SolveViewModel? = nil) {
         _viewModel = State(initialValue: viewModel ?? SolveViewModel())
@@ -239,7 +239,7 @@ struct SolveView: View {
     /// `navigationDestination(item:)` instead of the boolean `isPresented:` form -- the latter is
     /// where a real iPadOS 26 SwiftUI bug lives: with it, this screen's own `.navigationTitle`
     /// silently fails to render on iPad's floating tab bar (confirmed by removing it and watching
-    /// the title come back), while `PracticeView`, which has no `navigationDestination` at all,
+    /// the title come back), while `ChallengeView`, which has no `navigationDestination` at all,
     /// was unaffected. The `item:` form carries the same push-when-solved behavior without
     /// tripping it.
     private var solveResultBinding: Binding<SolveResult?> {

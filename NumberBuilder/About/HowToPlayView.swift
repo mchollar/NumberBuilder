@@ -2,17 +2,17 @@ import SwiftUI
 import NumberBuilderKit
 
 /// Explains both modes behind one segmented control rather than two separate screens -- Solve
-/// and Practice share the same `SolutionTier` rules, so a single view avoids duplicating that
-/// section, and it gives the Practice auto-show-once intro (see `PracticeView`) a clean way to
-/// open pre-selected to Practice via `initialMode`, no scroll-position hack needed.
+/// and Challenge share the same `SolutionTier` rules, so a single view avoids duplicating that
+/// section, and it gives the Challenge auto-show-once intro (see `ChallengeView`) a clean way to
+/// open pre-selected to Challenge via `initialMode`, no scroll-position hack needed.
 struct HowToPlayView: View {
     enum Mode: String, CaseIterable, Hashable {
         case solve = "Solve"
-        case practice = "Challenge"
+        case challenge = "Challenge"
     }
 
     @State private var mode: Mode
-    /// True only when presented as a sheet (the Practice auto-show-once intro) -- pushed from
+    /// True only when presented as a sheet (the Challenge auto-show-once intro) -- pushed from
     /// About via `NavigationLink`, the automatic back button already covers dismissal.
     private var showsDoneButton: Bool
     @Environment(\.dismiss) private var dismiss
@@ -43,7 +43,7 @@ struct HowToPlayView: View {
             List {
                 switch mode {
                 case .solve: solveContent
-                case .practice: practiceContent
+                case .challenge: challengeContent
                 }
             }
             .scrollContentBackground(.hidden)
@@ -97,7 +97,7 @@ struct HowToPlayView: View {
     }
 
     @ViewBuilder
-    private var practiceContent: some View {
+    private var challengeContent: some View {
         Section {
             Text("Challenge hands you a roll and a target — you build the answer yourself, tapping dice and operators into place left to right.")
         }
@@ -113,7 +113,7 @@ struct HowToPlayView: View {
         .listRowBackground(Color.nbCardSurface)
 
         Section("Difficulty Levels") {
-            ForEach(PracticeLevel.allCases, id: \.self) { level in
+            ForEach(ChallengeLevel.allCases, id: \.self) { level in
                 HStack(alignment: .top, spacing: 10) {
                     Circle()
                         .fill(level.tier.accentColor)
@@ -153,8 +153,8 @@ struct HowToPlayView: View {
     }
 }
 
-#Preview("How to Play - Practice Sheet") {
+#Preview("How to Play - Challenge Sheet") {
     NavigationStack {
-        HowToPlayView(initialMode: .practice, showsDoneButton: true)
+        HowToPlayView(initialMode: .challenge, showsDoneButton: true)
     }
 }

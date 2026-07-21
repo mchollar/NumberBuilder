@@ -37,7 +37,7 @@ public struct SolverConfiguration: Sendable, Hashable {
     /// and deliberately conservative since there's no current plan to support more than 5 dice.
     ///
     /// 9 (not 5) for under-5-dice configs specifically so this ceiling never clips
-    /// `DieValue.practiceVariants`' own per-base table (bases 2/3 legitimately need up to 9/6,
+    /// `DieValue.challengeVariants`' own per-base table (bases 2/3 legitimately need up to 9/6,
     /// and base 4's root search needs up to 9) -- `SolverEngine` intersects the two, so this is
     /// just "don't cut off Explore mode's search before it even reaches what Challenge mode can
     /// already generate," not a performance-driven number for the classic 3-dice game the way the

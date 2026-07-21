@@ -2,7 +2,7 @@ import SwiftUI
 import NumberBuilderKit
 
 /// Shared `UserDefaults` keys for the player's dice appearance choice -- read by every real
-/// dice-rendering call site (`SolveView`, `PracticeView`, `DiceWheelPicker`), written only here.
+/// dice-rendering call site (`SolveView`, `ChallengeView`, `DiceWheelPicker`), written only here.
 enum DiceAppearanceSettings {
     static let colorSchemeKey = "diceColorScheme"
     static let styleKey = "diceRenderStyle"

@@ -13,7 +13,7 @@ struct NumberBuilderApp: App {
                 }
 
                 NavigationStack {
-                    PracticeView()
+                    ChallengeView()
                 }
                 .tabItem {
                     Label("Challenge", systemImage: "star.fill")

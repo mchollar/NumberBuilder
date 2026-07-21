@@ -116,7 +116,7 @@ private enum BruteForceReference {
         // space instead of validating the pruning itself, and could report spurious mismatches
         // (or worse, mask a real one).
         let variantSets: [[DieValue]] = configuration.dice.map { face in
-            DieValue.practiceVariants(
+            DieValue.challengeVariants(
                 base: face,
                 allowExponents: configuration.allowExponents,
                 allowRoots: configuration.allowRoots

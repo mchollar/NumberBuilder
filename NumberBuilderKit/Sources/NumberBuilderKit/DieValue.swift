@@ -60,7 +60,7 @@ public struct DieValue: Hashable, Sendable, Comparable {
     /// Plain exponent ceiling per base -- meets or exceeds which powers N2K's own training
     /// materials bother to tabulate: much higher for the small bases their table also goes far
     /// with (2, 3) than for the bases it stops at square/cube (5, 6). 4 keeps the same ceiling as
-    /// 5/6 for its own *plain* powers -- its extra headroom in `practiceVariants` below exists
+    /// 5/6 for its own *plain* powers -- its extra headroom in `challengeVariants` below exists
     /// only for root search, not for plain exponent choices.
     private static func maxPlainExponent(forBase base: Int) -> Int {
         switch base {
@@ -72,7 +72,7 @@ public struct DieValue: Hashable, Sendable, Comparable {
 
     /// Every variant Challenge should ever offer for a rolled `base`, whether generating a puzzle
     /// or letting the player manually choose. Wraps `variants(maxExponent:allowExponents:allowRoots:)`
-    /// with Practice-specific tuning: 4 is the only face (1-6) that can ever produce a genuine
+    /// with Challenge-specific tuning: 4 is the only face (1-6) that can ever produce a genuine
     /// root value at all -- for any other base, an exact root always round-trips back to a lower
     /// plain power of the same base, which `variants` already dedups away as a duplicate. At 4's
     /// own plain cap of 5, only three of those surface (4^(1/2)=2, 4^(3/2)=8, 4^(5/2)=32); two
@@ -81,7 +81,7 @@ public struct DieValue: Hashable, Sendable, Comparable {
     /// any resulting *plain* power beyond its own ceiling -- the goal is exposing those two extra
     /// root values, not a pile of newly-reachable huge plain exponent choices like 4^7=16384
     /// itself.
-    public static func practiceVariants(base: Int, allowExponents: Bool, allowRoots: Bool) -> [DieValue] {
+    public static func challengeVariants(base: Int, allowExponents: Bool, allowRoots: Bool) -> [DieValue] {
         let plainCap = maxPlainExponent(forBase: base)
         let searchCap = (base == 4 && allowRoots) ? 9 : plainCap
         let variants = DieValue(base: base).variants(maxExponent: searchCap, allowExponents: allowExponents, allowRoots: allowRoots)

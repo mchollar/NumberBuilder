@@ -1,7 +1,7 @@
 import SwiftUI
 
 /// Shown two ways: as a forced, non-dismissable substitute for Challenge's own content once the
-/// free trial is exhausted (`PracticeView`'s body swaps to this instead of the puzzle UI, no
+/// free trial is exhausted (`ChallengeView`'s body swaps to this instead of the puzzle UI, no
 /// dismiss path at all -- there's nothing behind it to go "back" to), and as a voluntary,
 /// dismissable `.sheet` reached by tapping the trial banner before the cap is hit. `onDismiss`
 /// being non-nil is what distinguishes the two -- pass it only for the sheet presentation.

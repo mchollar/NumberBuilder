@@ -8,9 +8,9 @@ import NumberBuilderKit
 /// the left-to-right grouping is never a mystery.
 @Observable
 @MainActor
-final class PracticeViewModel {
-    private(set) var level: PracticeLevel
-    private(set) var puzzle: PracticeGenerator.Puzzle
+final class ChallengeViewModel {
+    private(set) var level: ChallengeLevel
+    private(set) var puzzle: ChallengeGenerator.Puzzle
     /// Convenience for every call site that only cares which techniques are in play (dice/tier
     /// coloring, the variant picker) -- fully implied by `level` now, not a separate choice.
     var tier: SolutionTier { level.tier }
@@ -51,7 +51,7 @@ final class PracticeViewModel {
     /// concluding again doesn't burn a second credit (Reset's whole purpose is trying a different
     /// expression for the same dice/target, which should stay free).
     private var hasCountedCurrentPuzzle = false
-    /// True when the free trial is exhausted and Challenge hasn't been unlocked -- `PracticeView`
+    /// True when the free trial is exhausted and Challenge hasn't been unlocked -- `ChallengeView`
     /// shows `PaywallView` instead of the normal puzzle content whenever this is true. Set at
     /// init (in case the trial was already exhausted in a previous session) and re-checked on
     /// every `newPuzzle()` attempt, not on every puzzle generation eagerly -- an already-concluded
@@ -59,9 +59,9 @@ final class PracticeViewModel {
     /// access until the *next* new-puzzle attempt.
     private(set) var isPaywalled: Bool
 
-    init(level: PracticeLevel = .one) {
+    init(level: ChallengeLevel = .one) {
         self.level = level
-        let puzzle = PracticeGenerator.generate(level: level)
+        let puzzle = ChallengeGenerator.generate(level: level)
         self.puzzle = puzzle
         self.placedDice = Array(repeating: nil, count: puzzle.dice.count)
         self.placedOperations = Array(repeating: nil, count: puzzle.dice.count - 1)
@@ -69,7 +69,7 @@ final class PracticeViewModel {
         self.isPaywalled = !PurchaseManager.shared.hasChallengeAccess
     }
 
-    func selectLevel(_ newLevel: PracticeLevel) {
+    func selectLevel(_ newLevel: ChallengeLevel) {
         guard newLevel != level else { return }
         level = newLevel
         newPuzzle()
@@ -78,11 +78,11 @@ final class PracticeViewModel {
     func newPuzzle() {
         guard PurchaseManager.shared.hasChallengeAccess else {
             isPaywalled = true
-            AppLogger.practice.debug("New puzzle blocked -- free trial exhausted")
+            AppLogger.challenge.debug("New puzzle blocked -- free trial exhausted")
             return
         }
         isPaywalled = false
-        puzzle = PracticeGenerator.generate(level: level)
+        puzzle = ChallengeGenerator.generate(level: level)
         placedDice = Array(repeating: nil, count: puzzle.dice.count)
         placedOperations = Array(repeating: nil, count: puzzle.dice.count - 1)
         trayIndexForDieSlot = Array(repeating: nil, count: puzzle.dice.count)
@@ -91,7 +91,7 @@ final class PracticeViewModel {
         activeVariantOptions = []
         isRevealed = false
         hasCountedCurrentPuzzle = false
-        AppLogger.practice.debug("New puzzle: dice \(self.puzzle.dice), target \(self.puzzle.target), tier \(String(describing: self.tier))")
+        AppLogger.challenge.debug("New puzzle: dice \(self.puzzle.dice), target \(self.puzzle.target), tier \(String(describing: self.tier))")
     }
 
     /// Counts this puzzle toward the free trial the first time it concludes -- called from both
@@ -175,7 +175,7 @@ final class PracticeViewModel {
     /// for `.basic`, several for the harder tiers.
     private func availableVariants(at trayIndex: Int) -> [DieValue] {
         let face = puzzle.dice[trayIndex]
-        return DieValue.practiceVariants(
+        return DieValue.challengeVariants(
             base: face,
             allowExponents: tier != .basic,
             allowRoots: tier == .rootsAndExponents
@@ -206,13 +206,13 @@ final class PracticeViewModel {
     /// pending operator does allow if plain itself isn't a legal choice right now.
     func placeTrayDie(at trayIndex: Int) {
         guard isAwaitingDie, !usedTrayIndices.contains(trayIndex), let slot = nextDieSlot else {
-            AppLogger.practice.debug("Ignored tray tap at index \(trayIndex): not awaiting a die or already used")
+            AppLogger.challenge.debug("Ignored tray tap at index \(trayIndex): not awaiting a die or already used")
             return
         }
         let variants = validVariants(for: trayIndex, atSlot: slot)
         let plain = variants.first { $0.exponent == 1 && $0.root == 1 }
         guard let defaultVariant = plain ?? variants.first else {
-            AppLogger.practice.debug("Ignored tray tap at index \(trayIndex): no legal variant for slot \(slot)")
+            AppLogger.challenge.debug("Ignored tray tap at index \(trayIndex): no legal variant for slot \(slot)")
             return
         }
         placedDice[slot] = defaultVariant
@@ -232,7 +232,7 @@ final class PracticeViewModel {
 
     func placeOperation(_ operation: MathOperation) {
         guard isAwaitingOperation, let slot = nextOperationSlot else {
-            AppLogger.practice.debug("Ignored operator tap: not awaiting an operation")
+            AppLogger.challenge.debug("Ignored operator tap: not awaiting an operation")
             return
         }
         placedOperations[slot] = operation
@@ -292,7 +292,7 @@ final class PracticeViewModel {
     }
 
     /// Gives up on the current puzzle -- shows `puzzle.exampleSolution` (already built for free
-    /// by `PracticeGenerator`) and locks every further interaction until Reset/New Puzzle.
+    /// by `ChallengeGenerator`) and locks every further interaction until Reset/New Puzzle.
     /// Deliberately not recoverable: revealing is treated as the end of this attempt, not a hint
     /// you keep playing after. Leaves `feedback` untouched on purpose -- clearing it used to wipe
     /// an existing "Not quite" banner, which made revealing after a wrong Submit look like a win
@@ -303,7 +303,7 @@ final class PracticeViewModel {
         activeDieSlot = nil
         activeVariantOptions = []
         recordConclusionIfNeeded()
-        AppLogger.practice.debug("Revealed answer for dice \(self.puzzle.dice), target \(self.puzzle.target)")
+        AppLogger.challenge.debug("Revealed answer for dice \(self.puzzle.dice), target \(self.puzzle.target)")
     }
 
     /// Solves the puzzle's own dice/target for real, independent of `level` -- "Show all" means
@@ -311,10 +311,10 @@ final class PracticeViewModel {
     /// target, not just techniques consistent with what this puzzle's level happened to allow.
     func showAllSolutions() {
         hasLoadedAllSolutions = false
-        AppLogger.practice.debug("Solving all solutions for dice \(self.puzzle.dice), target \(self.puzzle.target)")
+        AppLogger.challenge.debug("Solving all solutions for dice \(self.puzzle.dice), target \(self.puzzle.target)")
         allSolutionsSolver.solve(dice: puzzle.dice, target: puzzle.target) { [weak self] results in
             self?.hasLoadedAllSolutions = true
-            AppLogger.practice.debug("Found \(results.count) total solutions")
+            AppLogger.challenge.debug("Found \(results.count) total solutions")
         }
     }
 
@@ -325,6 +325,6 @@ final class PracticeViewModel {
         guard let result = evaluate(dice: dice, operations: operations) else { return }
         feedback = result == puzzle.target ? .correct : .incorrect(got: result)
         recordConclusionIfNeeded()
-        AppLogger.practice.debug("Submitted: got \(result), target \(self.puzzle.target), tier \(String(describing: self.tier))")
+        AppLogger.challenge.debug("Submitted: got \(result), target \(self.puzzle.target), tier \(String(describing: self.tier))")
     }
 }

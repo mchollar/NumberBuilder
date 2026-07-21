@@ -18,7 +18,7 @@ extension Color {
 
 extension MathOperation {
     /// Consistent per-operator color, shared by every screen that renders an operator symbol
-    /// (Solve results, Practice's operator picker and placed workspace tokens) — distinct from
+    /// (Solve results, Challenge's operator picker and placed workspace tokens) — distinct from
     /// the tier accent colors so the two color systems don't blur together.
     var accentColor: Color {
         switch self {
@@ -143,7 +143,7 @@ struct NBTonalButtonStyle: ButtonStyle {
 /// the exact bug class the dice `.plain` scheme and `HowToPlayView`'s step badges both hit before).
 /// Used where a primary action should carry no hue at all -- Solve's Calculate button -- distinct
 /// from `NBPrimaryButtonStyle`, which stays available for tier/accent-tinted primary buttons
-/// (Practice's Submit/Reset) that are explicitly meant to keep their color.
+/// (Challenge's Submit/Reset) that are explicitly meant to keep their color.
 struct NBNeutralButtonStyle: ButtonStyle {
     var isEnabled: Bool = true
 

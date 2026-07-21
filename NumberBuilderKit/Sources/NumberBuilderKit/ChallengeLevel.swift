@@ -6,23 +6,23 @@
 /// actually matters to a player: how big the target gets, alongside which techniques are in
 /// play. Modeled loosely on the real N2K's own board levels, which are likewise defined by
 /// target range rather than by capping individual dice.
-public enum PracticeLevel: Int, CaseIterable, Sendable, Hashable, Comparable {
+public enum ChallengeLevel: Int, CaseIterable, Sendable, Hashable, Comparable {
     case one = 1, two, three, four, five, six
 
-    public static func < (lhs: PracticeLevel, rhs: PracticeLevel) -> Bool {
+    public static func < (lhs: ChallengeLevel, rhs: ChallengeLevel) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
 
-    public var next: PracticeLevel {
-        PracticeLevel(rawValue: rawValue + 1) ?? self
+    public var next: ChallengeLevel {
+        ChallengeLevel(rawValue: rawValue + 1) ?? self
     }
 
-    public var previous: PracticeLevel {
-        PracticeLevel(rawValue: rawValue - 1) ?? self
+    public var previous: ChallengeLevel {
+        ChallengeLevel(rawValue: rawValue - 1) ?? self
     }
 
     /// Which techniques this level requires -- exactly one die must demonstrate it (see
-    /// `PracticeGenerator`), same as the old tier system.
+    /// `ChallengeGenerator`), same as the old tier system.
     public var tier: SolutionTier {
         switch self {
         case .one, .two: return .basic
