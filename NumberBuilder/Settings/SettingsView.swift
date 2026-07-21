@@ -116,7 +116,7 @@ struct SettingsView: View {
         } icon: {
             Image(systemName: systemImage)
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(tint)
+                .foregroundStyle(tint.accessibleIconTint(against: .nbCardSurface))
                 .frame(width: 30, height: 30)
                 .background(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)

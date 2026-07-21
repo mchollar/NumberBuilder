@@ -65,6 +65,10 @@ struct DiceAppearanceView: View {
         .padding(20)
         .frame(maxWidth: .infinity)
         .cardSurface()
+        // Purely reinforcing -- updates live as the player picks options below, but the option
+        // list already states every choice in words, so this would just be three more silent,
+        // unlabeled elements for VoiceOver with nothing the list doesn't already say.
+        .accessibilityHidden(true)
     }
 
     private func optionSection<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
@@ -73,6 +77,7 @@ struct DiceAppearanceView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .tracking(0.5)
+                .accessibilityAddTraits(.isHeader)
             VStack(spacing: 10) {
                 content()
             }
@@ -100,6 +105,7 @@ struct DiceAppearanceView: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     /// Style swatches skip the row/checkmark treatment `optionRow` uses for Color -- just the die
@@ -121,6 +127,7 @@ struct DiceAppearanceView: View {
         .buttonStyle(.plain)
         .frame(maxWidth: .infinity)
         .accessibilityLabel(option.label)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 

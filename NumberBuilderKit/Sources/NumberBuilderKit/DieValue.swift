@@ -23,6 +23,21 @@ public struct DieValue: Hashable, Sendable, Comparable {
         lhs.value < rhs.value
     }
 
+    /// Single source of truth for how a die reads out loud -- three call sites in the app target
+    /// each used to render base + exponent/root as two independent, unlabeled `Text` views (a
+    /// visual "6²"), which VoiceOver announced as two disconnected numbers ("6" then "2") with no
+    /// indication they're one value. Centralizing the spoken form here means all three stay in
+    /// sync automatically instead of needing the same fix copy-pasted three times.
+    public var accessibilityDescription: String {
+        if root == 1 && exponent == 1 {
+            return "\(base)"
+        } else if root == 1 {
+            return "\(base) to the power of \(exponent)"
+        } else {
+            return "\(base) to the power of \(exponent) over \(root)"
+        }
+    }
+
     /// Every power/root variant of this die's rolled value, e.g. a rolled 6 can also stand in
     /// as 6⁰=1 or 6²=36. Verification is done with exact integer arithmetic (never trusting a
     /// `Double` comparison directly) so large bases don't silently round wrong.

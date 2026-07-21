@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import NumberBuilderKit
 
 // MARK: - Palette
@@ -58,10 +59,37 @@ extension SolutionTier {
 
 // MARK: - Typography
 
-extension Font {
-    /// Large rounded numerals — dice faces, the target number, headline results.
-    static func nbNumber(_ size: CGFloat, weight: Font.Weight = .bold) -> Font {
-        .system(size: size, weight: weight, design: .rounded)
+/// Large rounded numerals — dice faces, the target number, headline results. Scales with Dynamic
+/// Type via `@ScaledMetric`, not a raw fixed-size `.system(size:)` font (which never grows or
+/// shrinks with Text Size at all) and not a plain `UIFontMetrics.default.scaledValue(for:)` call
+/// either -- an earlier version of this used that directly inside a `static func` returning a
+/// plain `Font`, which shipped a real, live bug: since nothing in the view hierarchy actually
+/// *read* an environment value SwiftUI tracks, SwiftUI had no way to know a given Text's
+/// appearance depended on Dynamic Type, so it never proactively re-rendered that view when the
+/// system text size changed live. The font value only updated the next time that view happened to
+/// re-render for some unrelated reason (e.g. a tap changing other state) -- which looked like
+/// content "fixing itself" after any interaction, and meant some elements (a `TextField`'s digits,
+/// a button's label) stayed stuck at their old size when text size was turned back down. Only a
+/// property wrapper declared on an actual `View`/`ViewModifier` (like `@ScaledMetric` here)
+/// participates in SwiftUI's environment-dependency graph and triggers a real re-render when
+/// Dynamic Type changes.
+private struct NBNumberFontModifier: ViewModifier {
+    @ScaledMetric private var size: CGFloat
+    let weight: Font.Weight
+
+    init(size: CGFloat, weight: Font.Weight) {
+        self._size = ScaledMetric(wrappedValue: size)
+        self.weight = weight
+    }
+
+    func body(content: Content) -> some View {
+        content.font(.system(size: size, weight: weight, design: .rounded))
+    }
+}
+
+extension View {
+    func nbNumberFont(_ size: CGFloat, weight: Font.Weight = .bold) -> some View {
+        modifier(NBNumberFontModifier(size: size, weight: weight))
     }
 }
 
@@ -95,6 +123,67 @@ extension View {
     }
 }
 
+// MARK: - Contrast-aware color
+
+/// Picks white or black text/icons for this color as a background, based on real WCAG contrast
+/// math rather than an eyeballed brightness cutoff -- e.g. `NBPrimaryButtonStyle` hardcoding
+/// white text washed out at 2.89:1 (light mode) / 1.85:1 (dark mode) against the Exponents
+/// tier's cyan accent (WCAG's 3:1 minimum for large/bold text and non-text UI elements), and
+/// `DiceFaceView`'s rainbow dice put white pips on yellow at 1.51:1. Both now pick their
+/// foreground from this instead of assuming white always works on a saturated accent color.
+///
+/// Deliberately keeps white wherever it already clears 3:1 (red's dice pips pass at 3.55:1, for
+/// instance) rather than always switching to whichever of black/white has the single highest
+/// ratio -- that would have silently repainted colors that were never actually broken.
+extension Color {
+    var contrastAwareForeground: Color {
+        let contrastWithWhite = 1.05 / (Self.relativeLuminance(self) + 0.05)
+        return contrastWithWhite >= 3.0 ? .white : .black
+    }
+
+    /// Darkens this color just enough to clear WCAG's 3:1 non-text minimum against `background`,
+    /// preserving hue/saturation -- for icon badges (Settings' rows, Results Help's tier cards)
+    /// that render the same tint twice, once as a full-strength icon and once as a faint wash
+    /// behind it. Some hues (yellow, green) are too light at full saturation to ever clear 3:1
+    /// against *any* light card surface, no matter how the wash's own opacity is tuned -- as the
+    /// wash approaches the icon's own color, contrast only drops further, never rises. Left
+    /// unchanged wherever it already passes (most tints do).
+    func accessibleIconTint(against background: Color) -> Color {
+        guard Self.contrastRatio(self, background) < 3.0 else { return self }
+        let uiColor = UIColor(self)
+        var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
+        guard uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) else {
+            return self
+        }
+        var candidate = self
+        var currentBrightness = brightness
+        for _ in 0..<12 {
+            currentBrightness *= 0.85
+            candidate = Color(hue: hue, saturation: saturation, brightness: currentBrightness)
+            if Self.contrastRatio(candidate, background) >= 3.0 {
+                break
+            }
+        }
+        return candidate
+    }
+
+    private static func relativeLuminance(_ color: Color) -> CGFloat {
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        UIColor(color).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        func linearize(_ channel: CGFloat) -> CGFloat {
+            channel <= 0.03928 ? channel / 12.92 : pow((channel + 0.055) / 1.055, 2.4)
+        }
+        // Real WCAG relative luminance (sRGB-gamma-corrected), not a naive weighted RGB average.
+        return 0.2126 * linearize(red) + 0.7152 * linearize(green) + 0.0722 * linearize(blue)
+    }
+
+    private static func contrastRatio(_ a: Color, _ b: Color) -> CGFloat {
+        let l1 = relativeLuminance(a)
+        let l2 = relativeLuminance(b)
+        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
+    }
+}
+
 // MARK: - Button styles
 
 /// Full-width, capsule, filled accent button with a press-down scale — the app's primary action.
@@ -104,8 +193,8 @@ struct NBPrimaryButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.nbNumber(17, weight: .semibold))
-            .foregroundStyle(.white)
+            .nbNumberFont(17, weight: .semibold)
+            .foregroundStyle(isEnabled ? tint.contrastAwareForeground : .white)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
@@ -124,7 +213,7 @@ struct NBTonalButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.nbNumber(17, weight: .semibold))
+            .nbNumberFont(17, weight: .semibold)
             .foregroundStyle(isEnabled ? tint : Color.gray)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
@@ -149,7 +238,7 @@ struct NBNeutralButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.nbNumber(17, weight: .semibold))
+            .nbNumberFont(17, weight: .semibold)
             .foregroundStyle(isEnabled ? Color(.systemBackground) : Color.mutedText)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
@@ -183,7 +272,7 @@ struct NBOutlineButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.nbNumber(17, weight: .semibold))
+            .nbNumberFont(17, weight: .semibold)
             .foregroundStyle(tint)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
@@ -231,15 +320,29 @@ extension ButtonStyle where Self == NBTonalButtonStyle {
 
 /// Constrains and centers content on wide screens (iPad, or an iPhone in landscape) so cards and
 /// lists don't stretch edge-to-edge on a big display; a no-op on compact-width screens.
+///
+/// This used to be `HStack { Spacer(minLength: 0); content.frame(maxWidth: ...); Spacer(minLength: 0) }`.
+/// That shipped a real bug at extreme Dynamic Type sizes: `.frame(maxWidth:)` only ever caps how far
+/// a view is *allowed* to grow -- it never forces content to actually measure at a smaller size. An
+/// `HStack` grants each non-`Spacer` child its own ideal/natural width before handing any leftover
+/// space to the `Spacer`s, so a single row anywhere inside `content` that reported an oversized ideal
+/// width (any row of `.nbNumberFont`-scaled text at AX5, which is big enough that several such rows
+/// exceed a phone's screen width once combined) silently expanded this whole wrapper -- and, because
+/// that width then became the layout's coordinate space, every *other* sibling row got centered and
+/// symmetrically clipped along with it, even ones with no width problem of their own. `.lineLimit` /
+/// `.minimumScaleFactor` on individual `Text`s didn't fix this: those only affect a `Text`'s *final*
+/// render once it's given a real proposed width, not the *ideal*-size measurement pass that decided
+/// this wrapper's width in the first place. `.containerRelativeFrame` fixes the actual mechanism: it
+/// proposes a real, bounded width down into `content` (the `ScrollView`'s own width on compact,
+/// capped at `maxWidth` on regular), so every descendant is forced to size within it instead of
+/// leaking its natural size upward.
 private struct ReadableContentWidthModifier: ViewModifier {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     var maxWidth: CGFloat
 
     func body(content: Content) -> some View {
-        HStack {
-            Spacer(minLength: 0)
-            content.frame(maxWidth: horizontalSizeClass == .regular ? maxWidth : .infinity)
-            Spacer(minLength: 0)
+        content.containerRelativeFrame(.horizontal) { length, _ in
+            horizontalSizeClass == .regular ? min(length, maxWidth) : length
         }
     }
 }
@@ -261,6 +364,13 @@ private struct VerticallyCenteredWhenRegularModifier: ViewModifier {
     }
 }
 
+private struct HeightPreferenceKey: PreferenceKey {
+    static var defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = nextValue()
+    }
+}
+
 extension View {
     func readableContentWidth(_ maxWidth: CGFloat = 600) -> some View {
         modifier(ReadableContentWidthModifier(maxWidth: maxWidth))
@@ -268,5 +378,21 @@ extension View {
 
     func verticallyCenteredWhenRegular(containerHeight: CGFloat) -> some View {
         modifier(VerticallyCenteredWhenRegularModifier(containerHeight: containerHeight))
+    }
+
+    /// Reads this view's own height into `binding` passively via a background, instead of
+    /// wrapping it in a `GeometryReader` that becomes a structural parent in the layout pass --
+    /// that approach caused a real, shipped bug: at extreme Dynamic Type sizes, the very first
+    /// layout pass of a `GeometryReader`-wrapped screen could render with stale width math
+    /// (content overflowing the screen edge entirely) until *any* subsequent state change forced
+    /// a fresh layout pass to correct it. A background `GeometryReader` reports the same size
+    /// without disrupting the layout of the view it's attached to.
+    func measuringHeight(into binding: Binding<CGFloat>) -> some View {
+        background(
+            GeometryReader { proxy in
+                Color.clear.preference(key: HeightPreferenceKey.self, value: proxy.size.height)
+            }
+        )
+        .onPreferenceChange(HeightPreferenceKey.self) { binding.wrappedValue = $0 }
     }
 }

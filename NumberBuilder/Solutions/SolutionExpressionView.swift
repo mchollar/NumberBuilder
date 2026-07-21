@@ -1,6 +1,20 @@
 import SwiftUI
 import NumberBuilderKit
 
+/// Sentence-connector phrasing ("5 plus 3") for the composed accessibility label below --
+/// distinct from `MathOperation.accessibleName` ("Add"), which names an operator *button*, not a
+/// word that reads naturally in the middle of a spoken sentence.
+private extension MathOperation {
+    var spokenConnector: String {
+        switch self {
+        case .add: return "plus"
+        case .subtract: return "minus"
+        case .multiply: return "times"
+        case .divide: return "divided by"
+        }
+    }
+}
+
 /// Renders a `Solution`'s expression with real superscripts (smaller font + baseline offset)
 /// instead of the shipped app's unicode-superscript-character string concatenation.
 ///
@@ -22,7 +36,7 @@ struct SolutionExpressionView: View {
                     primaryToken(token)
                 }
             }
-            .font(.nbNumber(19, weight: .medium))
+            .nbNumberFont(19, weight: .medium)
 
             if hasComputedValues {
                 HStack(spacing: 4) {
@@ -30,10 +44,31 @@ struct SolutionExpressionView: View {
                         evaluatedToken(token)
                     }
                 }
-                .font(.nbNumber(14, weight: .medium))
+                .nbNumberFont(14, weight: .medium)
                 .foregroundStyle(.secondary)
             }
         }
+        // Display-only, never itself interactive -- collapse both lines (which otherwise read as
+        // a string of disconnected tokens, then re-announce the same computed value a second
+        // time) into one composed sentence instead of patching each token individually.
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityDescription)
+    }
+
+    private var accessibilityDescription: String {
+        var parts: [String] = []
+        for (index, die) in solution.dice.enumerated() {
+            var diePart = die.accessibilityDescription
+            if die.exponent != 1 || die.root != 1 {
+                diePart += ", which is \(die.value),"
+            }
+            parts.append(diePart)
+            if index < solution.operations.count {
+                parts.append(solution.operations[index].spokenConnector)
+            }
+        }
+        parts.append("equals \(solution.result)")
+        return parts.joined(separator: " ")
     }
 
     @ViewBuilder

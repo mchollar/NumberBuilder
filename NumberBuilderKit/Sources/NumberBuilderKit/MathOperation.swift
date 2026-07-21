@@ -12,6 +12,18 @@ public enum MathOperation: CaseIterable, Sendable, Hashable {
         }
     }
 
+    /// Spoken form for VoiceOver -- the raw glyph (`symbol`) is otherwise the operator button's
+    /// only label, and a bare Unicode character can be mis-spoken or read ambiguously (e.g. "−"
+    /// vs. a hyphen).
+    public var accessibleName: String {
+        switch self {
+        case .add: return "Add"
+        case .subtract: return "Subtract"
+        case .multiply: return "Multiply"
+        case .divide: return "Divide"
+        }
+    }
+
     /// `nil` if the operation has no valid integer result (division must be exact).
     public func apply(_ lhs: Int, _ rhs: Int) -> Int? {
         switch self {

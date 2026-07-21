@@ -30,6 +30,9 @@ struct SolveView: View {
     @State private var rollTrigger = 0
     @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .rainbow
     @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
+    /// Fed by `.measuringHeight(into:)` rather than a `GeometryReader` wrapping the whole screen
+    /// -- see that modifier's doc comment for the real, shipped layout bug that caused.
+    @State private var scrollContainerHeight: CGFloat = 0
 
     /// Defaults to a fresh view model for real use; the override lets previews (and marketing/App
     /// Store screenshot captures) drive it into a specific state without simulating taps -- mirrors
@@ -40,21 +43,20 @@ struct SolveView: View {
     }
 
     var body: some View {
-        GeometryReader { proxy in
-            ScrollView {
-                VStack(spacing: 20) {
-                    puzzleCard
-                    calculateButton
-                    progressSection
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 20)
-                .readableContentWidth()
-                .verticallyCenteredWhenRegular(containerHeight: proxy.size.height)
+        ScrollView {
+            VStack(spacing: 20) {
+                puzzleCard
+                calculateButton
+                progressSection
             }
-            .background(Color.nbBackground.ignoresSafeArea())
-            .scrollDismissesKeyboard(.interactively)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 20)
+            .readableContentWidth()
+            .verticallyCenteredWhenRegular(containerHeight: scrollContainerHeight)
         }
+        .background(Color.nbBackground.ignoresSafeArea())
+        .scrollDismissesKeyboard(.interactively)
+        .measuringHeight(into: $scrollContainerHeight)
         .navigationTitle("Number Builder")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
@@ -65,6 +67,7 @@ struct SolveView: View {
                     Image(systemName: "gearshape")
                 }
                 .tint(.primary)
+                .accessibilityLabel("Settings")
             }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
@@ -102,7 +105,7 @@ struct SolveView: View {
             sectionLabel("Target Number")
             TextField("0", text: $viewModel.targetText)
                 .keyboardType(.numberPad)
-                .font(.nbNumber(40))
+                .nbNumberFont(40)
                 .multilineTextAlignment(.center)
                 .focused($targetFieldFocused)
                 .padding(.vertical, 14)
@@ -192,6 +195,7 @@ struct SolveView: View {
                         DiceFaceView(value: viewModel.diceFaces[index], colorScheme: diceColorScheme, style: diceStyle, index: index, tier: nil)
                             .frame(width: 64 * scale, height: 64 * scale)
                             .allowsHitTesting(false)
+                            .accessibilityHidden(true)
                             .phaseAnimator([DiePopPhase.hidden, .pop, .hidden], trigger: rollTrigger) { view, phase in
                                 view
                                     .scaleEffect(phase.scale)
@@ -217,6 +221,7 @@ struct SolveView: View {
             .font(.caption.weight(.semibold))
             .foregroundStyle(.secondary)
             .tracking(0.5)
+            .accessibilityAddTraits(.isHeader)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 

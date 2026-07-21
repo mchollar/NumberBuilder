@@ -26,6 +26,9 @@ struct ChallengeView: View {
     /// The *voluntary* look at the paywall, reached by tapping the trial banner before the cap is
     /// hit -- distinct from `viewModel.isPaywalled`'s forced, non-dismissable body substitution.
     @State private var showingPaywallSheet = false
+    /// Fed by `.measuringHeight(into:)` rather than a `GeometryReader` wrapping the whole screen
+    /// -- see that modifier's doc comment for the real, shipped layout bug that caused.
+    @State private var scrollContainerHeight: CGFloat = 0
 
     /// Defaults to a fresh puzzle for real use; the override lets previews drive the view model
     /// into a specific state (e.g. mid-placement, to inspect `variantPicker`) without simulating
@@ -55,6 +58,7 @@ struct ChallengeView: View {
                     Image(systemName: "gearshape")
                 }
                 .tint(.primary)
+                .accessibilityLabel("Settings")
             }
         }
         .onAppear {
@@ -92,26 +96,25 @@ struct ChallengeView: View {
         // `.safeAreaInset(edge: .top)` -- that combination silently suppresses the navigation
         // bar's large title (the space stays reserved, but the title text itself never draws),
         // a real SwiftUI quirk, not something specific to this screen's content.
-        GeometryReader { proxy in
-            VStack(spacing: 0) {
-                if !PurchaseManager.shared.isUnlocked {
-                    trialBanner
-                }
-                ScrollView {
-                    VStack(spacing: 20) {
-                        levelPicker
-                        puzzleCard
-                        answerCard
-                        variantPicker
-                        operatorPicker
-                        controls
-                    }
-                    .padding(20)
-                    .readableContentWidth()
-                    .verticallyCenteredWhenRegular(containerHeight: proxy.size.height)
-                }
-                .background(Color.nbBackground.ignoresSafeArea())
+        VStack(spacing: 0) {
+            if !PurchaseManager.shared.isUnlocked {
+                trialBanner
             }
+            ScrollView {
+                VStack(spacing: 20) {
+                    levelPicker
+                    puzzleCard
+                    answerCard
+                    variantPicker
+                    operatorPicker
+                    controls
+                }
+                .padding(20)
+                .readableContentWidth()
+                .verticallyCenteredWhenRegular(containerHeight: scrollContainerHeight)
+            }
+            .background(Color.nbBackground.ignoresSafeArea())
+            .measuringHeight(into: $scrollContainerHeight)
         }
     }
 
@@ -125,13 +128,15 @@ struct ChallengeView: View {
             HStack {
                 Text("🎉 Free Trial — \(remainingFreePuzzles) puzzle\(remainingFreePuzzles == 1 ? "" : "s") left")
                     .font(.footnote.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.footnote.weight(.semibold))
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
-            .frame(maxWidth: .infinity)
+            .containerRelativeFrame(.horizontal)
             .background(Color.nbCardSurface)
         }
         .buttonStyle(.plain)
@@ -162,16 +167,18 @@ struct ChallengeView: View {
     private var levelPicker: some View {
         VStack(spacing: 6) {
             HStack {
-                levelStepButton(systemImage: "chevron.left", isEnabled: viewModel.level != .one) {
+                levelStepButton(systemImage: "chevron.left", accessibilityLabel: "Previous level", isEnabled: viewModel.level != .one) {
                     viewModel.selectLevel(viewModel.level.previous)
                 }
                 Spacer()
                 Text("Level \(viewModel.level.rawValue)")
-                    .font(.nbNumber(20, weight: .bold))
+                    .nbNumberFont(20, weight: .bold)
                     .foregroundStyle(viewModel.tier.accentColor)
                     .contentTransition(.numericText())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
                 Spacer()
-                levelStepButton(systemImage: "chevron.right", isEnabled: viewModel.level != .six) {
+                levelStepButton(systemImage: "chevron.right", accessibilityLabel: "Next level", isEnabled: viewModel.level != .six) {
                     viewModel.selectLevel(viewModel.level.next)
                 }
             }
@@ -183,7 +190,7 @@ struct ChallengeView: View {
         }
     }
 
-    private func levelStepButton(systemImage: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {
+    private func levelStepButton(systemImage: String, accessibilityLabel: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {
         Button {
             withAnimation(.easeInOut(duration: 0.25)) {
                 action()
@@ -195,6 +202,8 @@ struct ChallengeView: View {
         }
         .foregroundStyle(isEnabled ? viewModel.tier.accentColor : Color.secondary.opacity(0.3))
         .disabled(!isEnabled)
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityValue("Level \(viewModel.level.rawValue)")
     }
 
     private var puzzleCard: some View {
@@ -208,7 +217,7 @@ struct ChallengeView: View {
                 diceTray
                 Spacer()
                 Text("\(viewModel.puzzle.target)")
-                    .font(.nbNumber(32))
+                    .nbNumberFont(32)
                     .foregroundStyle(viewModel.tier.accentColor)
                     .lineLimit(1)
                     .minimumScaleFactor(0.4)
@@ -245,6 +254,11 @@ struct ChallengeView: View {
                     }
                 }
                 .disabled(!isAvailable)
+                .accessibilityLabel(
+                    isUsed ? "Die showing \(face), already placed"
+                        : isAvailable ? "Die showing \(face)"
+                        : "Die showing \(face), not usable right now"
+                )
             }
         }
         .padding(8)
@@ -276,10 +290,10 @@ struct ChallengeView: View {
                     workspaceToken(token)
                 }
             }
-            .font(.nbNumber(34, weight: .bold))
+            .nbNumberFont(34, weight: .bold)
             .lineLimit(1)
             .minimumScaleFactor(0.5)
-            .frame(maxWidth: .infinity, alignment: .center)
+            .containerRelativeFrame(.horizontal, alignment: .center)
 
             // No standing "Target: N" line here -- the roll card right above already shows the
             // target, and repeating it a few inches lower added nothing until there was an actual
@@ -317,12 +331,12 @@ struct ChallengeView: View {
                         .foregroundStyle(viewModel.tier.accentColor)
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .containerRelativeFrame(.horizontal, alignment: .leading)
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
         .padding(20)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .containerRelativeFrame(.horizontal, alignment: .leading)
         .cardSurface()
     }
 
@@ -339,11 +353,14 @@ struct ChallengeView: View {
             HStack(spacing: 8) {
                 Image(systemName: "checkmark.circle.fill")
                     .symbolEffect(.bounce, value: correctTrigger)
+                    .accessibilityHidden(true)
                 Text("Correct! = \(viewModel.puzzle.target)")
             }
-            .font(.nbNumber(24, weight: .bold))
+            .nbNumberFont(24, weight: .bold)
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
             .foregroundStyle(.green)
-            .frame(maxWidth: .infinity, alignment: .center)
+            .containerRelativeFrame(.horizontal, alignment: .center)
             .transition(.scale(scale: 0.85).combined(with: .opacity))
         case .incorrect(let got):
             // Both numbers in one line, read as a false equation -- clearer at a glance than a
@@ -351,11 +368,14 @@ struct ChallengeView: View {
             // something real to compare it against.
             HStack(spacing: 8) {
                 Image(systemName: "xmark.circle.fill")
+                    .accessibilityHidden(true)
                 Text("\(got) ≠ \(viewModel.puzzle.target)")
             }
-            .font(.nbNumber(24, weight: .bold))
+            .nbNumberFont(24, weight: .bold)
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
             .foregroundStyle(.red)
-            .frame(maxWidth: .infinity, alignment: .center)
+            .containerRelativeFrame(.horizontal, alignment: .center)
             .transition(.opacity.combined(with: .move(edge: .top)))
         }
     }
@@ -374,11 +394,14 @@ struct ChallengeView: View {
                     }
                 } label: {
                     Text(operation.symbol)
-                        .font(.nbNumber(35, weight: .bold))
+                        .nbNumberFont(35, weight: .bold)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.4)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.nbTonal(tint: operation.accentColor, isEnabled: isActive))
                 .disabled(!isActive)
+                .accessibilityLabel(operation.accessibleName)
             }
         }
         .padding(20)
@@ -419,6 +442,8 @@ struct ChallengeView: View {
                     }
                 } label: {
                     Label("Undo", systemImage: "arrow.uturn.backward")
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                 }
                 .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor, isEnabled: viewModel.canUndo))
                 .disabled(!viewModel.canUndo)
@@ -429,6 +454,8 @@ struct ChallengeView: View {
                     }
                 } label: {
                     Label("Reveal Answer", systemImage: "eye.fill")
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                 }
                 .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor, isEnabled: !viewModel.isRevealed))
                 .disabled(viewModel.isRevealed)
@@ -454,6 +481,9 @@ struct ChallengeView: View {
             .font(.caption.weight(.semibold))
             .foregroundStyle(.secondary)
             .tracking(0.5)
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .accessibilityAddTraits(.isHeader)
     }
 
 
@@ -535,11 +565,14 @@ struct ChallengeView: View {
                     .foregroundStyle(viewModel.tier.accentColor)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(die.accessibilityDescription)
     }
 
     private var blankSlot: some View {
         Image(systemName: "square.dashed")
             .foregroundStyle(.secondary.opacity(0.4))
+            .accessibilityLabel("Empty slot")
     }
 
     // MARK: - Variant picker
@@ -588,7 +621,7 @@ struct ChallengeView: View {
                     }
                 } else {
                     Text("—")
-                        .font(.nbNumber(20, weight: .bold))
+                        .nbNumberFont(20, weight: .bold)
                         .foregroundStyle(.secondary.opacity(0.4))
                         .frame(maxWidth: .infinity, minHeight: 20)
                         .padding(20)
@@ -623,10 +656,13 @@ struct ChallengeView: View {
                 ? AnyButtonStyle(.nbPrimary(tint: viewModel.tier.accentColor))
                 : AnyButtonStyle(.nbTonal(tint: viewModel.tier.accentColor))
         )
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     /// Notation only, deliberately no computed value -- working out what a power/root equals is
-    /// part of the challenge, not something the app should do for the player.
+    /// part of the challenge, not something the app should do for the player. The accessibility
+    /// label mirrors that: it speaks the notation ("6 to the power of 2"), never the value it
+    /// works out to.
     private func variantOptionLabel(_ die: DieValue) -> some View {
         HStack(alignment: .top, spacing: 1) {
             Text("\(die.base)")
@@ -636,7 +672,9 @@ struct ChallengeView: View {
                     .baselineOffset(8)
             }
         }
-        .font(.nbNumber(20, weight: .bold))
+        .nbNumberFont(20, weight: .bold)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(die.accessibilityDescription)
     }
 }
 

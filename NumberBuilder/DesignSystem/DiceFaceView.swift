@@ -31,8 +31,13 @@ struct DiceFaceView: View {
             // white a hardcoded pip color would be, making pips vanish against their own
             // background. `.systemBackground` is `.primary`'s adaptive opposite in both
             // appearances, so it stays a real background/pip contrast either way. Every other
-            // scheme is a fixed saturated hue that already contrasts fine against white.
-            return colorScheme == .plain ? Color(.systemBackground) : .white
+            // scheme is a fixed saturated hue, most of which already contrast fine against white
+            // -- except `.rainbow`'s yellow, which doesn't (1.51:1), so the choice is luminance-
+            // aware rather than blindly white for every non-`.plain` scheme.
+            if colorScheme == .plain {
+                return Color(.systemBackground)
+            }
+            return background.contrastAwareForeground
         case .filledWhiteBackground: return colorScheme.color(forIndex: index, tier: tier)
         case .minimalOutline: return colorScheme.color(forIndex: index, tier: tier)
         }

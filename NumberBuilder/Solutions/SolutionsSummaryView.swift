@@ -43,6 +43,7 @@ struct SolutionsSummaryView: View {
                     Image(systemName: "questionmark.circle")
                 }
                 .tint(.nbAccent)
+                .accessibilityLabel("Results Help")
             }
         }
         .sheet(isPresented: $showHelp) {
@@ -58,10 +59,13 @@ struct SolutionsSummaryView: View {
                         .frame(width: 56, height: 56)
                 }
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel("Rolled \(diceFaces.map(String.init).joined(separator: ", "))")
             Image(systemName: "arrow.right")
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
             Text("\(target)")
-                .font(.nbNumber(32))
+                .nbNumberFont(32)
                 .foregroundStyle(Color.nbAccent)
         }
         .frame(maxWidth: .infinity)
@@ -76,8 +80,9 @@ struct SolutionsSummaryView: View {
                 Image(systemName: "exclamationmark.magnifyingglass")
                     .font(.system(size: 36))
                     .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
                 Text("No Solutions Found")
-                    .font(.nbNumber(20))
+                    .nbNumberFont(20)
                 Text("There's no way to reach \(target) with \(diceFaces.map(String.init).joined(separator: ", ")).")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -106,6 +111,7 @@ struct SolutionsSummaryView: View {
                     Circle()
                         .fill(tier.accentColor)
                         .frame(width: 8, height: 8)
+                        .accessibilityHidden(true)
                     Text("\(title) · \(solutions.count)")
                 }
             }
@@ -157,8 +163,8 @@ private struct ResultsHelpSheet: View {
     private func tierCard(_ tier: SolutionTier) -> some View {
         HStack(spacing: 14) {
             Text(badgeGlyph(tier))
-                .font(.nbNumber(20, weight: .bold))
-                .foregroundStyle(tier.accentColor)
+                .nbNumberFont(20, weight: .bold)
+                .foregroundStyle(tier.accentColor.accessibleIconTint(against: .nbCardSurface))
                 .frame(width: 48, height: 48)
                 .background(
                     Circle().fill(tier.accentColor.opacity(0.18))
@@ -175,6 +181,7 @@ private struct ResultsHelpSheet: View {
         }
         .padding(14)
         .cardSurface()
+        .accessibilityElement(children: .combine)
     }
 
     private func tip(systemImage: String, text: LocalizedStringKey) -> some View {

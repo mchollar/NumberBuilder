@@ -27,12 +27,13 @@ struct PaywallView: View {
                                 .font(.title2)
                                 .foregroundStyle(.secondary)
                         }
+                        .accessibilityLabel("Close")
                     }
                 }
 
                 VStack(spacing: 16) {
                     Text("Unlock Challenge Mode")
-                        .font(.nbNumber(28))
+                        .nbNumberFont(28)
                         .multilineTextAlignment(.center)
 
                     Text(subtitle)

@@ -49,7 +49,7 @@ struct AboutView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                         .cardSurface()
                     Text("Number Builder")
-                        .font(.nbNumber(22))
+                        .nbNumberFont(22)
                     Text("Version \(appVersion) (\(appBuild))")
                         .font(.footnote)
                         .foregroundStyle(.secondary)

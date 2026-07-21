@@ -82,6 +82,7 @@ struct HowToPlayView: View {
                         .fill(tier.accentColor)
                         .frame(width: 8, height: 8)
                         .padding(.top, 6)
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text(tier.shortTitle)
                             .fontWeight(.semibold)
@@ -91,6 +92,7 @@ struct HowToPlayView: View {
                     }
                 }
                 .padding(.vertical, 2)
+                .accessibilityElement(children: .combine)
             }
         }
         .listRowBackground(Color.nbCardSurface)
@@ -119,6 +121,7 @@ struct HowToPlayView: View {
                         .fill(level.tier.accentColor)
                         .frame(width: 8, height: 8)
                         .padding(.top, 6)
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
                         Text("Level \(level.rawValue)")
                             .fontWeight(.semibold)
@@ -128,6 +131,7 @@ struct HowToPlayView: View {
                     }
                 }
                 .padding(.vertical, 2)
+                .accessibilityElement(children: .combine)
             }
         }
         .listRowBackground(Color.nbCardSurface)
@@ -136,7 +140,7 @@ struct HowToPlayView: View {
     private func stepRow(number: Int, text: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Text("\(number)")
-                .font(.nbNumber(14, weight: .bold))
+                .nbNumberFont(14, weight: .bold)
                 .foregroundStyle(Color(.systemBackground))
                 .frame(width: 22, height: 22)
                 .background(Circle().fill(Color.primary))

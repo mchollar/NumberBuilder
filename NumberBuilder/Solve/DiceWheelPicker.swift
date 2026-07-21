@@ -36,6 +36,12 @@ struct DiceWheelPicker: UIViewRepresentable {
         picker.dataSource = context.coordinator
         picker.delegate = context.coordinator
         picker.selectRow(selection - 1, inComponent: 0, animated: false)
+        // Without this, VoiceOver has nothing to announce for this picker at all -- a bare
+        // UIImageView row (a rendered die bitmap, not text) gives the system no string to read
+        // for whatever's currently centered, so this was the app's primary Solve-mode input
+        // control and it was completely silent.
+        picker.accessibilityLabel = "Die \(index + 1) value"
+        picker.accessibilityHint = "Swipe up or down to change the value"
         return picker
     }
 
@@ -132,6 +138,7 @@ struct DiceWheelPicker: UIViewRepresentable {
                 // system's own selection-highlight chrome is separately neutralized in
                 // ClearHighlightPickerView below.
                 container.backgroundColor = UIColor(named: "InnerSurface")
+                container.isAccessibilityElement = true
                 imageView = UIImageView()
                 imageView.contentMode = .scaleAspectFit
                 imageView.translatesAutoresizingMaskIntoConstraints = false
@@ -144,6 +151,7 @@ struct DiceWheelPicker: UIViewRepresentable {
                 ])
             }
             imageView.image = image(forValue: row + 1)
+            container.accessibilityLabel = "\(row + 1)"
             return container
         }
 
