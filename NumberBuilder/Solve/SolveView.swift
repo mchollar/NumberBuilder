@@ -23,13 +23,21 @@ private enum DiePopPhase {
 }
 
 struct SolveView: View {
-    @State private var viewModel = SolveViewModel()
+    @State private var viewModel: SolveViewModel
     @FocusState private var targetFieldFocused: Bool
     /// Bumped only by the Roll button — dice bouncing should never fire from manually scrolling
     /// a wheel to pick a value by hand.
     @State private var rollTrigger = 0
     @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .rainbow
     @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
+
+    /// Defaults to a fresh view model for real use; the override lets previews (and marketing/App
+    /// Store screenshot captures) drive it into a specific state without simulating taps -- mirrors
+    /// `PracticeView`'s identical init for the same reason.
+    @MainActor
+    init(viewModel: SolveViewModel? = nil) {
+        _viewModel = State(initialValue: viewModel ?? SolveViewModel())
+    }
 
     var body: some View {
         ScrollView {
