@@ -1,4 +1,18 @@
 import SwiftUI
+import UIKit
+
+/// Reads the actual rendered app icon out of the bundle rather than keeping a second, separately
+/// maintained copy of the icon artwork as its own asset -- one source of truth for "what does
+/// Number Builder's icon look like," so it can't quietly drift out of sync with the real one.
+private extension Bundle {
+    var iconFileName: String? {
+        guard let icons = infoDictionary?["CFBundleIcons"] as? [String: Any],
+              let primaryIcon = icons["CFBundlePrimaryIcon"] as? [String: Any],
+              let iconFiles = primaryIcon["CFBundleIconFiles"] as? [String]
+        else { return nil }
+        return iconFiles.last
+    }
+}
 
 /// Purely informational -- icon/name/version, then static developer/copyright facts. Everything
 /// actionable (Rate, Feedback, Share, the debug menu) lives in `SettingsView` now, which is also
@@ -17,12 +31,18 @@ struct AboutView: View {
         let currentYear = Calendar.current.component(.year, from: Date())
         return currentYear > 2020 ? "2020–\(currentYear)" : "2020"
     }
+    private var appIconImage: Image {
+        if let iconFileName = Bundle.main.iconFileName, let uiImage = UIImage(named: iconFileName) {
+            return Image(uiImage: uiImage)
+        }
+        return Image(systemName: "app.fill")
+    }
 
     var body: some View {
         List {
             Section {
                 VStack(spacing: 12) {
-                    Image("NumberBuilder Icon")
+                    appIconImage
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 96, height: 96)
