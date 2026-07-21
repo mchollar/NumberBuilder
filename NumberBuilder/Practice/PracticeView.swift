@@ -92,23 +92,26 @@ struct PracticeView: View {
         // `.safeAreaInset(edge: .top)` -- that combination silently suppresses the navigation
         // bar's large title (the space stays reserved, but the title text itself never draws),
         // a real SwiftUI quirk, not something specific to this screen's content.
-        VStack(spacing: 0) {
-            if !PurchaseManager.shared.isUnlocked {
-                trialBanner
-            }
-            ScrollView {
-                VStack(spacing: 20) {
-                    levelPicker
-                    puzzleCard
-                    answerCard
-                    variantPicker
-                    operatorPicker
-                    controls
+        GeometryReader { proxy in
+            VStack(spacing: 0) {
+                if !PurchaseManager.shared.isUnlocked {
+                    trialBanner
                 }
-                .padding(20)
-                .readableContentWidth()
+                ScrollView {
+                    VStack(spacing: 20) {
+                        levelPicker
+                        puzzleCard
+                        answerCard
+                        variantPicker
+                        operatorPicker
+                        controls
+                    }
+                    .padding(20)
+                    .readableContentWidth()
+                    .verticallyCenteredWhenRegular(containerHeight: proxy.size.height)
+                }
+                .background(Color.nbBackground.ignoresSafeArea())
             }
-            .background(Color.nbBackground.ignoresSafeArea())
         }
     }
 

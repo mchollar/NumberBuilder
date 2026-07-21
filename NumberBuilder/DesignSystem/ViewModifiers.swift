@@ -244,8 +244,29 @@ private struct ReadableContentWidthModifier: ViewModifier {
     }
 }
 
+/// Centers short content vertically within a `ScrollView` on iPad, instead of leaving it stranded
+/// at the top with a wall of empty space below -- a no-op on iPhone (where content already tends
+/// to fill the screen), and a no-op whenever content is actually taller than the screen (more
+/// results, bigger Dynamic Type, the keyboard up), since `minHeight` only ever raises the frame's
+/// floor, never caps its growth, so normal top-anchored scrolling still takes over once needed.
+private struct VerticallyCenteredWhenRegularModifier: ViewModifier {
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    var containerHeight: CGFloat
+
+    func body(content: Content) -> some View {
+        content.frame(
+            minHeight: horizontalSizeClass == .regular ? containerHeight : nil,
+            alignment: .center
+        )
+    }
+}
+
 extension View {
     func readableContentWidth(_ maxWidth: CGFloat = 600) -> some View {
         modifier(ReadableContentWidthModifier(maxWidth: maxWidth))
+    }
+
+    func verticallyCenteredWhenRegular(containerHeight: CGFloat) -> some View {
+        modifier(VerticallyCenteredWhenRegularModifier(containerHeight: containerHeight))
     }
 }

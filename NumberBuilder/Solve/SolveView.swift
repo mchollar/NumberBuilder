@@ -40,18 +40,21 @@ struct SolveView: View {
     }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                puzzleCard
-                calculateButton
-                progressSection
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(spacing: 20) {
+                    puzzleCard
+                    calculateButton
+                    progressSection
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 20)
+                .readableContentWidth()
+                .verticallyCenteredWhenRegular(containerHeight: proxy.size.height)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 20)
-            .readableContentWidth()
+            .background(Color.nbBackground.ignoresSafeArea())
+            .scrollDismissesKeyboard(.interactively)
         }
-        .background(Color.nbBackground.ignoresSafeArea())
-        .scrollDismissesKeyboard(.interactively)
         .navigationTitle("Number Builder")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
