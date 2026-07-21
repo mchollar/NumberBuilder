@@ -6,7 +6,6 @@ struct SolutionsSummaryView: View {
     let diceFaces: [Int]
     let target: Int
 
-    @AppStorage("hasSeenResultsHelp") private var hasSeenResultsHelp = false
     @State private var showHelp = false
     @AppStorage(DiceAppearanceSettings.colorSchemeKey) private var diceColorScheme: DiceColorScheme = .rainbow
     @AppStorage(DiceAppearanceSettings.styleKey) private var diceStyle: DiceRenderStyle = .filledColoredBackground
@@ -46,16 +45,8 @@ struct SolutionsSummaryView: View {
                 .tint(.nbAccent)
             }
         }
-        .alert("Results Help", isPresented: $showHelp) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(helpMessage)
-        }
-        .onAppear {
-            if !hasSeenResultsHelp {
-                showHelp = true
-                hasSeenResultsHelp = true
-            }
+        .sheet(isPresented: $showHelp) {
+            ResultsHelpSheet()
         }
     }
 
@@ -122,16 +113,87 @@ struct SolutionsSummaryView: View {
         }
     }
 
-    private var helpMessage: String {
-        """
-        The results are divided into three categories: Basic, Using Exponents, and Using Exponents & Roots. Only one of each solution type (if any) is shown on this page. More results of each type can be viewed by tapping "Show All Results."
+}
 
-        • Basic solutions use only +, −, ×, and ÷.
-        • Using Exponents solutions also allow whole-number exponents.
-        • Using Exponents & Roots solutions also allow fractional exponents (roots).
+/// Replaces a plain `.alert()` wall of text with something that actually shows the three tiers'
+/// own colors and badges instead of just describing them -- the same "Basic / Exponents /
+/// Exponents & Roots" colored-dot language already used in `tierSection`'s header and
+/// `HowToPlayView`'s tier list, reused here rather than invented fresh.
+private struct ResultsHelpSheet: View {
+    @Environment(\.dismiss) private var dismiss
 
-        A number with an exponent or root shows a smaller line underneath with its fully calculated value.
-        """
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    VStack(spacing: 12) {
+                        ForEach(SolutionTier.allCases, id: \.self) { tier in
+                            tierCard(tier)
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        tip(systemImage: "square.stack.3d.up.fill", text: "Only the first match of each type shows here — tap **Show All Results** to see the rest.")
+                        tip(systemImage: "textformat.superscript", text: "An exponent or root gets a smaller line underneath with its fully calculated value.")
+                    }
+                    .padding(16)
+                    .cardSurface()
+                }
+                .padding(20)
+                .readableContentWidth()
+            }
+            .background(Color.nbBackground.ignoresSafeArea())
+            .navigationTitle("Results Help")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Done") { dismiss() }
+                        .tint(.nbAccent)
+                }
+            }
+        }
+    }
+
+    private func tierCard(_ tier: SolutionTier) -> some View {
+        HStack(spacing: 14) {
+            Text(badgeGlyph(tier))
+                .font(.nbNumber(20, weight: .bold))
+                .foregroundStyle(tier.accentColor)
+                .frame(width: 48, height: 48)
+                .background(
+                    Circle().fill(tier.accentColor.opacity(0.18))
+                )
+            VStack(alignment: .leading, spacing: 2) {
+                Text(tier.shortTitle)
+                    .font(.headline)
+                    .foregroundStyle(tier.accentColor)
+                Text(tier.explanation)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .cardSurface()
+    }
+
+    private func tip(systemImage: String, text: LocalizedStringKey) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: systemImage)
+                .foregroundStyle(Color.nbAccent)
+                .frame(width: 20)
+            Text(text)
+        }
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+    }
+
+    private func badgeGlyph(_ tier: SolutionTier) -> String {
+        switch tier {
+        case .basic: return "±"
+        case .exponents: return "x²"
+        case .rootsAndExponents: return "√x"
+        }
     }
 }
 
