@@ -23,14 +23,12 @@ struct SettingsView: View {
                 NavigationLink {
                     DiceAppearanceView()
                 } label: {
-                    Label("Dice Appearance", systemImage: "die.face.5.fill")
-                        .foregroundStyle(Color.primary)
+                    settingsRow("Dice Appearance", systemImage: "die.face.5.fill", tint: .pink)
                 }
                 NavigationLink {
                     HowToPlayView()
                 } label: {
-                    Label("How to Play", systemImage: "questionmark.circle.fill")
-                        .foregroundStyle(Color.primary)
+                    settingsRow("How to Play", systemImage: "questionmark.circle.fill", tint: .nbAccent)
                 }
             }
             .listRowBackground(Color.nbCardSurface)
@@ -39,8 +37,7 @@ struct SettingsView: View {
                 Button {
                     openReviewPage()
                 } label: {
-                    Label("Rate Number Builder", systemImage: "star.fill")
-                        .foregroundStyle(Color.primary)
+                    settingsRow("Rate Number Builder", systemImage: "star.fill", tint: .yellow)
                 }
                 Button {
                     if MailComposeView.canSendMail {
@@ -49,12 +46,10 @@ struct SettingsView: View {
                         isShowingMailUnavailableAlert = true
                     }
                 } label: {
-                    Label("Send Feedback", systemImage: "envelope.fill")
-                        .foregroundStyle(Color.primary)
+                    settingsRow("Send Feedback", systemImage: "envelope.fill", tint: .green)
                 }
                 ShareLink(item: Self.appStoreURL) {
-                    Label("Share Number Builder", systemImage: "square.and.arrow.up.fill")
-                        .foregroundStyle(Color.primary)
+                    settingsRow("Share Number Builder", systemImage: "square.and.arrow.up.fill", tint: .blue)
                 }
             } footer: {
                 Text("No data is collected. No ads, ever.")
@@ -65,8 +60,7 @@ struct SettingsView: View {
                 NavigationLink {
                     PurchasesView()
                 } label: {
-                    Label("Purchases", systemImage: "cart.fill")
-                        .foregroundStyle(Color.primary)
+                    settingsRow("Purchases", systemImage: "cart.fill", tint: .brown)
                 }
             }
             .listRowBackground(Color.nbCardSurface)
@@ -75,8 +69,7 @@ struct SettingsView: View {
                 NavigationLink {
                     AboutView()
                 } label: {
-                    Label("About Number Builder", systemImage: "info.circle.fill")
-                        .foregroundStyle(Color.primary)
+                    settingsRow("About Number Builder", systemImage: "info.circle.fill", tint: .indigo)
                 }
             }
             .listRowBackground(Color.nbCardSurface)
@@ -86,8 +79,7 @@ struct SettingsView: View {
                 NavigationLink {
                     DebugMenuView()
                 } label: {
-                    Label("Debug Menu", systemImage: "ladybug.fill")
-                        .foregroundStyle(Color.primary)
+                    settingsRow("Debug Menu", systemImage: "ladybug.fill", tint: .gray)
                 }
             }
             .listRowBackground(Color.nbCardSurface)
@@ -108,6 +100,28 @@ struct SettingsView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text("Please check settings and enable Mail.")
+        }
+    }
+
+    /// Every row used to render a plain black/white SF Symbol regardless of what it did, which read
+    /// as flat and undifferentiated. A tinted rounded-square badge behind each icon (mirroring
+    /// iOS's own Settings app, and reusing colors already established elsewhere in the app --
+    /// `MathOperation.accentColor`'s palette, `SolutionTier.accentColor`'s red) breaks that up
+    /// without introducing a whole new palette. A single `.opacity()` on the tint for the badge
+    /// background looks right in both light and dark mode without separate-casing either.
+    private func settingsRow(_ title: String, systemImage: String, tint: Color) -> some View {
+        Label {
+            Text(title)
+                .foregroundStyle(Color.primary)
+        } icon: {
+            Image(systemName: systemImage)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 30, height: 30)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(tint.opacity(0.18))
+                )
         }
     }
 
