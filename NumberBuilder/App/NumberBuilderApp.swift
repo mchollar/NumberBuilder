@@ -9,7 +9,7 @@ struct NumberBuilderApp: App {
                     SolveView()
                 }
                 .tabItem {
-                    Label("Explore", systemImage: "die.face.5.fill")
+                    Label("Solve", systemImage: "die.face.5.fill")
                 }
 
                 NavigationStack {

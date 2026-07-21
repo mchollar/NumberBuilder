@@ -7,7 +7,7 @@ import NumberBuilderKit
 /// open pre-selected to Practice via `initialMode`, no scroll-position hack needed.
 struct HowToPlayView: View {
     enum Mode: String, CaseIterable, Hashable {
-        case solve = "Explore"
+        case solve = "Solve"
         case practice = "Challenge"
     }
 
@@ -24,7 +24,7 @@ struct HowToPlayView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("Number Builder has two modes: Explore and Challenge.")
+            Text("Number Builder has two modes: Solve and Challenge.")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
