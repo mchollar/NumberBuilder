@@ -120,7 +120,7 @@ struct SettingsView: View {
                 .frame(width: 30, height: 30)
                 .background(
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(tint.opacity(0.18))
+                        .fill(tint.opacity(NBMetrics.iconBadgeWashOpacity))
                 )
         }
     }

@@ -47,13 +47,13 @@ struct PaywallView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(maxHeight: 320)
-                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: NBMetrics.iconContainerCornerRadius, style: .continuous))
                         .overlay(
-                            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                .strokeBorder(Color.cardBorder, lineWidth: 1)
+                            RoundedRectangle(cornerRadius: NBMetrics.iconContainerCornerRadius, style: .continuous)
+                                .strokeBorder(Color.cardBorder, lineWidth: NBMetrics.hairlineBorderWidth)
                         )
                 }
-                .padding(20)
+                .padding(NBMetrics.cardOuterPadding)
                 .cardSurface()
 
                 VStack(spacing: 12) {
@@ -88,7 +88,7 @@ struct PaywallView: View {
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
-            .padding(20)
+            .padding(NBMetrics.cardOuterPadding)
             .readableContentWidth()
         }
         .background(Color.nbBackground.ignoresSafeArea())

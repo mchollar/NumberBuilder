@@ -49,7 +49,7 @@ struct SolveView: View {
                 calculateButton
                 progressSection
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, NBMetrics.screenHorizontalMargin)
             .padding(.vertical, 20)
             .readableContentWidth()
             .verticallyCenteredWhenRegular(containerHeight: scrollContainerHeight)
@@ -108,14 +108,14 @@ struct SolveView: View {
                 .nbNumberFont(40)
                 .multilineTextAlignment(.center)
                 .focused($targetFieldFocused)
-                .padding(.vertical, 14)
+                .padding(.vertical, NBMetrics.innerElementPadding)
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    RoundedRectangle(cornerRadius: NBMetrics.innerControlCornerRadius, style: .continuous)
                         .fill(Color.innerSurface)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .strokeBorder(targetFieldFocused ? Color.primary : Color.primary.opacity(0.15), lineWidth: targetFieldFocused ? 2 : 1)
+                            RoundedRectangle(cornerRadius: NBMetrics.innerControlCornerRadius, style: .continuous)
+                                .strokeBorder(targetFieldFocused ? Color.primary : Color.primary.opacity(NBMetrics.disabledBorderOpacity), lineWidth: targetFieldFocused ? 2 : 1)
                         )
                 )
                 .onChange(of: viewModel.targetText) {
@@ -123,7 +123,7 @@ struct SolveView: View {
                 }
         }
         .frame(maxWidth: .infinity)
-        .padding(20)
+        .padding(NBMetrics.cardOuterPadding)
         .cardSurface()
     }
 
@@ -185,7 +185,7 @@ struct SolveView: View {
                     .frame(width: dieWidth, height: dieHeight)
                     .clipped()
                     .background(
-                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        RoundedRectangle(cornerRadius: NBMetrics.innerControlCornerRadius, style: .continuous)
                             .fill(Color.innerSurface)
                     )
                     .overlay {
@@ -193,7 +193,7 @@ struct SolveView: View {
                         // the (unanimated, still perfectly interactive) wheel underneath already
                         // settled on its new value.
                         DiceFaceView(value: viewModel.diceFaces[index], colorScheme: diceColorScheme, style: diceStyle, index: index, tier: nil)
-                            .frame(width: 64 * scale, height: 64 * scale)
+                            .frame(width: NBMetrics.standardDieIconSize * scale, height: NBMetrics.standardDieIconSize * scale)
                             .allowsHitTesting(false)
                             .accessibilityHidden(true)
                             .phaseAnimator([DiePopPhase.hidden, .pop, .hidden], trigger: rollTrigger) { view, phase in
@@ -236,7 +236,7 @@ struct SolveView: View {
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity)
-            .padding(20)
+            .padding(NBMetrics.cardOuterPadding)
             .cardSurface()
         }
     }

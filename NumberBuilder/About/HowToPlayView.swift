@@ -11,6 +11,10 @@ struct HowToPlayView: View {
         case challenge = "Challenge"
     }
 
+    /// Local to this file -- the same value repeats 3 times below for the same "breathing room
+    /// around one list row" reason, but nowhere else in the app needs it.
+    private static let rowVerticalPadding: CGFloat = 2
+
     @State private var mode: Mode
     /// True only when presented as a sheet (the Challenge auto-show-once intro) -- pushed from
     /// About via `NavigationLink`, the automatic back button already covers dismissal.
@@ -29,7 +33,7 @@ struct HowToPlayView: View {
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 20)
+                .padding(.horizontal, NBMetrics.screenHorizontalMargin)
                 .padding(.top, 4)
                 .padding(.bottom, 12)
 
@@ -37,7 +41,7 @@ struct HowToPlayView: View {
                 ForEach(Mode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
             .pickerStyle(.segmented)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, NBMetrics.screenHorizontalMargin)
             .padding(.top, 12)
 
             List {
@@ -80,7 +84,7 @@ struct HowToPlayView: View {
                 HStack(alignment: .top, spacing: 10) {
                     Circle()
                         .fill(tier.accentColor)
-                        .frame(width: 8, height: 8)
+                        .frame(width: NBMetrics.bulletDotSize, height: NBMetrics.bulletDotSize)
                         .padding(.top, 6)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
@@ -91,7 +95,7 @@ struct HowToPlayView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .padding(.vertical, 2)
+                .padding(.vertical, Self.rowVerticalPadding)
                 .accessibilityElement(children: .combine)
             }
         }
@@ -119,7 +123,7 @@ struct HowToPlayView: View {
                 HStack(alignment: .top, spacing: 10) {
                     Circle()
                         .fill(level.tier.accentColor)
-                        .frame(width: 8, height: 8)
+                        .frame(width: NBMetrics.bulletDotSize, height: NBMetrics.bulletDotSize)
                         .padding(.top, 6)
                         .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 2) {
@@ -130,7 +134,7 @@ struct HowToPlayView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                .padding(.vertical, 2)
+                .padding(.vertical, Self.rowVerticalPadding)
                 .accessibilityElement(children: .combine)
             }
         }
@@ -147,7 +151,7 @@ struct HowToPlayView: View {
             Text(text)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.vertical, 2)
+        .padding(.vertical, Self.rowVerticalPadding)
     }
 }
 

@@ -41,11 +41,11 @@ struct DiceAppearanceView: View {
                             styleSwatch(option)
                         }
                     }
-                    .padding(14)
-                    .cardSurface(cornerRadius: 16)
+                    .padding(NBMetrics.innerElementPadding)
+                    .cardSurface(cornerRadius: NBMetrics.iconContainerCornerRadius)
                 }
             }
-            .padding(20)
+            .padding(NBMetrics.cardOuterPadding)
             .readableContentWidth()
         }
         .background(Color.nbBackground)
@@ -62,7 +62,7 @@ struct DiceAppearanceView: View {
                 }
             }
         }
-        .padding(20)
+        .padding(NBMetrics.cardOuterPadding)
         .frame(maxWidth: .infinity)
         .cardSurface()
         // Purely reinforcing -- updates live as the player picks options below, but the option
@@ -87,7 +87,7 @@ struct DiceAppearanceView: View {
     private func optionRow(isSelected: Bool, label: String, swatch: DiceFaceView, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 14) {
-                swatch.frame(width: 56, height: 56)
+                swatch.frame(width: NBMetrics.trayDieSize, height: NBMetrics.trayDieSize)
                 Text(label)
                     .font(.body.weight(.medium))
                     .foregroundStyle(.primary)
@@ -97,10 +97,10 @@ struct DiceAppearanceView: View {
                         .foregroundStyle(Color.primary)
                 }
             }
-            .padding(14)
-            .cardSurface(cornerRadius: 16)
+            .padding(NBMetrics.innerElementPadding)
+            .cardSurface(cornerRadius: NBMetrics.iconContainerCornerRadius)
             .overlay(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                RoundedRectangle(cornerRadius: NBMetrics.iconContainerCornerRadius, style: .continuous)
                     .strokeBorder(isSelected ? Color.primary : Color.clear, lineWidth: 2)
             )
         }
@@ -117,7 +117,7 @@ struct DiceAppearanceView: View {
             style = option
         } label: {
             DiceFaceView(value: 4, colorScheme: colorScheme, style: option, index: 1, tier: .exponents)
-                .frame(width: 64, height: 64)
+                .frame(width: NBMetrics.standardDieIconSize, height: NBMetrics.standardDieIconSize)
                 .padding(6)
                 .overlay(
                     RoundedRectangle(cornerRadius: 22, style: .continuous)

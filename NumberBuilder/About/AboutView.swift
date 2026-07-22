@@ -46,7 +46,7 @@ struct AboutView: View {
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 96, height: 96)
-                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                        .clipShape(RoundedRectangle(cornerRadius: NBMetrics.cardCornerRadius, style: .continuous))
                         .cardSurface()
                     Text("Number Builder")
                         .nbNumberFont(22)

@@ -56,7 +56,7 @@ struct SolutionsSummaryView: View {
             HStack(spacing: 6) {
                 ForEach(Array(diceFaces.enumerated()), id: \.offset) { index, face in
                     DiceFaceView(value: face, colorScheme: diceColorScheme, style: diceStyle, index: index, tier: nil)
-                        .frame(width: 56, height: 56)
+                        .frame(width: NBMetrics.trayDieSize, height: NBMetrics.trayDieSize)
                 }
             }
             .accessibilityElement(children: .ignore)
@@ -69,7 +69,7 @@ struct SolutionsSummaryView: View {
                 .foregroundStyle(Color.nbAccent)
         }
         .frame(maxWidth: .infinity)
-        .padding(20)
+        .padding(NBMetrics.cardOuterPadding)
         .cardSurface()
         .padding(.vertical, 4)
     }
@@ -90,7 +90,7 @@ struct SolutionsSummaryView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 28)
-            .padding(.horizontal, 20)
+            .padding(.horizontal, NBMetrics.screenHorizontalMargin)
         }
         .listRowBackground(Color.nbCardSurface)
     }
@@ -110,7 +110,7 @@ struct SolutionsSummaryView: View {
                 HStack(spacing: 6) {
                     Circle()
                         .fill(tier.accentColor)
-                        .frame(width: 8, height: 8)
+                        .frame(width: NBMetrics.bulletDotSize, height: NBMetrics.bulletDotSize)
                         .accessibilityHidden(true)
                     Text("\(title) · \(solutions.count)")
                 }
@@ -145,7 +145,7 @@ private struct ResultsHelpSheet: View {
                     .padding(16)
                     .cardSurface()
                 }
-                .padding(20)
+                .padding(NBMetrics.cardOuterPadding)
                 .readableContentWidth()
             }
             .background(Color.nbBackground.ignoresSafeArea())
@@ -167,7 +167,7 @@ private struct ResultsHelpSheet: View {
                 .foregroundStyle(tier.accentColor.accessibleIconTint(against: .nbCardSurface))
                 .frame(width: 48, height: 48)
                 .background(
-                    Circle().fill(tier.accentColor.opacity(0.18))
+                    Circle().fill(tier.accentColor.opacity(NBMetrics.iconBadgeWashOpacity))
                 )
             VStack(alignment: .leading, spacing: 2) {
                 Text(tier.shortTitle)
@@ -179,7 +179,7 @@ private struct ResultsHelpSheet: View {
             }
             Spacer(minLength: 0)
         }
-        .padding(14)
+        .padding(NBMetrics.innerElementPadding)
         .cardSurface()
         .accessibilityElement(children: .combine)
     }
