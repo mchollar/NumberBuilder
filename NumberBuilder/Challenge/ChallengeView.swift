@@ -11,6 +11,18 @@ enum DebugResettableFlag {
     static let freeChallengePuzzlesUsedKey = "freeChallengePuzzlesUsed"
 }
 
+/// Values repeated only within this file -- see the 2026-07-21 magic-numbers audit. Kept local
+/// rather than folded into the shared `NBMetrics` since nothing outside `ChallengeView` uses them.
+private enum ChallengeMetrics {
+    /// The shrink floor most large scaled text on this screen uses.
+    static let standardShrinkFloor: CGFloat = 0.5
+    /// A lower floor for the two biggest glyphs on screen (the target number, operator symbols) --
+    /// deliberately more room to shrink than `standardShrinkFloor`, not an inconsistency.
+    static let extremeShrinkFloor: CGFloat = 0.4
+    /// Faint/disabled icon opacity -- unusable tray dice, blank slots, the empty-variant dash.
+    static let faintIconOpacity: Double = 0.4
+}
+
 struct ChallengeView: View {
     @State private var viewModel: ChallengeViewModel
     /// Flips true the first time this sheet is shown, so a newcomer sees the explainer exactly
@@ -109,7 +121,7 @@ struct ChallengeView: View {
                     operatorPicker
                     controls
                 }
-                .padding(20)
+                .padding(NBMetrics.cardOuterPadding)
                 .readableContentWidth()
                 .verticallyCenteredWhenRegular(containerHeight: scrollContainerHeight)
             }
@@ -134,9 +146,9 @@ struct ChallengeView: View {
                 Image(systemName: "chevron.right")
                     .font(.footnote.weight(.semibold))
             }
-            .padding(.horizontal, 20)
+            .padding(.horizontal, NBMetrics.screenHorizontalMargin)
             .padding(.vertical, 10)
-            .containerRelativeFrame(.horizontal)
+            .frame(maxWidth: .infinity)
             .background(Color.nbCardSurface)
         }
         .buttonStyle(.plain)
@@ -176,7 +188,7 @@ struct ChallengeView: View {
                     .foregroundStyle(viewModel.tier.accentColor)
                     .contentTransition(.numericText())
                     .lineLimit(1)
-                    .minimumScaleFactor(0.5)
+                    .minimumScaleFactor(ChallengeMetrics.standardShrinkFloor)
                 Spacer()
                 levelStepButton(systemImage: "chevron.right", accessibilityLabel: "Next level", isEnabled: viewModel.level != .six) {
                     viewModel.selectLevel(viewModel.level.next)
@@ -192,7 +204,7 @@ struct ChallengeView: View {
 
     private func levelStepButton(systemImage: String, accessibilityLabel: String, isEnabled: Bool, action: @escaping () -> Void) -> some View {
         Button {
-            withAnimation(.easeInOut(duration: 0.25)) {
+            withAnimation(NBMetrics.standardInteractionAnimation) {
                 action()
             }
         } label: {
@@ -220,11 +232,11 @@ struct ChallengeView: View {
                     .nbNumberFont(32)
                     .foregroundStyle(viewModel.tier.accentColor)
                     .lineLimit(1)
-                    .minimumScaleFactor(0.4)
+                    .minimumScaleFactor(ChallengeMetrics.extremeShrinkFloor)
                     .layoutPriority(1)
             }
         }
-        .padding(20)
+        .padding(NBMetrics.cardOuterPadding)
         .cardSurface()
     }
 
@@ -234,7 +246,7 @@ struct ChallengeView: View {
                 let isAvailable = viewModel.canPlaceTrayDie(at: index)
                 let isUsed = viewModel.usedTrayIndices.contains(index)
                 Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
+                    withAnimation(NBMetrics.standardInteractionAnimation) {
                         viewModel.placeTrayDie(at: index)
                     }
                 } label: {
@@ -245,7 +257,7 @@ struct ChallengeView: View {
                     if isUsed {
                         Image(systemName: "square.dashed")
                             .font(.system(size: 26))
-                            .foregroundStyle(.secondary.opacity(0.4))
+                            .foregroundStyle(.secondary.opacity(ChallengeMetrics.faintIconOpacity))
                             .frame(width: 56, height: 56)
                     } else {
                         DiceFaceView(value: face, colorScheme: diceColorScheme, style: diceStyle, index: index, tier: viewModel.tier)
@@ -262,15 +274,15 @@ struct ChallengeView: View {
             }
         }
         .padding(8)
-        .overlay(highlightBorder(viewModel.isAwaitingDie, cornerRadius: 14))
-        .animation(.easeInOut(duration: 0.25), value: viewModel.isAwaitingDie)
+        .overlay(highlightBorder(viewModel.isAwaitingDie, cornerRadius: NBMetrics.innerControlCornerRadius))
+        .animation(NBMetrics.standardInteractionAnimation, value: viewModel.isAwaitingDie)
     }
 
     /// The moving "it's this section's turn" indicator shared by the dice tray, variant row, and
     /// operator row -- all three stay visible and in place the whole puzzle now (see
     /// `variantPicker`/`operatorPicker`'s doc comments for why they used to reveal/hide instead),
     /// so this border is what actually shows the player where to look next.
-    private func highlightBorder(_ isActive: Bool, cornerRadius: CGFloat = 20) -> some View {
+    private func highlightBorder(_ isActive: Bool, cornerRadius: CGFloat = NBMetrics.cardCornerRadius) -> some View {
         RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
             .strokeBorder(isActive ? viewModel.tier.accentColor : Color.clear, lineWidth: 2.5)
     }
@@ -282,9 +294,34 @@ struct ChallengeView: View {
     /// a correct answer even when it wasn't), and the revealed solution folded in below a divider
     /// instead of spawning a second floating card. No standing target restatement either -- the
     /// roll card above already shows it; see `statusLine`'s doc comment.
+    ///
+    /// This card used to need its own outer width-handling modifier, because its workspace token
+    /// row (up to 7 `.nbNumberFont(34, bold)` glyphs) can report an *ideal* size, at large Dynamic
+    /// Type sizes, bigger than any iPhone screen -- and a plain `.frame(maxWidth: .infinity)` lets
+    /// that inflated ideal size leak upward and overflow the screen edge, regardless of the row's
+    /// own `.lineLimit(1)`/`.minimumScaleFactor(_:)` (those only affect the final *render* pass
+    /// once a bounded width is proposed, not the unconstrained ideal-size query an ancestor uses to
+    /// decide its own size). `.containerRelativeFrame` was tried twice as a hard cap to contain that
+    /// leak -- once governing the whole readable-content column (`ReadableContentWidthModifier`),
+    /// once scoped narrowly to just this card -- and confirmed, both times, via direct user testing
+    /// on a real device, to go stale across rotation: rotate an iPhone to landscape and back, and it
+    /// keeps reporting the landscape-era width, breaking not just this card but every sibling that
+    /// shares its parent `VStack`. `.containerRelativeFrame` is retired from this screen entirely.
+    ///
+    /// The actual fix is upstream of all of that: `.dynamicTypeSize(...)` on the workspace token
+    /// row itself (see below) caps the *effective* Dynamic Type scale that row responds to, so its
+    /// ideal size can never exceed what's already proven to fit. With the leak stopped at its
+    /// source, this card needs no hard cap of its own -- it sizes the same plain way every sibling
+    /// in this column does, via `readableContentWidth()`.
     private var answerCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        // Kept as `VStack(spacing: 8)`, not `VStack(alignment: .leading, ...)`, with each
+        // leading-aligned child requesting `.frame(maxWidth: .infinity, alignment: .leading)`
+        // individually instead. That split isn't load-bearing anymore now that this card has no
+        // hard-capped outer width to clash with, but it's harmless and matches every other card on
+        // this screen, so there's no reason to unwind it.
+        VStack(spacing: 8) {
             sectionLabel("Your Answer")
+                .frame(maxWidth: .infinity, alignment: .leading)
             HStack(spacing: 6) {
                 ForEach(Array(workspaceTokens.enumerated()), id: \.offset) { _, token in
                     workspaceToken(token)
@@ -292,8 +329,16 @@ struct ChallengeView: View {
             }
             .nbNumberFont(34, weight: .bold)
             .lineLimit(1)
-            .minimumScaleFactor(0.5)
-            .containerRelativeFrame(.horizontal, alignment: .center)
+            .minimumScaleFactor(ChallengeMetrics.standardShrinkFloor)
+            .frame(maxWidth: .infinity, alignment: .center)
+            // Caps the *effective* Dynamic Type scale this row responds to -- see this card's own
+            // doc comment above for why: at true AX5, this row's ideal size (up to 7 large bold
+            // glyphs) can exceed any iPhone's screen width, and that ideal size leaks upward into
+            // this card's own frame regardless of the `.lineLimit`/`.minimumScaleFactor` above.
+            // `.accessibility2` is a real, still-substantial increase over the standard sizes (this
+            // row still grows, just not without bound) chosen because it's been confirmed by live
+            // testing to keep this row's ideal size within what a compact iPhone can display.
+            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
 
             // No standing "Target: N" line here -- the roll card right above already shows the
             // target, and repeating it a few inches lower added nothing until there was an actual
@@ -331,12 +376,11 @@ struct ChallengeView: View {
                         .foregroundStyle(viewModel.tier.accentColor)
                     }
                 }
-                .containerRelativeFrame(.horizontal, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .padding(20)
-        .containerRelativeFrame(.horizontal, alignment: .leading)
+        .padding(NBMetrics.cardOuterPadding)
         .cardSurface()
     }
 
@@ -358,9 +402,9 @@ struct ChallengeView: View {
             }
             .nbNumberFont(24, weight: .bold)
             .lineLimit(1)
-            .minimumScaleFactor(0.5)
+            .minimumScaleFactor(ChallengeMetrics.standardShrinkFloor)
             .foregroundStyle(.green)
-            .containerRelativeFrame(.horizontal, alignment: .center)
+            .frame(maxWidth: .infinity, alignment: .center)
             .transition(.scale(scale: 0.85).combined(with: .opacity))
         case .incorrect(let got):
             // Both numbers in one line, read as a false equation -- clearer at a glance than a
@@ -373,9 +417,9 @@ struct ChallengeView: View {
             }
             .nbNumberFont(24, weight: .bold)
             .lineLimit(1)
-            .minimumScaleFactor(0.5)
+            .minimumScaleFactor(ChallengeMetrics.standardShrinkFloor)
             .foregroundStyle(.red)
-            .containerRelativeFrame(.horizontal, alignment: .center)
+            .frame(maxWidth: .infinity, alignment: .center)
             .transition(.opacity.combined(with: .move(edge: .top)))
         }
     }
@@ -389,14 +433,14 @@ struct ChallengeView: View {
         return HStack(spacing: 12) {
             ForEach(MathOperation.allCases, id: \.self) { operation in
                 Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
+                    withAnimation(NBMetrics.standardInteractionAnimation) {
                         viewModel.placeOperation(operation)
                     }
                 } label: {
                     Text(operation.symbol)
                         .nbNumberFont(35, weight: .bold)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.4)
+                        .minimumScaleFactor(ChallengeMetrics.extremeShrinkFloor)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.nbTonal(tint: operation.accentColor, isEnabled: isActive))
@@ -404,10 +448,10 @@ struct ChallengeView: View {
                 .accessibilityLabel(operation.accessibleName)
             }
         }
-        .padding(20)
+        .padding(NBMetrics.cardOuterPadding)
         .cardSurface()
         .overlay(highlightBorder(isActive))
-        .animation(.easeInOut(duration: 0.25), value: isActive)
+        .animation(NBMetrics.standardInteractionAnimation, value: isActive)
     }
 
     private var controls: some View {
@@ -437,32 +481,32 @@ struct ChallengeView: View {
 
             HStack(spacing: 12) {
                 Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
+                    withAnimation(NBMetrics.standardInteractionAnimation) {
                         viewModel.undoLast()
                     }
                 } label: {
                     Label("Undo", systemImage: "arrow.uturn.backward")
                         .lineLimit(1)
-                        .minimumScaleFactor(0.5)
+                        .minimumScaleFactor(ChallengeMetrics.standardShrinkFloor)
                 }
                 .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor, isEnabled: viewModel.canUndo))
                 .disabled(!viewModel.canUndo)
 
                 Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
+                    withAnimation(NBMetrics.standardInteractionAnimation) {
                         viewModel.revealAnswer()
                     }
                 } label: {
                     Label("Reveal Answer", systemImage: "eye.fill")
                         .lineLimit(1)
-                        .minimumScaleFactor(0.5)
+                        .minimumScaleFactor(ChallengeMetrics.standardShrinkFloor)
                 }
                 .buttonStyle(.nbTonal(tint: viewModel.tier.accentColor, isEnabled: !viewModel.isRevealed))
                 .disabled(viewModel.isRevealed)
             }
 
             Button {
-                withAnimation(.easeInOut(duration: 0.25)) {
+                withAnimation(NBMetrics.standardInteractionAnimation) {
                     viewModel.newPuzzle()
                 }
             } label: {
@@ -482,7 +526,7 @@ struct ChallengeView: View {
             .foregroundStyle(.secondary)
             .tracking(0.5)
             .lineLimit(1)
-            .minimumScaleFactor(0.5)
+            .minimumScaleFactor(ChallengeMetrics.standardShrinkFloor)
             .accessibilityAddTraits(.isHeader)
     }
 
@@ -524,7 +568,7 @@ struct ChallengeView: View {
         case .dieSlot(let index):
             if let die = viewModel.placedDice[index] {
                 Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
+                    withAnimation(NBMetrics.standardInteractionAnimation) {
                         viewModel.removeDieSlot(index)
                     }
                 } label: {
@@ -537,7 +581,7 @@ struct ChallengeView: View {
         case .opSlot(let index):
             if let operation = viewModel.placedOperations[index] {
                 Button {
-                    withAnimation(.easeInOut(duration: 0.25)) {
+                    withAnimation(NBMetrics.standardInteractionAnimation) {
                         viewModel.removeOperationSlot(index)
                     }
                 } label: {
@@ -571,7 +615,7 @@ struct ChallengeView: View {
 
     private var blankSlot: some View {
         Image(systemName: "square.dashed")
-            .foregroundStyle(.secondary.opacity(0.4))
+            .foregroundStyle(.secondary.opacity(ChallengeMetrics.faintIconOpacity))
             .accessibilityLabel("Empty slot")
     }
 
@@ -617,26 +661,26 @@ struct ChallengeView: View {
                                 variantButton(variant)
                             }
                         }
-                        .padding(20)
+                        .padding(NBMetrics.cardOuterPadding)
                     }
                 } else {
                     Text("—")
                         .nbNumberFont(20, weight: .bold)
-                        .foregroundStyle(.secondary.opacity(0.4))
+                        .foregroundStyle(.secondary.opacity(ChallengeMetrics.faintIconOpacity))
                         .frame(maxWidth: .infinity, minHeight: 20)
-                        .padding(20)
+                        .padding(NBMetrics.cardOuterPadding)
                 }
             }
             .cardSurface()
             .overlay(highlightBorder(isActive))
-            .animation(.easeInOut(duration: 0.25), value: isActive)
+            .animation(NBMetrics.standardInteractionAnimation, value: isActive)
         }
     }
 
     private func variantButton(_ variant: DieValue) -> some View {
         let isSelected = viewModel.activeDieSlot.flatMap { viewModel.placedDice[$0] } == variant
         return Button {
-            withAnimation(.easeInOut(duration: 0.25)) {
+            withAnimation(NBMetrics.standardInteractionAnimation) {
                 viewModel.selectVariant(variant)
             }
         } label: {

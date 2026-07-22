@@ -57,6 +57,36 @@ extension SolutionTier {
     }
 }
 
+// MARK: - Shared metrics
+
+/// Named values for numbers that repeated across multiple files for the same reason, found by
+/// the 2026-07-21 magic-numbers audit -- every value here matches exactly what was already on
+/// screen, so wiring these in is a naming pass, not a visual change. Deliberately excludes values
+/// that only repeated by coincidence, not shared meaning (see the audit report for the full
+/// reasoning) -- not every number in the app belongs in this list, only the ones doing the same
+/// conceptual job in more than one place.
+enum NBMetrics {
+    static let cardCornerRadius: CGFloat = 20
+    static let cardOuterPadding: CGFloat = 20
+    /// `readableContentWidth()`'s regular-size-class (iPad) cap -- exposed as a named value so
+    /// anything that needs to independently recompute the same effective content width (see
+    /// `ChallengeView.answerCard`) can match it exactly, instead of guessing 600 a second time.
+    static let readableContentMaxWidth: CGFloat = 600
+    static let screenHorizontalMargin: CGFloat = 20
+    static let innerElementPadding: CGFloat = 14
+    static let buttonVerticalPadding: CGFloat = 16
+    static let innerControlCornerRadius: CGFloat = 14
+    static let iconContainerCornerRadius: CGFloat = 16
+    static let hairlineBorderWidth: CGFloat = 1
+    static let disabledBorderOpacity: Double = 0.15
+    static let iconBadgeWashOpacity: Double = 0.18
+    static let standardInteractionAnimation: Animation = .easeInOut(duration: 0.25)
+    static let buttonPressAnimation: Animation = .spring(response: 0.25, dampingFraction: 0.7)
+    static let standardDieIconSize: CGFloat = 64
+    static let trayDieSize: CGFloat = 56
+    static let bulletDotSize: CGFloat = 8
+}
+
 // MARK: - Typography
 
 /// Large rounded numerals — dice faces, the target number, headline results. Scales with Dynamic
@@ -96,7 +126,7 @@ extension View {
 // MARK: - Card surface
 
 private struct CardSurfaceModifier: ViewModifier {
-    var cornerRadius: CGFloat = 20
+    var cornerRadius: CGFloat = NBMetrics.cardCornerRadius
 
     func body(content: Content) -> some View {
         content
@@ -106,7 +136,7 @@ private struct CardSurfaceModifier: ViewModifier {
             )
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(Color.cardBorder, lineWidth: 1)
+                    .strokeBorder(Color.cardBorder, lineWidth: NBMetrics.hairlineBorderWidth)
             )
             .shadow(color: .black.opacity(0.12), radius: 10, y: 4)
     }
@@ -118,7 +148,7 @@ extension View {
         modifier(CardSurfaceModifier())
     }
 
-    func cardSurface(cornerRadius: CGFloat = 20) -> some View {
+    func cardSurface(cornerRadius: CGFloat = NBMetrics.cardCornerRadius) -> some View {
         modifier(CardSurfaceModifier(cornerRadius: cornerRadius))
     }
 }
@@ -196,13 +226,13 @@ struct NBPrimaryButtonStyle: ButtonStyle {
             .nbNumberFont(17, weight: .semibold)
             .foregroundStyle(isEnabled ? tint.contrastAwareForeground : .white)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, NBMetrics.buttonVerticalPadding)
             .background(
                 Capsule(style: .continuous)
                     .fill(isEnabled ? tint : Color.gray.opacity(0.35))
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+            .animation(NBMetrics.buttonPressAnimation, value: configuration.isPressed)
     }
 }
 
@@ -216,13 +246,13 @@ struct NBTonalButtonStyle: ButtonStyle {
             .nbNumberFont(17, weight: .semibold)
             .foregroundStyle(isEnabled ? tint : Color.gray)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, NBMetrics.buttonVerticalPadding)
             .background(
                 Capsule(style: .continuous)
-                    .fill((isEnabled ? tint : Color.gray).opacity(0.15))
+                    .fill((isEnabled ? tint : Color.gray).opacity(NBMetrics.disabledBorderOpacity))
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+            .animation(NBMetrics.buttonPressAnimation, value: configuration.isPressed)
     }
 }
 
@@ -241,7 +271,7 @@ struct NBNeutralButtonStyle: ButtonStyle {
             .nbNumberFont(17, weight: .semibold)
             .foregroundStyle(isEnabled ? Color(.systemBackground) : Color.mutedText)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, NBMetrics.buttonVerticalPadding)
             .background(
                 Capsule(style: .continuous)
                     .fill(isEnabled ? Color.primary : Color.innerSurface)
@@ -252,10 +282,10 @@ struct NBNeutralButtonStyle: ButtonStyle {
                 // reading as a borderless rectangle rather than a button. The enabled state
                 // (solid black/white) already has plenty of contrast on its own.
                 Capsule(style: .continuous)
-                    .strokeBorder(isEnabled ? Color.clear : Color.primary.opacity(0.15), lineWidth: 1)
+                    .strokeBorder(isEnabled ? Color.clear : Color.primary.opacity(NBMetrics.disabledBorderOpacity), lineWidth: NBMetrics.hairlineBorderWidth)
             )
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+            .animation(NBMetrics.buttonPressAnimation, value: configuration.isPressed)
     }
 }
 
@@ -275,7 +305,7 @@ struct NBOutlineButtonStyle: ButtonStyle {
             .nbNumberFont(17, weight: .semibold)
             .foregroundStyle(tint)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, NBMetrics.buttonVerticalPadding)
             .background(
                 // A brief tint wash while held -- the scale-down alone was too subtle to read as
                 // "this responded to my touch" on an otherwise-transparent outline button.
@@ -293,7 +323,7 @@ struct NBOutlineButtonStyle: ButtonStyle {
             // their opaque fill).
             .contentShape(Capsule())
             .scaleEffect(configuration.isPressed ? 0.97 : 1)
-            .animation(.spring(response: 0.25, dampingFraction: 0.7), value: configuration.isPressed)
+            .animation(NBMetrics.buttonPressAnimation, value: configuration.isPressed)
     }
 }
 
@@ -321,28 +351,55 @@ extension ButtonStyle where Self == NBTonalButtonStyle {
 /// Constrains and centers content on wide screens (iPad, or an iPhone in landscape) so cards and
 /// lists don't stretch edge-to-edge on a big display; a no-op on compact-width screens.
 ///
-/// This used to be `HStack { Spacer(minLength: 0); content.frame(maxWidth: ...); Spacer(minLength: 0) }`.
-/// That shipped a real bug at extreme Dynamic Type sizes: `.frame(maxWidth:)` only ever caps how far
-/// a view is *allowed* to grow -- it never forces content to actually measure at a smaller size. An
-/// `HStack` grants each non-`Spacer` child its own ideal/natural width before handing any leftover
-/// space to the `Spacer`s, so a single row anywhere inside `content` that reported an oversized ideal
-/// width (any row of `.nbNumberFont`-scaled text at AX5, which is big enough that several such rows
-/// exceed a phone's screen width once combined) silently expanded this whole wrapper -- and, because
-/// that width then became the layout's coordinate space, every *other* sibling row got centered and
-/// symmetrically clipped along with it, even ones with no width problem of their own. `.lineLimit` /
-/// `.minimumScaleFactor` on individual `Text`s didn't fix this: those only affect a `Text`'s *final*
-/// render once it's given a real proposed width, not the *ideal*-size measurement pass that decided
-/// this wrapper's width in the first place. `.containerRelativeFrame` fixes the actual mechanism: it
-/// proposes a real, bounded width down into `content` (the `ScrollView`'s own width on compact,
-/// capped at `maxWidth` on regular), so every descendant is forced to size within it instead of
-/// leaking its natural size upward.
+/// Compact (iPhone) used to just be `HStack { Spacer(minLength: 0); content.frame(maxWidth: .infinity);
+/// Spacer(minLength: 0) }`. That shipped a real bug at extreme Dynamic Type sizes: `.frame(maxWidth:)`
+/// only ever caps how far a view is *allowed* to grow -- it never forces content to actually measure
+/// at a smaller size. An `HStack` grants each non-`Spacer` child its own ideal/natural width before
+/// handing any leftover space to the `Spacer`s, so a single row anywhere inside `content` that
+/// reported an oversized ideal width (any row of `.nbNumberFont`-scaled text at AX5) silently
+/// expanded this whole wrapper, and every sibling row got centered and clipped along with it.
+/// `.containerRelativeFrame` fixes that: it proposes a real, bounded width down into `content`
+/// regardless of what content's ideal size wants.
+///
+/// Regular (iPad) still uses the original `HStack` + `.frame(maxWidth:)` approach, not
+/// `.containerRelativeFrame` -- briefly unified with the compact case, which shipped a *different*
+/// real bug: `.containerRelativeFrame` measures against a container reference that, on iPad with the
+/// floating tab bar, does not match the actual visible content area the tab bar insets from the true
+/// screen edges. The `HStack` form doesn't have this problem because it just uses whatever width its
+/// real SwiftUI parent actually proposes to it (which already correctly reflects that inset), rather
+/// than independently re-deriving a container size. Confirmed by direct bisection: reverting this one
+/// case to the old `HStack` form fixed a real, visible mismatch between the readable-content column
+/// and the app's own background on iPad.
+///
+/// Compact (iPhone) is now back to the *exact* original `.frame(maxWidth: .infinity)` too -- briefly
+/// switched to `.containerRelativeFrame` (fed by an independently-measured width, to route around the
+/// iPad problem above) to fix the AX5 overflow bug, but that introduced a *third*, separate
+/// `.containerRelativeFrame` unreliability: after rotating an iPhone to landscape and back to
+/// portrait, the whole readable-content column can get stuck reporting the landscape width, with
+/// nothing to prompt a fresh measurement (reported live on a real device, confirmed by direct
+/// bisection against this exact modifier -- not a simulator artifact, and not fixed by routing the
+/// measurement through an independently-measured value instead of trusting `.containerRelativeFrame`'s
+/// own `length` -- the unreliability is in `.containerRelativeFrame` itself, not in how its input is
+/// sourced). This modifier governs the *entire* readable-content column on every screen, so it's not
+/// the place to accept that risk. `.containerRelativeFrame` was then tried scoped narrowly instead,
+/// just to `ChallengeView.answerCard` (the actual source of the AX5 overflow this used to guard
+/// against), on the theory that a single-card, single-screen usage wouldn't share the same rotation
+/// bug -- confirmed wrong by the user on a real device: rotating the Challenge tab reproduced the
+/// identical staleness, and because that card's own reported size fed back into its shared parent
+/// `VStack`'s width, the stale size poisoned every sibling right along with it, exactly like the
+/// original AX5 leak. `.containerRelativeFrame` is retired from this app entirely; the AX5 leak is
+/// now stopped at its actual source -- see `ChallengeView.answerCard`'s own doc comment -- by capping
+/// the *effective* Dynamic Type scale its oversized content responds to, so it can never report an
+/// oversized ideal size in the first place, and this modifier no longer needs a hard cap of its own.
 private struct ReadableContentWidthModifier: ViewModifier {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     var maxWidth: CGFloat
 
     func body(content: Content) -> some View {
-        content.containerRelativeFrame(.horizontal) { length, _ in
-            horizontalSizeClass == .regular ? min(length, maxWidth) : length
+        HStack {
+            Spacer(minLength: 0)
+            content.frame(maxWidth: horizontalSizeClass == .regular ? maxWidth : .infinity)
+            Spacer(minLength: 0)
         }
     }
 }
@@ -372,7 +429,7 @@ private struct HeightPreferenceKey: PreferenceKey {
 }
 
 extension View {
-    func readableContentWidth(_ maxWidth: CGFloat = 600) -> some View {
+    func readableContentWidth(_ maxWidth: CGFloat = NBMetrics.readableContentMaxWidth) -> some View {
         modifier(ReadableContentWidthModifier(maxWidth: maxWidth))
     }
 
@@ -380,15 +437,24 @@ extension View {
         modifier(VerticallyCenteredWhenRegularModifier(containerHeight: containerHeight))
     }
 
-    /// Reads this view's own height into `binding` passively via a background, instead of
-    /// wrapping it in a `GeometryReader` that becomes a structural parent in the layout pass --
-    /// that approach caused a real, shipped bug: at extreme Dynamic Type sizes, the very first
-    /// layout pass of a `GeometryReader`-wrapped screen could render with stale width math
-    /// (content overflowing the screen edge entirely) until *any* subsequent state change forced
-    /// a fresh layout pass to correct it. A background `GeometryReader` reports the same size
-    /// without disrupting the layout of the view it's attached to.
+    /// Reads this view's own height into `binding` passively via an overlay, instead of wrapping
+    /// it in a `GeometryReader` that becomes a structural parent in the layout pass -- that
+    /// approach caused a real, shipped bug: at extreme Dynamic Type sizes, the very first layout
+    /// pass of a `GeometryReader`-wrapped screen could render with stale width math (content
+    /// overflowing the screen edge entirely) until *any* subsequent state change forced a fresh
+    /// layout pass to correct it.
+    ///
+    /// This uses `.overlay`, not `.background` -- a real, confirmed difference, not a stylistic
+    /// choice. An earlier version used `.background(GeometryReader{...})`, matching the pattern
+    /// most SwiftUI writeups show; attached directly to a `ScrollView`, that combination's
+    /// `.onPreferenceChange` never actually fired -- confirmed by displaying the bound value live
+    /// and watching it sit at `0` indefinitely, no matter how long the screen had to settle,
+    /// which silently broke every feature that depended on it (`verticallyCenteredWhenRegular` on
+    /// iPad, and an attempted fix elsewhere that measured a card's width the same way). Swapping
+    /// to `.overlay` on the exact same call site immediately produced a real, correct value.
+    /// `Color.clear` inside the overlay means there's nothing to visually disrupt either way.
     func measuringHeight(into binding: Binding<CGFloat>) -> some View {
-        background(
+        overlay(
             GeometryReader { proxy in
                 Color.clear.preference(key: HeightPreferenceKey.self, value: proxy.size.height)
             }
