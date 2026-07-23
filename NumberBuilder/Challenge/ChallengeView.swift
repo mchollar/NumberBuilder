@@ -520,13 +520,32 @@ struct ChallengeView: View {
         }
     }
 
+    /// No `.minimumScaleFactor` here, deliberately -- it was added during the M11 accessibility pass
+    /// to guard against AX5 overflow, but confirmed by diagnostic logging (real proposed-width
+    /// numbers printed via a temporary `GeometryReader`) to cause a much worse bug: in an `HStack`
+    /// sharing this label with a `Spacer` (e.g. "Your Roll" / `Spacer` / "Target"), a `Text` with
+    /// `.lineLimit(1)` + `.minimumScaleFactor` reports an artificially small "ideal size" to the
+    /// layout system, so the `Spacer` claims space that should have gone to the label -- shrinking
+    /// it down near its scale floor even with abundant unused width sitting right next to it.
+    /// `.layoutPriority(1)` (the usual fix for a `Spacer` stealing space) did not help, confirmed
+    /// empirically. `.lineLimit(2)` avoids that trap entirely: at normal sizes there's plenty of
+    /// room and it renders on one line exactly as before; at AX5 it wraps to a second line instead
+    /// of either shrinking (the bug above) or truncating with "…" (confirmed live -- a bare,
+    /// unconstrained `Text` here truncated instead of wrapping, for reasons not fully understood,
+    /// so this is an explicit line count, not reliance on the implicit default). Never overflows the
+    /// screen edge either way, unlike the actual AX5 leak this was guarding against (which lived in
+    /// `answerCard`'s workspace token row, not here -- see that row's own `.dynamicTypeSize` cap).
     private func sectionLabel(_ text: String) -> some View {
         Text(text.uppercased())
-            .font(.caption.weight(.semibold))
+            .font(.footnote.weight(.semibold))
             .foregroundStyle(.secondary)
             .tracking(0.5)
-            .lineLimit(1)
-            .minimumScaleFactor(ChallengeMetrics.standardShrinkFloor)
+            .lineLimit(2)
+            // Without this, the HStack proposes this Text only a single line's worth of height
+            // (matched to its single-line sibling), so `.lineLimit(2)` has no room to actually
+            // render a second line and truncates instead -- confirmed live. This forces the Text to
+            // report its own true multi-line ideal height when it needs one.
+            .fixedSize(horizontal: false, vertical: true)
             .accessibilityAddTraits(.isHeader)
     }
 
